@@ -1,0 +1,6 @@
+@EventsWebApp.Server_HostAddress = http://localhost:5206
+
+GET {{EventsWebApp.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
