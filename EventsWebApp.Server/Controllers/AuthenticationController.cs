@@ -1,11 +1,12 @@
 using EventsWebApp.Application.Services;
 using EventsWebApp.Server.Contracts;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthenticationController
+    public class AuthenticationController : Controller
     {
         private readonly UserService _userService;
 
@@ -14,25 +15,27 @@ namespace EventsWebApp.Server.Controllers
             _userService = userService;
         }
 
-        [HttpGet("/login")]
+        [HttpPost("/login")]
         public async Task<IResult> Login([FromQuery] LoginRequest loginRequest)
         {
             try
             {
                 var token = await _userService.Login(loginRequest.email, loginRequest.password);
-                return Results.Ok(token);
+                HttpContext.Response.Cookies.Append("tasty-cookies", token);
+                return Results.Ok();
             }catch (Exception e)
             {
                 return Results.BadRequest(e.Message);
             }
         }
 
-        [HttpGet("/register")]
+        [HttpPost("/register")]
         public async Task<IResult> Register([FromQuery] RegisterRequest registerRequest)
         {
             try
             {
-                await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
+                var token = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
+                HttpContext.Response.Cookies.Append("tasty-cookies", token);
                 return Results.Ok();
             }
             catch (Exception e)

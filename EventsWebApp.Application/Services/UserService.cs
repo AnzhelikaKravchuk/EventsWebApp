@@ -49,7 +49,7 @@ namespace EventsWebApp.Application.Services
             }
             return _mapper.Map<UserDto>(user);
         }
-        public async Task Register(string email, string password, string username)
+        public async Task<string> Register(string email, string password, string username)
         {
             var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
             if (candidate != null)
@@ -63,6 +63,9 @@ namespace EventsWebApp.Application.Services
 
             await _appUnitOfWork.UserRepository.Add(user);
             _appUnitOfWork.Save();
+
+            var token = _jwtProvider.GenerateToken(user);
+            return token;
         }
 
         public async Task<string> Login(string email, string password)
