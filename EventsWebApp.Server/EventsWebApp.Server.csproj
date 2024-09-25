@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\EventsWebApp.Application\EventsWebApp.Application.csproj" />
+    <ProjectReference Include="..\..\EventsWebApp.Infrastructure\EventsWebApp.Infrastructure.csproj" />
     <ProjectReference Include="..\eventswebapp.client\eventswebapp.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
