@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\EventsWebApp.Application\EventsWebApp.Application.csproj" />
-    <ProjectReference Include="..\..\EventsWebApp.Infrastructure\EventsWebApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\EventsWebApp.Application\EventsWebApp.Application.csproj" />
     <ProjectReference Include="..\eventswebapp.client\eventswebapp.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\EventsWebApp.Infrastructure\EventsWebApp.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
