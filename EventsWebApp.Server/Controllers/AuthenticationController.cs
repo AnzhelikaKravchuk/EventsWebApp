@@ -32,7 +32,7 @@ namespace EventsWebApp.Server.Controllers
         {
             try
             {
-                await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username) ;
+                await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
                 return Results.Ok();
             }
             catch (Exception e)

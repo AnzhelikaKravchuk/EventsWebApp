@@ -9,6 +9,6 @@ namespace EventsWebApp.Application.Interfaces
         Task<User> GetById(Guid id);
         Task<User> GetByEmail(string email);
         Task<List<User>> GetAll();
-        Task<Guid> Update(Guid id, string email, string password, string username);
+        Task<Guid> Update(User user);
     }
 }

@@ -6,6 +6,7 @@ using EventsWebApp.Infrastructure.Repositories;
 using EventsWebApp.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using EventsWebApp.Infrastructure.UnitOfWork;
+using EventsWebApp.Application.Validators;
 
 namespace EventsWebApp.Server
 {
@@ -30,6 +31,7 @@ namespace EventsWebApp.Server
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<UserValidator>();
 
             services.AddScoped<UserService>();
 

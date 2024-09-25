@@ -15,10 +15,6 @@ namespace EventsWebApp.Infrastructure.Repositories
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user == null)
-            {
-                throw new Exception("No such user found");
-            }
             return user;
         }
 
@@ -26,10 +22,6 @@ namespace EventsWebApp.Infrastructure.Repositories
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
 
-            if (user == null)
-            {
-                throw new Exception("No such user found");
-            }
             return user;
         }
 
@@ -45,16 +37,16 @@ namespace EventsWebApp.Infrastructure.Repositories
             return user.Id;
         }
 
-        public async Task<Guid> Update(Guid id, string email, string password, string username)
+        public async Task<Guid> Update(User user)
         {
             await _dbContext.Users
-                .Where(x => x.Id == id)
+                .Where(x => x.Id == user.Id)
                 .ExecuteUpdateAsync(x => x
-                    .SetProperty(u => u.Email, u => email)
-                    .SetProperty(u => u.PasswordHash, u => password)
-                    .SetProperty(u => u.Username, u => username)
+                    .SetProperty(u => u.Email, u => user.Email)
+                    .SetProperty(u => u.PasswordHash, u => user.PasswordHash)
+                    .SetProperty(u => u.Username, u => user.Username)
                     );
-            return id;
+            return user.Id;
         }
 
         public async Task<Guid> Delete(Guid id)
