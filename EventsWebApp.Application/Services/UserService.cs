@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.Dto;
+﻿using AutoMapper;
+using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
 
@@ -6,38 +7,46 @@ namespace EventsWebApp.Application.Services
 {
     public class UserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IAppUnitOfWork _appUnitOfWork;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
+        public UserService(IAppUnitOfWork appUnitOfWork, IPasswordHasher passwordHasher, IJwtProvider jwtProvider, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _appUnitOfWork = appUnitOfWork;
             _passwordHasher = passwordHasher;
             _jwtProvider = jwtProvider;
+            _mapper = mapper;
         }
 
         public async Task<List<UserDto>> GetAllUsers()
         {
-            var users = await _userRepository.GetAll();
-            return users.Select(u => UserMapper.Map(u)).ToList();
+            var users = await _appUnitOfWork.UserRepository.GetAll();
+            return users.Select(_mapper.Map<UserDto>).ToList();
         }
 
         public async Task<UserDto> GetUser(Guid id)
         {
-            User user = await _userRepository.GetById(id);
-            return UserMapper.Map(user);
+            User user = await _appUnitOfWork.UserRepository.GetById(id);
+            return _mapper.Map<UserDto>(user);
         }
         public async Task Register(string email, string password, string username)
         {
+            var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
+            if(candidate != null)
+            {
+                throw new Exception("User already exists");
+            }
             string hashedPassword = _passwordHasher.Generate(password);
 
             User user = new User(Guid.NewGuid(), email, hashedPassword, username, "User");
-            await _userRepository.Add(user);
+            await _appUnitOfWork.UserRepository.Add(user);
+            _appUnitOfWork.Save();
         }
         public async Task<string> Login(string email, string password)
         {
-            User candidate = await _userRepository.GetByEmail(email);
+            User candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
 
             if (candidate == null || !_passwordHasher.Verify(password, candidate.PasswordHash))
             {
@@ -51,12 +60,22 @@ namespace EventsWebApp.Application.Services
 
         public async Task<Guid> UpdateUser(Guid id, string email, string password, string username)
         {
-            return await _userRepository.Update(id, email, password, username);
+            var userId = await _appUnitOfWork.UserRepository.Update(id, email, password, username);
+
+            _appUnitOfWork.Save();
+            return userId;
         }
 
         public async Task<Guid> DeleteUser(Guid id)
         {
-            return await _userRepository.Delete(id);
+            var userId = await _appUnitOfWork.UserRepository.Delete(id);
+
+            _appUnitOfWork.Save();
+            return userId;
+        }
+        protected void Dispose(bool disposing)
+        {
+            _appUnitOfWork.Dispose();
         }
     }
 }

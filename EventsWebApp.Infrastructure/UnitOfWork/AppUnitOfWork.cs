@@ -2,7 +2,7 @@
 
 namespace EventsWebApp.Infrastructure.UnitOfWork
 {
-    public class AppUnitOfWork : IDisposable
+    public class AppUnitOfWork : IDisposable, IAppUnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private IUserRepository _userRepository;
@@ -10,12 +10,16 @@ namespace EventsWebApp.Infrastructure.UnitOfWork
 
         private bool disposed = false;
 
-        public IUserRepository UserRepository { get { 
-                return _userRepository; 
-            } 
+        public IUserRepository UserRepository
+        {
+            get
+            {
+                return _userRepository;
+            }
         }
 
-        public AppUnitOfWork(ApplicationDbContext context, IUserRepository userRepository) {
+        public AppUnitOfWork(ApplicationDbContext context, IUserRepository userRepository)
+        {
             _context = context;
             _userRepository = userRepository;
         }

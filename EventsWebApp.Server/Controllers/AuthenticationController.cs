@@ -21,9 +21,9 @@ namespace EventsWebApp.Server.Controllers
             {
                 var token = await _userService.Login(loginRequest.email, loginRequest.password);
                 return Results.Ok(token);
-            }catch (Exception)
+            }catch (Exception e)
             {
-                return Results.BadRequest();
+                return Results.BadRequest(e.Message);
             }
         }
 
@@ -35,9 +35,9 @@ namespace EventsWebApp.Server.Controllers
                 await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username) ;
                 return Results.Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Results.BadRequest();
+                return Results.BadRequest(e.Message);
             }
         }
     }

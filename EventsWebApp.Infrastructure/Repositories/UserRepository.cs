@@ -1,6 +1,5 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
-using EventsWebApp.Infrastructure.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventsWebApp.Infrastructure.Repositories
@@ -20,7 +19,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No such user found");
             }
-            return user.ToDomainUser();
+            return user;
         }
 
         public async Task<User> GetByEmail(string email)
@@ -31,26 +30,17 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No such user found");
             }
-            return user.ToDomainUser();
+            return user;
         }
 
         public async Task<List<User>> GetAll()
         {
-            return await _dbContext.Users.AsNoTracking().Select(entity => entity.ToDomainUser()).ToListAsync();
+            return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
 
         public async Task<Guid> Add(User user)
-        {
-            UserEntity userEntity = new UserEntity
-            {
-                Id = user.Id,
-                Email = user.Email,
-                PasswordHash = user.PasswordHash,
-                Username = user.Username,
-                Role = user.Role,
-            };
-            await _dbContext.Users.AddAsync(userEntity);
-            await _dbContext.SaveChangesAsync();
+        { 
+            await _dbContext.Users.AddAsync(user);
 
             return user.Id;
         }
