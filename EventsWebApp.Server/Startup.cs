@@ -29,12 +29,18 @@ namespace EventsWebApp.Server
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAttendeeRepository, AttendeeRepository>();
+            services.AddScoped<ISocialEventRepository, SocialEventRepository>();
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<UserValidator>();
+            services.AddScoped<SocialEventValidator>();
+            services.AddScoped<AttendeeValidator>();
 
             services.AddScoped<UserService>();
+            services.AddScoped<SocialEventService>();
+            services.AddScoped<AttendeeService>();
 
             services.AddApiAuthentication(Configuration);
 
