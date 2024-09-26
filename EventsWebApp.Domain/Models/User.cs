@@ -8,9 +8,8 @@
         public string Username { get; } = string.Empty;
         public string Role { get; } = string.Empty;
 
-        public User(Guid id, string email, string passwordHash, string username, string role)
+        public User(string email, string passwordHash, string username, string role)
         {
-            this.Id = id;
             this.Email = email;
             this.PasswordHash = passwordHash;
             this.Username = username;

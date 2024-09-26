@@ -1,6 +1,5 @@
 using EventsWebApp.Application.Services;
 using EventsWebApp.Server.Contracts;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 namespace EventsWebApp.Server.Controllers
 {

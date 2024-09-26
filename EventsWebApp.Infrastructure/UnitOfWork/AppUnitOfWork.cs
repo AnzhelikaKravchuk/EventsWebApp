@@ -6,6 +6,8 @@ namespace EventsWebApp.Infrastructure.UnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private IUserRepository _userRepository;
+        private ISocialEventRepository _socialEventRepository;
+        private IAttendeeRepository _attendeeRepository;
 
 
         private bool disposed = false;
@@ -18,10 +20,27 @@ namespace EventsWebApp.Infrastructure.UnitOfWork
             }
         }
 
-        public AppUnitOfWork(ApplicationDbContext context, IUserRepository userRepository)
+        public ISocialEventRepository SocialEventRepository
+        {
+            get
+            {
+                return _socialEventRepository;
+            }
+        }
+
+        public IAttendeeRepository AttendeeRepository
+        {
+            get
+            {
+                return _attendeeRepository;
+            }
+        }
+        public AppUnitOfWork(ApplicationDbContext context, IUserRepository userRepository, ISocialEventRepository socialEventRepository, IAttendeeRepository attendeeRepository)
         {
             _context = context;
             _userRepository = userRepository;
+            _socialEventRepository = socialEventRepository;
+            _attendeeRepository = attendeeRepository;
         }
 
         public void Save()

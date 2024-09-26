@@ -7,6 +7,7 @@ using EventsWebApp.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using EventsWebApp.Infrastructure.UnitOfWork;
 using EventsWebApp.Application.Validators;
+using EventsWebApp.Server.Extensions;
 
 namespace EventsWebApp.Server
 {
@@ -35,7 +36,7 @@ namespace EventsWebApp.Server
 
             services.AddScoped<UserService>();
 
-            services.AddAuthorization();
+            services.AddApiAuthentication(Configuration);
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();

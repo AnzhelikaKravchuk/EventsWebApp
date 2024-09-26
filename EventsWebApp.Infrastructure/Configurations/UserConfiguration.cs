@@ -4,10 +4,11 @@ using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Infrastructure.Configurations
 {
-    public class UserCofiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).IsRequired();
             builder.Property(x => x.Username).IsRequired();
             builder.Property(x => x.Email).IsRequired();

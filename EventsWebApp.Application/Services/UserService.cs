@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EventsWebApp.Application.Services
 {
-    public class UserService
+    public class UserService : IDisposable
     {
         private readonly IAppUnitOfWork _appUnitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -58,7 +58,7 @@ namespace EventsWebApp.Application.Services
             }
             string hashedPassword = _passwordHasher.Generate(password);
 
-            User user = new User(Guid.NewGuid(), email, hashedPassword, username, "User");
+            User user = new User(email, hashedPassword, username, "User");
             ValidateUser(user);
 
             await _appUnitOfWork.UserRepository.Add(user);
@@ -113,7 +113,7 @@ namespace EventsWebApp.Application.Services
                 throw new Exception(stringBuilder.ToString());
             }
         }
-        protected void Dispose(bool disposing)
+        public void Dispose()
         {
             _appUnitOfWork.Dispose();
         }

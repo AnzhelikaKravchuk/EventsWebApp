@@ -13,4 +13,10 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
+app.MapGet("get", () =>
+{
+    return Results.Ok("ok");
+}).RequireAuthorization("AdminPolicy");
+
+
 app.Run();

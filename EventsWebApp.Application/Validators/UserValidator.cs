@@ -7,9 +7,9 @@ namespace EventsWebApp.Application.Validators
     {
         public UserValidator() {
             RuleFor(user => user.Id).NotEmpty();
-            RuleFor(user => user.Email).NotNull().EmailAddress();
-            RuleFor(user => user.Username).NotNull();
-            RuleFor(user => user.Role).NotNull();
+            RuleFor(user => user.Email).NotEmpty().EmailAddress();
+            RuleFor(user => user.Username).NotEmpty();
+            RuleFor(user => user.Role).NotEmpty();
         }
     }
 }
