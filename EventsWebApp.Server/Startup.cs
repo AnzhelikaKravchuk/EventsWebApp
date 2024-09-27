@@ -1,5 +1,5 @@
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Mapper;
+using EventsWebApp.Server.Mapper;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Infrastructure.Handlers;
 using EventsWebApp.Infrastructure.Repositories;
@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using EventsWebApp.Infrastructure.UnitOfWork;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Server.Extensions;
+using EventsWebApp.Server.ExceptionsHandler;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EventsWebApp.Server
 {
@@ -25,7 +28,6 @@ namespace EventsWebApp.Server
             string connection = Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No database connection string");
 
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.AddAutoMapper(typeof(AppMappingProfile));
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IUserRepository, UserRepository>();
@@ -44,9 +46,19 @@ namespace EventsWebApp.Server
 
             services.AddApiAuthentication(Configuration);
 
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            MapperConfiguration config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AppMappingProfile());
+            });
+
+            services.AddAutoMapper(typeof(AppMappingProfile));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -71,6 +83,7 @@ namespace EventsWebApp.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseExceptionHandler();
 
         }
         

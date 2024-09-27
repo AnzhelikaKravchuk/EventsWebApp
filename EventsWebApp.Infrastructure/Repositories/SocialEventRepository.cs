@@ -27,7 +27,9 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<List<SocialEvent>> GetAll()
         {
-            return await _dbContext.SocialEvents.AsNoTracking().ToListAsync();
+            var events =  await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
+
+            return events;
         }
 
         public async Task<List<Attendee>> GetAllAttendeesByEventId(Guid id)
@@ -37,7 +39,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No event was found");
             }
-            return socialEvent.Attendees;
+            return socialEvent.ListOfAttendees;
         }
 
         //REFACTOR
@@ -48,7 +50,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No event was found");
             }
-            var attendeeList = socialEvent.Attendees;
+            var attendeeList = socialEvent.ListOfAttendees;
             if(attendeeList == null)
             {
                 throw new Exception("Attendee list is empty");
@@ -89,7 +91,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No event was found");
             }
-            var attendeesList = socialEvent.Attendees;
+            var attendeesList = socialEvent.ListOfAttendees;
             if (attendeesList == null)
             {
                 attendeesList = new List<Attendee>();

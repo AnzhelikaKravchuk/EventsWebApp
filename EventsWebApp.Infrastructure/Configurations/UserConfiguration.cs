@@ -10,10 +10,10 @@ namespace EventsWebApp.Infrastructure.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).IsRequired();
-            builder.Property(x => x.Username).IsRequired();
-            builder.Property(x => x.Email).IsRequired();
+            builder.Property(x => x.Username).HasMaxLength(100).IsRequired();
+            builder.Property(x => x.Email).HasMaxLength(100).IsRequired();
             builder.Property(x => x.PasswordHash).IsRequired();
-            builder.Property(x => x.Role).IsRequired();
+            builder.Property(x => x.Role).HasMaxLength(100).IsRequired();
         }
     }
 }

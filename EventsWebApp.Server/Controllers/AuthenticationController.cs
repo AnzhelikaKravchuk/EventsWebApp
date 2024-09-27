@@ -15,32 +15,19 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("/login")]
-        public async Task<IResult> Login([FromQuery] LoginRequest loginRequest)
+        public async Task<IResult> Login([FromForm] LoginRequest loginRequest)
         {
-            try
-            {
-                var token = await _userService.Login(loginRequest.email, loginRequest.password);
-                HttpContext.Response.Cookies.Append("tasty-cookies", token);
-                return Results.Ok();
-            }catch (Exception e)
-            {
-                return Results.BadRequest(e.Message);
-            }
+            var token = await _userService.Login(loginRequest.email, loginRequest.password);
+            HttpContext.Response.Cookies.Append("tasty-cookies", token);
+            return Results.Ok();
         }
 
         [HttpPost("/register")]
-        public async Task<IResult> Register([FromQuery] RegisterRequest registerRequest)
+        public async Task<IResult> Register([FromForm] RegisterRequest registerRequest)
         {
-            try
-            {
-                var token = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
-                HttpContext.Response.Cookies.Append("tasty-cookies", token);
-                return Results.Ok();
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest(e.Message);
-            }
+            var token = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
+            HttpContext.Response.Cookies.Append("tasty-cookies", token);
+            return Results.Ok();
         }
     }
 }

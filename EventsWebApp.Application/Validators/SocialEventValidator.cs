@@ -7,7 +7,7 @@ namespace EventsWebApp.Application.Validators
     public class SocialEventValidator : AbstractValidator<SocialEvent>
     {
         public SocialEventValidator() { 
-            RuleFor(socialEvent => socialEvent.Id).NotEmpty();
+            //RuleFor(socialEvent => socialEvent.Id).NotEmpty();
 
             RuleFor(socialEvent => socialEvent.Name).NotEmpty().MaximumLength(100);
             RuleFor(socialEvent => socialEvent.Description).NotEmpty();

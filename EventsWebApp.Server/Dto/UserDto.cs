@@ -1,4 +1,4 @@
-﻿namespace EventsWebApp.Application.Dto
+﻿namespace EventsWebApp.Server.Dto
 {
     public class UserDto
     {

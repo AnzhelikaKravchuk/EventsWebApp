@@ -9,6 +9,9 @@ namespace EventsWebApp.Infrastructure
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<SocialEvent> SocialEvents { get; set; } = null!;
         public DbSet<Attendee> Attendees { get; set; } = null!;
+
+
+        public ApplicationDbContext() { }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
             Database.EnsureCreated();
@@ -16,9 +19,15 @@ namespace EventsWebApp.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly); 
             new UserConfiguration().Configure(builder.Entity<User>());
             new SocialEventConfiguration().Configure(builder.Entity<SocialEvent>());
             new AttendeeConfiguration().Configure(builder.Entity<Attendee>());
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=DESKTOP-ESUGBMO;Database=EventsWebApp;Trusted_Connection=True;TrustServerCertificate=True");
         }
     }
 }
