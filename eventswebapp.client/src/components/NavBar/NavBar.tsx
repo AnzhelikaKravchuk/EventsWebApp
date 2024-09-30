@@ -1,10 +1,12 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 interface Props {
   isAuthenticated: boolean;
 }
 
 export default function NavBar(props: Props) {
+  const { logout } = useAuth();
   return (
     <AppBar position='static'>
       <Toolbar variant='dense'>
@@ -13,6 +15,7 @@ export default function NavBar(props: Props) {
           <div>
             <NavLink to='/socialEvents'>Social Events</NavLink>
             <NavLink to='/admissions'>Your Admissions</NavLink>
+            <Button onClick={logout}>Logout</Button>
           </div>
         ) : (
           <div>

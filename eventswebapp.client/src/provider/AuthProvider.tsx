@@ -24,6 +24,8 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     console.log('Here2');
     if (isAuthenticated) {
+      //GET TOKEN HERE
+
       Repository.GetRole()
         .then((role) => {
           setRole(role);

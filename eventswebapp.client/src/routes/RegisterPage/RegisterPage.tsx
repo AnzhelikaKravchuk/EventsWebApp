@@ -24,7 +24,7 @@ const RegisterPage = (props: Props) => {
   return (
     <section>
       <Typography variant='h1'>Register</Typography>
-      <form>
+      <form onSubmit={handleSubmit}>
         <Grid2
           container
           direction={'column'}
@@ -38,6 +38,7 @@ const RegisterPage = (props: Props) => {
               type='email'
               label='Email'
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Grid2>
           <Grid2 size={5}>
@@ -48,6 +49,7 @@ const RegisterPage = (props: Props) => {
               type='password'
               label='Password'
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </Grid2>
           <Grid2 size={5}>
@@ -58,10 +60,11 @@ const RegisterPage = (props: Props) => {
               type='text'
               label='Username'
               onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </Grid2>
           <Grid2 size={5}>
-            <Button onClick={handleSubmit} variant='contained'>
+            <Button type='submit' variant='contained'>
               Register
             </Button>
           </Grid2>

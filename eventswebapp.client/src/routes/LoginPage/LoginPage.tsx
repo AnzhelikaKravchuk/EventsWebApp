@@ -23,7 +23,7 @@ const LoginPage = (props: Props) => {
   return (
     <section>
       <Typography variant='h1'>Enter your credentials</Typography>
-      <form>
+      <form onSubmit={handleSubmit}>
         <Grid2
           container
           direction={'column'}
@@ -37,6 +37,7 @@ const LoginPage = (props: Props) => {
               type='email'
               label='Email'
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Grid2>
           <Grid2 size={5}>
@@ -47,10 +48,11 @@ const LoginPage = (props: Props) => {
               type='password'
               label='Password'
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </Grid2>
           <Grid2 size={5}>
-            <Button onClick={handleSubmit} variant='contained'>
+            <Button type='submit' variant='contained'>
               Login
             </Button>
           </Grid2>
