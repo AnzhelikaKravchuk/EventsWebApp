@@ -1,12 +1,59 @@
-import { Typography } from '@mui/material';
-import LoginPage from './pages/LoginPage/LoginPage';
-import RegisterPage from './pages/RegisterPage/RegisterPage';
+import { Route, Routes } from 'react-router-dom';
+import { ProtectedRoute } from './routes/ProtectedRoute/ProtectedRoute';
+import SocialEvents from './routes/SocialEvents/SocialEvents';
+import Root from './routes/Root/Root';
+import LoginPage from './routes/LoginPage/LoginPage';
+import RegisterPage from './routes/RegisterPage/RegisterPage';
+import { Role } from './types/types';
+import { AuthProvider } from './provider/AuthProvider';
+import EventsAdmissions from './routes/EventsAdmissions/EventsAdmissions';
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <Root />,
+//     children: [
+//       {
+//         path: '/socialEvents',
+//         element: <SocialEvents />,
+//       },
+//       {
+//         path: '/applications',
+//         element: <EventsApplications />,
+//       },
+//     ],
+//   },
+// ]);
 
 function App() {
   return (
-    <div>
-      <RegisterPage />
-    </div>
+    <AuthProvider>
+      <Routes>
+        <Route path='/' element={<Root />}>
+          <Route path='login' element={<LoginPage />} />
+          <Route path='register' element={<RegisterPage />} />
+          <Route
+            path='socialEvents'
+            element={
+              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                <SocialEvents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='admissions'
+            element={
+              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                <EventsAdmissions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='admin'
+            element={<ProtectedRoute allowedRoles={[Role.Admin]} />}
+          />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 

@@ -1,22 +1,23 @@
-import {
-  Button,
-  FormGroup,
-  FormLabel,
-  Grid2,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { useState } from 'react';
+import { Button, Grid2, TextField, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Repository } from '../../utils/Repository';
-
-type Props = {};
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+interface Props {}
 
 const LoginPage = (props: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   function handleSubmit() {
-    Repository.Login({ email, password });
+    Repository.Login({ email, password })
+      .then(() => {
+        login();
+        navigate('/socialEvents');
+      })
+      .catch();
   }
 
   return (

@@ -8,3 +8,9 @@ export interface RegisterRequest {
   password: string;
   username: string;
 }
+
+export enum Role {
+  User = 'user',
+  Admin = 'admin',
+  Guest = 'guest',
+}
