@@ -53,6 +53,7 @@ namespace EventsWebApp.Infrastructure.Migrations
                     Surname = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateOfRegistration = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SocialEventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

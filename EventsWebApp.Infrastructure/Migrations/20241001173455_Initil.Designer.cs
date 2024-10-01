@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventsWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240927204855_Initil")]
+    [Migration("20241001173455_Initil")]
     partial class Initil
     {
         /// <inheritdoc />
@@ -32,6 +32,9 @@ namespace EventsWebApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfRegistration")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")

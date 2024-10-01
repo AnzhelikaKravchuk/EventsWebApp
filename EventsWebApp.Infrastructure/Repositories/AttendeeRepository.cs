@@ -13,14 +13,21 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
         public async Task<Attendee> GetById(Guid id)
         {
-            var attendee = await _dbContext.Attendees.FirstOrDefaultAsync(x => x.Id == id);
+            var attendee = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).FirstOrDefaultAsync(x => x.Id == id);
 
             return attendee;
         }
 
+        public async Task<List<Attendee>> GetAllByUserId(Guid userId)
+        {
+            var attendees = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).Where(x => x.User.Id == userId).AsNoTracking().ToListAsync();
+
+            return attendees;
+        }
+
         public async Task<List<Attendee>> GetAll()
         {
-            return await _dbContext.Attendees.AsNoTracking().ToListAsync();
+            return await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().ToListAsync();
         }
 
         public async Task<Guid> Add(Attendee attendee)

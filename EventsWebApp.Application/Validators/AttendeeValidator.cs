@@ -11,6 +11,7 @@ namespace EventsWebApp.Application.Validators
             RuleFor(attendee => attendee.Name).NotEmpty().MaximumLength(100);
             RuleFor(attendee => attendee.Surname).NotEmpty().MaximumLength(100);
             RuleFor(attendee => attendee.DateOfBirth).NotEmpty().LessThan(DateTime.Now);
+            RuleFor(attendee => attendee.DateOfRegistration).NotEmpty().LessThanOrEqualTo(DateTime.Now);
             RuleFor(attendee => attendee.User).NotEmpty();
             RuleFor(attendee => attendee.SocialEvent).NotEmpty();
         }

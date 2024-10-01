@@ -2,7 +2,6 @@ using AutoMapper;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Contracts;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWebApp.Server.Controllers
@@ -32,15 +31,14 @@ namespace EventsWebApp.Server.Controllers
         {
             
             var socialEvent = _mapper.Map<SocialEvent>(request);
-            if (formFiles.Count < 1 || !formFiles[0].IsImage())
+            if (formFiles.Count > 0 && formFiles[0].IsImage())
             {
-                return BadRequest("No image attached");
+                byte[] image = ConvertFileToBytes(formFiles[0]);
+                socialEvent.Image = image;
             }
-            byte[] image = ConvertFileToBytes(formFiles[0]);
 
-            socialEvent.Image = image;
 
-            var socialEvents = await _socialEventService.CreateSocialEvent(socialEvent, Guid.Parse("BC1A2F4A-BD15-40EF-936F-08DCDF35EF2B"));
+            var socialEvents = await _socialEventService.CreateSocialEvent(socialEvent);
             return Ok(socialEvents);
         }
 
@@ -52,7 +50,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPut("updateEvent")]
-        public async Task<IActionResult> Update([FromForm] CreateSocialEventRequest request)
+        public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request)
         {
             var socialEvent = _mapper.Map<SocialEvent>(request);
             await _socialEventService.UpdateSocialEvent(socialEvent);

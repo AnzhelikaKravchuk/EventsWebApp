@@ -11,6 +11,7 @@ using EventsWebApp.Server.Extensions;
 using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 
 namespace EventsWebApp.Server
 {
@@ -28,6 +29,7 @@ namespace EventsWebApp.Server
             string connection = Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No database connection string");
 
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IUserRepository, UserRepository>();
@@ -49,7 +51,8 @@ namespace EventsWebApp.Server
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(x =>
+   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); ;
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 

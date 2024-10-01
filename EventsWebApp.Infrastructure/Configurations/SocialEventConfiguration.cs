@@ -15,7 +15,7 @@ namespace EventsWebApp.Infrastructure.Configurations
             builder.Property(x => x.Category).IsRequired();
             builder.Property(x => x.Date).IsRequired();
             builder.Property(x => x.MaxAttendee).IsRequired();
-            builder.Property(x => x.Image).IsRequired();
+            builder.Property(x => x.Image);
             builder.HasMany(x => x.ListOfAttendees).WithOne(e => e.SocialEvent);
         }
     }

@@ -2,11 +2,11 @@
 {
     public class User
     {
-        public Guid Id { get; }
-        public string Email { get; } = string.Empty;
-        public string PasswordHash { get; } = string.Empty;
-        public string Username { get; } = string.Empty;
-        public string Role { get; } = string.Empty;
+        public Guid Id { get; private set; }
+        public string Email { get; private set; } = string.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
+        public string Username { get; private set; } = string.Empty;
+        public string Role { get; private set; } = string.Empty;
 
         public User(string email, string passwordHash, string username, string role)
         {

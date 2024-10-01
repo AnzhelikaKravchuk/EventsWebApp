@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace EventsWebApp.Application.Services
@@ -20,25 +21,34 @@ namespace EventsWebApp.Application.Services
             return await _appUnitOfWork.AttendeeRepository.GetById(id);
         }
 
-        public async Task<List<SocialEvent>> GetAllAttendees()
+        public async Task<List<Attendee>> GetAllAttendeesByUserId(Guid userId)
         {
-            var attendees = await _appUnitOfWork.SocialEventRepository.GetAll();
-            return attendees;
+            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(userId);
         }
 
-        public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee)
+        public async Task<List<SocialEvent>> GetAllAttendees()
         {
-            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeById(socialEventId, attendee.Id);
+            return await _appUnitOfWork.SocialEventRepository.GetAll();
+            
+        }
 
-            if (candidate == null)
+        public async Task<Guid> AddAttendeeToEvent(Attendee attendee, Guid socialEventId, Guid userId)
+        {
+            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email);
+            SocialEvent socialEvent= await _appUnitOfWork.SocialEventRepository.GetById(socialEventId);
+            User user = await _appUnitOfWork.UserRepository.GetById(userId);
+
+            if (candidate != null)
             {
-                throw new Exception("No candidate found");
+                throw new Exception("This attendee already in the list");
             }
+            attendee.SocialEvent = socialEvent;
+            attendee.User = user;
 
             ValidateAttendee(attendee);
 
             await _appUnitOfWork.SocialEventRepository.AddAttendee(socialEventId, attendee);
-            await _appUnitOfWork.AttendeeRepository.Add(candidate);
+            await _appUnitOfWork.AttendeeRepository.Add(attendee);
             _appUnitOfWork.Save();
             return attendee.Id;
         }

@@ -15,7 +15,6 @@ namespace EventsWebApp.Application.Validators
             RuleFor(socialEvent => socialEvent.Place).NotEmpty().MaximumLength(100);
             RuleFor(socialEvent => socialEvent.Category).NotEmpty().Must(category => !category.Equals(E_SocialEventCategory.None));
             RuleFor(socialEvent => socialEvent.MaxAttendee).NotEmpty().LessThanOrEqualTo(100_000);
-            RuleFor(socialEvent => socialEvent.Image).NotEmpty();
         }
     }
 }

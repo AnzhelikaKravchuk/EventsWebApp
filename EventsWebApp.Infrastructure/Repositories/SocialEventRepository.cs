@@ -13,14 +13,14 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
         public async Task<SocialEvent> GetById(Guid id)
         {
-            var socialEvent = await _dbContext.SocialEvents.FirstOrDefaultAsync(x => x.Id == id);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
         }
 
         public async Task<SocialEvent> GetByName(string name)
         {
-            var socialEvent = await _dbContext.SocialEvents.FirstOrDefaultAsync(x => x.Name == name);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Name == name);
 
             return socialEvent;
         }
@@ -34,7 +34,7 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<List<Attendee>> GetAllAttendeesByEventId(Guid id)
         {
-            var socialEvent = await _dbContext.SocialEvents.FirstOrDefaultAsync(x => x.Id == id);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
             if (socialEvent == null)
             {
                 throw new Exception("No event was found");
@@ -45,7 +45,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         //REFACTOR
         public async Task<Attendee> GetAttendeeById(Guid socialEventId, Guid attendeeId)
         {
-            var socialEvent = await _dbContext.SocialEvents.FirstOrDefaultAsync(x => x.Id == socialEventId);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
                 throw new Exception("No event was found");
@@ -56,6 +56,23 @@ namespace EventsWebApp.Infrastructure.Repositories
                 throw new Exception("Attendee list is empty");
             }
             var attendee = attendeeList.FirstOrDefault(a => a.Id == attendeeId);
+
+            return attendee;
+        }
+
+        public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail)
+        {
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
+            if (socialEvent == null)
+            {
+                throw new Exception("No event was found");
+            }
+            var attendeeList = socialEvent.ListOfAttendees;
+            if (attendeeList == null)
+            {
+                throw new Exception("Attendee list is empty");
+            }
+            var attendee = attendeeList.FirstOrDefault(a => a.Email == attendeeEmail);
 
             return attendee;
         }
@@ -85,7 +102,7 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<Guid> AddAttendee(Guid socialEventId, Attendee attendee)
         {
-            var socialEvent = await _dbContext.SocialEvents.FirstOrDefaultAsync(x => x.Id == socialEventId);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
 
             if (socialEvent == null)
             {

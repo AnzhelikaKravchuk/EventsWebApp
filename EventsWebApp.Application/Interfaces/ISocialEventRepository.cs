@@ -13,5 +13,6 @@ namespace EventsWebApp.Application.Interfaces
         Task<List<Attendee>> GetAllAttendeesByEventId(Guid id);
         Task<Attendee> GetAttendeeById(Guid socialEventId, Guid attendeeId);
         Task<Guid> Update(SocialEvent socialEvent);
+        Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail);
     }
 }
