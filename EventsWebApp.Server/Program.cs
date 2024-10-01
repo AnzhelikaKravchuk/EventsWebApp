@@ -1,4 +1,5 @@
 using EventsWebApp.Server;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 

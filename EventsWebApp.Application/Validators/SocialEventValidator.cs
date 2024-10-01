@@ -9,7 +9,7 @@ namespace EventsWebApp.Application.Validators
         public SocialEventValidator() { 
             //RuleFor(socialEvent => socialEvent.Id).NotEmpty();
 
-            RuleFor(socialEvent => socialEvent.Name).NotEmpty().MaximumLength(100);
+            RuleFor(socialEvent => socialEvent.EventName).NotEmpty().MaximumLength(100);
             RuleFor(socialEvent => socialEvent.Description).NotEmpty();
             RuleFor(socialEvent => socialEvent.Date).NotEmpty().GreaterThan(DateTime.Now);
             RuleFor(socialEvent => socialEvent.Place).NotEmpty().MaximumLength(100);

@@ -1,8 +1,11 @@
 using AutoMapper;
 using EventsWebApp.Application.Services;
+using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
+using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -10,33 +13,78 @@ namespace EventsWebApp.Server.Controllers
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase { 
         private readonly SocialEventService _socialEventService;
+        private readonly ImageService _imageService;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public SocialEventsController(SocialEventService socialEventService, IMapper mapper)
+        public SocialEventsController(SocialEventService socialEventService, ImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _socialEventService = socialEventService;
+            _imageService = imageService;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet("socialEvents")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("getSocialEventById")]
+        public async Task<IActionResult> GetEventById([FromQuery] Guid id)
         {
-            var socialEvents = await _socialEventService.GetAllSocialEvents();
-            var listResponse = socialEvents.Select(s => _mapper.Map<SocialEventResponse>(s)).ToList();
-            return Ok(listResponse);
+            var socialEvent = await _socialEventService.GetSocialEventById(id);
+
+            return Ok(socialEvent);
         }
 
-        [HttpPost("createEvent")]
-        public async Task<IActionResult> Create([FromForm] CreateSocialEventRequest request, [FromForm] IFormFileCollection formFiles)
+
+        [HttpGet("getSocialEventByName")]
+        public async Task<IActionResult> GetEventByName([FromQuery] string name)
+        {
+            var socialEvents = await _socialEventService.GetSocialEventsByName(name);
+
+            return Ok(socialEvents);
+        }
+
+        [HttpGet("getSocialEventByDate")]
+        public async Task<IActionResult> GetEventByDate([FromQuery] string date)
+        {
+            var socialEvents = await _socialEventService.GetSocialEventsByDate(DateTime.Parse(date));
+
+            return Ok(socialEvents);
+        }
+
+        [HttpGet("getSocialEventByCategory")]
+        public async Task<IActionResult> GetEventByCategory([FromQuery] string category)
+        {
+            var socialEvents = await _socialEventService.GetSocialEventsByCategory((E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), category));
+
+            return Ok(socialEvents);
+        }
+
+
+        [HttpGet("getSocialEventByPlace")]
+        public async Task<IActionResult> GetEventByPlace([FromQuery] string place)
+        {
+            var socialEvents = await _socialEventService.GetSocialEventsByPlace(place);
+
+            return Ok(socialEvents);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSocialEvents([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+        {
+            var socialEvents = await _socialEventService.GetAllSocialEvents(pageIndex, pageSize);
+            var responseList = new PaginatedList<SocialEventResponse>(null, socialEvents.PageIndex, socialEvents.TotalPages);
+            responseList.Items = socialEvents.Items.Select(s => _mapper.Map<SocialEventResponse>(s)).ToList();
+            return Ok(responseList);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request, IFormFile formFile)
         {
             
             var socialEvent = _mapper.Map<SocialEvent>(request);
-            if (formFiles.Count > 0 && formFiles[0].IsImage())
+            if (formFile != null && formFile.IsImage())
             {
-                byte[] image = ConvertFileToBytes(formFiles[0]);
-                socialEvent.Image = image;
+                socialEvent.Image = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, formFile);
             }
-
 
             var socialEvents = await _socialEventService.CreateSocialEvent(socialEvent);
             return Ok(socialEvents);
@@ -57,16 +105,6 @@ namespace EventsWebApp.Server.Controllers
             return Ok();
         }
 
-        private byte[] ConvertFileToBytes(IFormFile formFile)
-        {
-            using (var ms = new MemoryStream())
-            {
-                formFile.CopyTo(ms);
-                var fileBytes = ms.ToArray();
-                return fileBytes;
-            }
-            
-        }
     }
 
 }

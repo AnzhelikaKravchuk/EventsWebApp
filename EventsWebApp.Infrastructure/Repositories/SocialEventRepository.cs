@@ -1,6 +1,9 @@
 ﻿using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
+using EventsWebApp.Domain.PaginationHandlers;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {
@@ -18,18 +21,46 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvent;
         }
 
-        public async Task<SocialEvent> GetByName(string name)
+        public async Task<List<SocialEvent>> GetByName(string name)
         {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Name == name);
+            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.EventName.Contains(name)).AsNoTracking().ToListAsync();
 
-            return socialEvent;
+            return socialEvents;
         }
 
-        public async Task<List<SocialEvent>> GetAll()
+        public async Task<List<SocialEvent>> GetByDate(DateTime date)
         {
-            var events =  await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
+            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Date.Date == date.Date).AsNoTracking().ToListAsync();
 
-            return events;
+            return socialEvents;
+        }
+
+        public async Task<List<SocialEvent>> GetByCategory(E_SocialEventCategory category)
+        {
+            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Category == category).AsNoTracking().ToListAsync();
+
+            return socialEvents;
+        }
+
+        public async Task<List<SocialEvent>> GetByPlace(string place)
+        {
+            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Place.Contains(place)).AsNoTracking().ToListAsync();
+
+            return socialEvents;
+        }
+
+        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(int pageIndex, int pageSize)
+        {
+            var events =  await _dbContext.SocialEvents.OrderBy(s => s.EventName)
+                                                    .Skip((pageIndex - 1) * pageSize)
+                                                    .Take(pageSize)
+                                                    .Include(s => s.ListOfAttendees)
+                                                    .AsNoTracking()
+                                                    .ToListAsync();
+            var count = await _dbContext.SocialEvents.CountAsync();
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new PaginatedList<SocialEvent>(events, pageIndex, totalPages);
         }
 
         public async Task<List<Attendee>> GetAllAttendeesByEventId(Guid id)
@@ -89,7 +120,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             await _dbContext.SocialEvents
                 .Where(x => x.Id == socialEvent.Id)
                 .ExecuteUpdateAsync(x => x
-                    .SetProperty(s => s.Name, s => socialEvent.Name)
+                    .SetProperty(s => s.EventName, s => socialEvent.EventName)
                     .SetProperty(s => s.Description, s => socialEvent.Description)
                     .SetProperty(s => s.Date, s => socialEvent.Date)
                     .SetProperty(s => s.Place, s => socialEvent.Place)
@@ -108,7 +139,13 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new Exception("No event was found");
             }
+
             var attendeesList = socialEvent.ListOfAttendees;
+            if (attendeesList != null && attendeesList.Count + 1 <= socialEvent.MaxAttendee)
+            {
+                throw new Exception("Max attendee number reached");
+            }
+
             if (attendeesList == null)
             {
                 attendeesList = new List<Attendee>();

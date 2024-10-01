@@ -45,6 +45,7 @@ namespace EventsWebApp.Server
             services.AddScoped<UserService>();
             services.AddScoped<SocialEventService>();
             services.AddScoped<AttendeeService>();
+            services.AddScoped<ImageService>();
 
             services.AddApiAuthentication(Configuration);
 

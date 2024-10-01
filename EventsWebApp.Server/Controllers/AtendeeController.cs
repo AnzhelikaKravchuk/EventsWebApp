@@ -34,5 +34,12 @@ namespace EventsWebApp.Server.Controllers
             var attendees = await _attendeeService.AddAttendeeToEvent(attendee, eventId, userId);
             return Ok(attendees);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid attendeeId)
+        {
+            var id = await _attendeeService.DeleteAttendee(attendeeId);
+            return Ok(id);
+        }
     }
 }

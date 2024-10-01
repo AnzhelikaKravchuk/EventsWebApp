@@ -1,6 +1,8 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Validators;
+using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
+using EventsWebApp.Domain.PaginationHandlers;
 using System.Text;
 
 namespace EventsWebApp.Application.Services
@@ -15,9 +17,9 @@ namespace EventsWebApp.Application.Services
             _validator = validator;
         }
 
-        public async Task<List<SocialEvent>> GetAllSocialEvents()
+        public async Task<PaginatedList<SocialEvent>> GetAllSocialEvents(int pageIndex = 1, int pageSize = 10)
         {
-            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetAll();
+            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(pageIndex, pageSize);
             return socialEvents;
         }
 
@@ -31,15 +33,26 @@ namespace EventsWebApp.Application.Services
             return socialEvent;
         }
 
-        public async Task<SocialEvent> GetSocialEventByName(string name)
+        public async Task<List<SocialEvent>> GetSocialEventsByName(string name)
         {
-            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByName(name);
-            if (socialEvent == null)
-            {
-                throw new Exception("No such social event found");
-            }
-            return socialEvent;
+            return await _appUnitOfWork.SocialEventRepository.GetByName(name);
         }
+
+        public async Task<List<SocialEvent>> GetSocialEventsByDate(DateTime date)
+        {
+            return await _appUnitOfWork.SocialEventRepository.GetByDate(date);
+        }
+
+        public async Task<List<SocialEvent>> GetSocialEventsByCategory(E_SocialEventCategory category)
+        {
+            return await _appUnitOfWork.SocialEventRepository.GetByCategory(category);
+        }
+
+        public async Task<List<SocialEvent>> GetSocialEventsByPlace(string place)
+        {
+            return await _appUnitOfWork.SocialEventRepository.GetByPlace(place);
+        }
+
         public async Task<List<Attendee>> GetAttendeesById(Guid id)
         {
             var attendees = await _appUnitOfWork.SocialEventRepository.GetAllAttendeesByEventId(id);

@@ -6,14 +6,14 @@ namespace EventsWebApp.Server.Contracts
     public record SocialEventResponse
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string NameOfEvent { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Date { get; set; }
         public string Place { get; set; } = string.Empty;
         public string Category { get; set; }
         public int MaxAttendee { get; set; }
         public List<Attendee> ListOfAttendees { get; set; } = [];
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
 
         public SocialEventResponse() { }
 
@@ -23,16 +23,18 @@ namespace EventsWebApp.Server.Contracts
                                             string date,
                                             string category,
                                             int maxAttendee,
-                                            List<Attendee> attendees)
+                                            List<Attendee> attendees,
+                                            string image)
         {
             Id = id;
-            Name = name;
+            NameOfEvent = name;
             Description = description;
             Place = place;
             Date = date;
             Category = category;
             MaxAttendee = maxAttendee;
             ListOfAttendees = attendees;
+            Image = image;
 
         }
     }

@@ -79,17 +79,17 @@ namespace EventsWebApp.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("Image")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<int>("MaxAttendee")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("EventName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxAttendee")
+                        .HasColumnType("int");
 
                     b.Property<string>("Place")
                         .IsRequired()

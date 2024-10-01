@@ -12,10 +12,10 @@ namespace EventsWebApp.Server.Mapper
             CreateMap<User, UserDto>();
 
             CreateMap<CreateSocialEventRequest, SocialEvent>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date)))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date).Date))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), src.Category)))
                 .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
@@ -24,19 +24,20 @@ namespace EventsWebApp.Server.Mapper
 
             CreateMap<SocialEvent, SocialEventResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.NameOfEvent, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString()))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.ToString()))
                 .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
                 //MAP TO CORRECT ATTENDEE IN LIST
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.MapFrom(src => src.ListOfAttendees))
                 ;
 
             CreateMap<UpdateSocialEventRequest, SocialEvent>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date)))
