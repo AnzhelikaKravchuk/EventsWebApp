@@ -1,6 +1,5 @@
 using EventsWebApp.Infrastructure.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -20,6 +19,7 @@ namespace EventsWebApp.Server.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                    };
@@ -40,6 +40,10 @@ namespace EventsWebApp.Server.Extensions
                 options.AddPolicy("AdminPolicy", policy =>
                 {
                     policy.RequireClaim(ClaimTypes.Role, "Admin");
+                });
+                options.AddPolicy("UserPolicy", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, "User");
                 });
             });
         }

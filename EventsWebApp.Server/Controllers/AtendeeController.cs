@@ -2,11 +2,13 @@ using AutoMapper;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "UserPolicy")]
     [Route("[controller]")]
     public class AtendeeController : ControllerBase
     {
@@ -36,6 +38,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> DeleteAttendee([FromQuery] Guid attendeeId)
         {
             var id = await _attendeeService.DeleteAttendee(attendeeId);

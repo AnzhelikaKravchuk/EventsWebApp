@@ -14,7 +14,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetById(Guid id)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
-
+            
             return user;
         }
 
@@ -25,6 +25,12 @@ namespace EventsWebApp.Infrastructure.Repositories
             return user;
         }
 
+        public async Task<User> GetByName(string name)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == name);
+
+            return user;
+        }
         public async Task<List<User>> GetAll()
         {
             return await _dbContext.Users.AsNoTracking().ToListAsync();

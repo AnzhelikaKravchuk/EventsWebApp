@@ -12,6 +12,8 @@ using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Server
 {
@@ -56,6 +58,7 @@ namespace EventsWebApp.Server
    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); ;
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            //services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             MapperConfiguration config = new MapperConfiguration(cfg =>
             {
@@ -76,6 +79,7 @@ namespace EventsWebApp.Server
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            
 
             if (env.IsDevelopment())
             {
@@ -84,6 +88,7 @@ namespace EventsWebApp.Server
             }
 
             app.UseHttpsRedirection();
+
 
             app.UseAuthentication();
             app.UseAuthorization();

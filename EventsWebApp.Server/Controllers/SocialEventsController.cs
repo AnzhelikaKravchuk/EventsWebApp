@@ -4,12 +4,13 @@ using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Server.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
+    [Authorize(Policy = "UserPolicy")]
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase { 
         private readonly SocialEventService _socialEventService;
@@ -77,6 +78,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request, IFormFile formFile)
         {
             
@@ -91,6 +93,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete("deleteEvent")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Delete([FromBody] Guid guid)
         {
             await _socialEventService.DeleteSocialEvent(guid);
@@ -98,6 +101,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPut("updateEvent")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request)
         {
             var socialEvent = _mapper.Map<SocialEvent>(request);

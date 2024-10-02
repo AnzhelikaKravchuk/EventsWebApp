@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace EventsWebApp.Application.Services
@@ -45,7 +46,7 @@ namespace EventsWebApp.Application.Services
             }
             return user;
         }
-        public async Task<string> Register(string email, string password, string username)
+        public async Task<(string, string)> Register(string email, string password, string username)
         {
             var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
             if (candidate != null)
@@ -58,13 +59,14 @@ namespace EventsWebApp.Application.Services
             ValidateUser(user);
 
             await _appUnitOfWork.UserRepository.Add(user);
+
+            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(user);
             _appUnitOfWork.Save();
 
-            var token = _jwtProvider.GenerateToken(user);
-            return token;
+            return (accessToken, refreshToken);
         }
 
-        public async Task<string> Login(string email, string password)
+        public async Task<(string,string)> Login(string email, string password)
         {
             User candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
 
@@ -73,9 +75,11 @@ namespace EventsWebApp.Application.Services
                 throw new Exception("No candidate found");
             }
 
-            var token = _jwtProvider.GenerateToken(candidate);
 
-            return token;
+            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(candidate);
+
+            _appUnitOfWork.Save();
+            return (accessToken, refreshToken);
         }
 
         public async Task<Guid> UpdateUser(User user)
@@ -94,6 +98,22 @@ namespace EventsWebApp.Application.Services
 
             _appUnitOfWork.Save();
             return userId;
+        }
+
+        public async Task<(string,string)> RefreshToken(string accessToken, string refreshToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            var user = await _appUnitOfWork.UserRepository.GetByEmail(
+            principal.Claims.First(c => c.Type == ClaimTypes.Email).Value);
+
+            if(user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow) {
+                throw new Exception("Token invalid");
+            }
+
+            (accessToken, refreshToken)  = _jwtProvider.CreateTokens(user);
+            _appUnitOfWork.Save();
+            return (accessToken, refreshToken);
         }
 
         private void ValidateUser(User user)

@@ -1,12 +1,13 @@
 ﻿using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Infrastructure.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.ExceptionServices;
 
 namespace EventsWebApp.Infrastructure
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext :DbContext//: IdentityDbContext<User>
     {
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<SocialEvent> SocialEvents { get; set; } = null!;
