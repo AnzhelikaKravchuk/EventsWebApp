@@ -9,6 +9,7 @@ import { AuthProvider } from './provider/AuthProvider';
 import EventsAdmissions from './routes/EventsAdmissions/EventsAdmissions';
 import EventPage from './routes/SocialEvents/EventPage';
 import CreateSocialEventPage from './routes/SocialEvents/CreateSocialEventPage';
+import EditSocialEventPage from './routes/SocialEvents/EditSocialEventPage';
 // const router = createBrowserRouter([
 //   {
 //     path: '/',
@@ -54,6 +55,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[Role.Admin]}>
                 <CreateSocialEventPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='editEvent'
+            element={
+              <ProtectedRoute allowedRoles={[Role.Admin]}>
+                <EditSocialEventPage />
               </ProtectedRoute>
             }
           />

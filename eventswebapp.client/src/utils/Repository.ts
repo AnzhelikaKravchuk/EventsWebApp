@@ -66,4 +66,14 @@ export class Repository {
     items.push(request);
     return true;
   }
+
+  public static async EditEvent(request) {
+    console.log(request);
+    const index = items.indexOf(request.id);
+    request.image = '';
+    if (index !== -1) {
+      items[index] = request;
+    }
+    return true;
+  }
 }
