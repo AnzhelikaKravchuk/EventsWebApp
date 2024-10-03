@@ -2,5 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventsWebApp.Server.Contracts
 {
-    public record RegisterRequest([Required] string email, [Required] string password, [Required] string username);
+    public record RegisterRequest(string email, 
+                                    string password, 
+                                    string username);
 }

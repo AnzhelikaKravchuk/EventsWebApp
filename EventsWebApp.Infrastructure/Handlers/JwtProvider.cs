@@ -23,7 +23,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             var refreshToken = GenerateRefreshToken(user);
 
             user.RefreshToken = refreshToken;
-            user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(1);
+            user.ExpiresRefreshToken = DateTime.UtcNow.AddSeconds(60);
 
             return (accessToken, refreshToken);
 
@@ -41,7 +41,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             var token = new JwtSecurityToken(
                 claims: claims,
                 signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddMinutes(_options.ExpiresTime)
+                expires: DateTime.UtcNow.AddSeconds(30)//_options.ExpiresTime)
                 );
 
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);

@@ -10,9 +10,9 @@ export interface RegisterRequest {
 }
 
 export enum Role {
-  User = 'user',
-  Admin = 'admin',
-  Guest = 'guest',
+  User = 'User',
+  Admin = 'Admin',
+  Guest = 'Guest',
 }
 export interface SocialEventModel {
   id: string;

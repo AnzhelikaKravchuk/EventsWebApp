@@ -10,7 +10,6 @@ interface Props {
 
 export const ProtectedRoute: React.FC<Props> = ({ children, allowedRoles }) => {
   const { role } = useAuth();
-
   if (!allowedRoles.includes(role)) {
     return <Navigate to='/login' />;
   }

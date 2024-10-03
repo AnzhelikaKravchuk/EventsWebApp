@@ -1,8 +1,9 @@
+using Azure.Core;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using System.Data;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
@@ -17,34 +18,60 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Login([FromForm] LoginRequest loginRequest)
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             var (accessToken, refreshToken) = await _userService.Login(loginRequest.email, loginRequest.password);
-            HttpContext.Response.Cookies.Append("accessToken", accessToken);
-            HttpContext.Response.Cookies.Append("refreshToken", refreshToken);
-            return Ok();
+            HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
+            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
+            return Ok((accessToken, refreshToken));
         }
 
         [HttpPost("/register")]
-        public async Task<IActionResult> Register([FromForm] RegisterRequest registerRequest)
+        public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             var (accessToken,refreshToken) = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
-            HttpContext.Response.Cookies.Append("accessToken", accessToken);
-            HttpContext.Response.Cookies.Append("refreshToken", refreshToken);
+            HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain ="localhost"});
+            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
+            return Ok((accessToken, refreshToken));
+        }
+
+        [HttpGet("/logout")]
+        public async Task<IActionResult> Logout()
+        {
+            if (HttpContext.Request.Cookies["accessToken"] != null)
+            {
+                HttpContext.Response.Cookies.Append("accessToken", "", new CookieOptions { Domain = "localhost", Expires = DateTime.Now.AddDays(-1) });
+            }
+
+            if (HttpContext.Request.Cookies["refreshToken"] != null)
+            {
+                HttpContext.Response.Cookies.Append("refreshToken", "", new CookieOptions { Domain = "localhost", Expires = DateTime.Now.AddDays(-1) });
+            }
             return Ok();
+        }
+
+        [HttpGet("/getRole")]
+        [Authorize]
+        public async Task<IActionResult> GetRole()
+        {
+            var accessToken = HttpContext.Request.Cookies["accessToken"];
+
+            var role = _userService.GetRoleByToken(accessToken);
+
+            return Ok(role);
         }
 
         [HttpPost("/refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var accessToken = HttpContext.Request.Cookies.First(c => c.Key == "accessToken").Value;
-            var refreshToken = HttpContext.Request.Cookies.First(c => c.Key == "refreshToken").Value;
+            var accessToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "accessToken").Value;
+            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
 
             (accessToken, refreshToken) = await _userService.RefreshToken(accessToken, refreshToken);
             
-            HttpContext.Response.Cookies.Append("accessToken", accessToken);
-            HttpContext.Response.Cookies.Append("refreshToken", refreshToken);
-            return Ok();
+            HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
+            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
+            return Ok((accessToken, refreshToken));
         }
     }
 }

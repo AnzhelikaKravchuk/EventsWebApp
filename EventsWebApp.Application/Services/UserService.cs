@@ -100,12 +100,19 @@ namespace EventsWebApp.Application.Services
             return userId;
         }
 
+        public string GetRoleByToken(string accessToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            return principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+        }
+
         public async Task<(string,string)> RefreshToken(string accessToken, string refreshToken)
         {
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
             var user = await _appUnitOfWork.UserRepository.GetByEmail(
-            principal.Claims.First(c => c.Type == ClaimTypes.Email).Value);
+            principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
 
             if(user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow) {
                 throw new Exception("Token invalid");

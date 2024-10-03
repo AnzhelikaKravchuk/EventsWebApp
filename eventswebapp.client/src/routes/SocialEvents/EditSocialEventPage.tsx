@@ -49,7 +49,7 @@ const EditSocialEventPage = (props: Props) => {
               id='eventName'
               type='text'
               label='Name'
-              value={state.eventName}
+              defaultValue={state.eventName}
               required
             />
           </Grid2>
@@ -60,7 +60,7 @@ const EditSocialEventPage = (props: Props) => {
               id='description'
               type='text'
               label='Description'
-              value={state.description}
+              defaultValue={state.description}
               required
             />
           </Grid2>
@@ -71,7 +71,7 @@ const EditSocialEventPage = (props: Props) => {
               id='place'
               type='text'
               label='place'
-              value={state.place}
+              defaultValue={state.place}
               required
             />
           </Grid2>
@@ -81,7 +81,7 @@ const EditSocialEventPage = (props: Props) => {
               name='category'
               id='category'
               label='Category'
-              value={state.category}
+              defaultValue={state.category}
               required>
               <MenuItem value={'Other'}>Other</MenuItem>
               <MenuItem value={'Conference'}>Conference</MenuItem>
@@ -98,7 +98,7 @@ const EditSocialEventPage = (props: Props) => {
               id='date'
               type='date'
               label='date'
-              value={state.date}
+              defaultValue={state.date}
               required
             />
           </Grid2>
@@ -109,7 +109,7 @@ const EditSocialEventPage = (props: Props) => {
               id='maxAttendee'
               type='number'
               label='Max Attendees'
-              value={state.maxAttendee}
+              defaultValue={state.maxAttendee}
               required
             />
           </Grid2>

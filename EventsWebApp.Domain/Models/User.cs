@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace EventsWebApp.Domain.Models
+﻿namespace EventsWebApp.Domain.Models
 {
-    public class User //: IdentityUser
+    public class User
     {
         public Guid Id { get; private set; }
         public string Email { get; private set; } = string.Empty;

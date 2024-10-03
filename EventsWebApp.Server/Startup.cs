@@ -10,10 +10,7 @@ using EventsWebApp.Application.Validators;
 using EventsWebApp.Server.Extensions;
 using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
-using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Server
 {
@@ -30,6 +27,15 @@ namespace EventsWebApp.Server
         {
             string connection = Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No database connection string");
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy => {
+                    policy.WithOrigins("https://localhost:5173");
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.AllowCredentials();
+                    });
+            });
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
             services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -70,16 +76,18 @@ namespace EventsWebApp.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
+                MinimumSameSitePolicy = SameSiteMode.None,
                 HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
                 Secure = CookieSecurePolicy.Always, 
             });
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            
+
+            app.UseCors();
 
             if (env.IsDevelopment())
             {

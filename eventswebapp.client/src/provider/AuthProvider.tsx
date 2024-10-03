@@ -1,50 +1,57 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { Repository } from '../utils/Repository';
 import { Role } from '../types/types';
+import { GetRole, Logout } from '../services/user';
 
 export const AuthContext = createContext({
   role: Role.Guest,
   logout: () => {},
-  login: () => {},
+  authenticate: () => {},
 });
 
 interface Props {
   children?: ReactNode;
 }
 export const AuthProvider: React.FC<Props> = ({ children }) => {
-  const [role, setRole] = useState(Role.Guest);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
 
   const logout = () => {
-    setIsAuthenticated(false);
+    console.log('logout');
     setRole(Role.Guest);
+    Logout();
+  };
+
+  const authenticate = () => {
+    updateRole();
+  };
+
+  const updateRole = () => {
+    setLoading(true);
+    return GetRole()
+      .then((role) => {
+        setRole(role);
+      })
+      .catch(() => {
+        logout();
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    console.log('Here2');
-    if (isAuthenticated) {
-      //GET TOKEN HERE
+    updateRole();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-      Repository.GetRole()
-        .then((role) => {
-          setRole(role);
-        })
-        .catch(() => {
-          logout();
-        });
-    }
-    setLoading(false);
-  }, [isAuthenticated]);
+  if (role === null) {
+    return null;
+  }
 
   const value = {
     role,
     logout,
-    login: () => {
-      setLoading(true);
-      setIsAuthenticated(true);
-    },
+    authenticate,
   };
+
   return (
     <AuthContext.Provider value={value}>
       {loading ? 'Loading' : children}

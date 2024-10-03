@@ -1,21 +1,19 @@
 import { Button, Grid2, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
-import { Repository } from '../../utils/Repository';
-import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-interface Props {}
+import { useForm } from 'react-hook-form';
+import { RegisterRequest } from '../../types/types';
+import { Register } from '../../services/user';
+import { useAuth } from '../../hooks/useAuth';
 
-const RegisterPage = (props: Props) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const { login } = useAuth();
+const RegisterPage = () => {
+  const { authenticate } = useAuth();
+  const { register, handleSubmit } = useForm<RegisterRequest>();
   const navigate = useNavigate();
 
-  function handleSubmit() {
-    Repository.Register({ email, password, username })
-      .then(() => {
-        login();
+  async function onSubmit(data: RegisterRequest) {
+    Register(data)
+      .then(async () => {
+        await authenticate();
         navigate('/socialEvents');
       })
       .catch();
@@ -24,7 +22,7 @@ const RegisterPage = (props: Props) => {
   return (
     <section>
       <Typography variant='h1'>Register</Typography>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid2
           container
           direction={'column'}
@@ -33,33 +31,33 @@ const RegisterPage = (props: Props) => {
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('email')}
               name='email'
               id='email'
               type='email'
               label='Email'
-              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </Grid2>
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('password')}
               name='password'
               id='password'
               type='password'
               label='Password'
-              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </Grid2>
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('username')}
               name='username'
               id='username'
               type='text'
               label='Username'
-              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </Grid2>
