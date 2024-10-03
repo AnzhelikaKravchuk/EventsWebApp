@@ -28,7 +28,7 @@ namespace EventsWebApp.Server.Extensions
                     {
                         OnMessageReceived = context =>
                         {
-                            context.Token = context.Request.Cookies["tasty-cookies"];
+                            context.Token = context.Request.Cookies["accessToken"];
                             return Task.CompletedTask;
                         }
                     };

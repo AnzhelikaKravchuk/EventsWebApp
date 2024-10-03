@@ -23,7 +23,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             var refreshToken = GenerateRefreshToken(user);
 
             user.RefreshToken = refreshToken;
-            user.ExpiresRefreshToken = DateTime.UtcNow.AddMinutes(2);
+            user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(1);
 
             return (accessToken, refreshToken);
 
@@ -71,7 +71,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime = true,
+                ValidateLifetime = false,
                 ClockSkew = TimeSpan.Zero,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey))
