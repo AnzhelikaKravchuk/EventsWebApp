@@ -4,45 +4,19 @@ import { useEffect, useState } from 'react';
 import { SocialEventModel } from '../../types/types';
 import EventPage from './EventPage';
 import { NavLink } from 'react-router-dom';
-
-interface Props {
-  currentItems: Array<SocialEventModel>;
-}
-function Items(props: Props) {
-  return (
-    <>
-      {props.currentItems &&
-        props.currentItems.map((item) => (
-          <NavLink to='/eventPage' state={item}>
-            <p>{item.eventName}</p>
-          </NavLink>
-        ))}
-    </>
-  );
-}
+import { GetSocialEvents } from '../../services/socialEvents';
+import Items from '../../components/Items/Items';
 
 const SocialEvents = () => {
-  const [items, setItems] = useState<Array<SocialEventModel>>([
-    {
-      id: '1',
-      eventName: 'Name',
-      description: 'Description',
-      place: 'Minsk',
-      date: new Date(),
-      category: 'Other',
-      maxAttendee: 1,
-      attendees: [],
-      image: '',
-    },
-  ]);
+  const [items, setItems] = useState<Array<SocialEventModel>>([]);
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
-    Repository.GetSocialEvents(pageIndex, pageSize).then((res) => {
-      setItems(res.currentItems);
-      setTotalPages(res.pageCount);
+    GetSocialEvents(pageIndex, pageSize).then((res) => {
+      setItems(res.items.$values);
+      setTotalPages(res.totalPages);
     });
   }, [pageIndex, pageSize]);
 

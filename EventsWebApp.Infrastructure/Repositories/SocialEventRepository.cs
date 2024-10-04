@@ -141,7 +141,7 @@ namespace EventsWebApp.Infrastructure.Repositories
             }
 
             var attendeesList = socialEvent.ListOfAttendees;
-            if (attendeesList != null && attendeesList.Count + 1 <= socialEvent.MaxAttendee)
+            if (attendeesList != null && attendeesList.Count + 1 > socialEvent.MaxAttendee)
             {
                 throw new Exception("Max attendee number reached");
             }

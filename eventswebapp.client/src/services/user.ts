@@ -29,7 +29,6 @@ export async function GetRole(): Promise<Role> {
     .then((response) => response?.data)
     .catch(async (error) => {
       if (error.status === 401) {
-        console.log('Here2');
         return TryRefreshToken(GetRole);
       }
     });

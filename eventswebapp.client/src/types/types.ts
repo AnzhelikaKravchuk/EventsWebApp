@@ -16,14 +16,22 @@ export enum Role {
 }
 export interface SocialEventModel {
   id: string;
-  eventName: string;
+  nameOfEvent: string;
   description: string;
   place: string;
   date: Date;
   category: string;
   maxAttendee: number;
-  attendees: Array<AttendeeModel>;
+  listOfAttendees: Array<AttendeeModel>;
   image: string;
+}
+
+export interface SocialEventsResponse {
+  items: Array<SocialEventModel>;
+  pageIndex: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }
 
 export interface AttendeeModel {

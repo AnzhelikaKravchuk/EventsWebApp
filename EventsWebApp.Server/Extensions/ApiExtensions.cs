@@ -1,5 +1,7 @@
 using EventsWebApp.Infrastructure.Handlers;
+using EventsWebApp.Server.RoleAuthorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -31,20 +33,17 @@ namespace EventsWebApp.Server.Extensions
                             context.Token = context.Request.Cookies["accessToken"];
                             return Task.CompletedTask;
                         }
+                            
                     };
                 });
 
 
+            services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
+
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminPolicy", policy =>
-                {
-                    policy.RequireClaim(ClaimTypes.Role, "Admin");
-                });
-                options.AddPolicy("UserPolicy", policy =>
-                {
-                    policy.RequireClaim(ClaimTypes.Role, "User");
-                });
+                options.AddPolicy("Admin", policy => policy.AddRequirements(new RoleRequirement("Admin")));
+                options.AddPolicy("User", policy => policy.AddRequirements(new RoleRequirement("User")));
             });
         }
     }

@@ -37,8 +37,8 @@ namespace EventsWebApp.Server
                     });
             });
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
+            //services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendeeRepository, AttendeeRepository>();
@@ -61,10 +61,9 @@ namespace EventsWebApp.Server
             services.AddProblemDetails();
 
             services.AddControllers().AddJsonOptions(x =>
-   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); ;
+   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); ; ;
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            //services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             MapperConfiguration config = new MapperConfiguration(cfg =>
             {

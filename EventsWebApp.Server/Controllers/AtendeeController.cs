@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "UserPolicy")]
+    [Authorize(Roles = "User")]
     [Route("[controller]")]
     public class AtendeeController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteAttendee([FromQuery] Guid attendeeId)
         {
             var id = await _attendeeService.DeleteAttendee(attendeeId);

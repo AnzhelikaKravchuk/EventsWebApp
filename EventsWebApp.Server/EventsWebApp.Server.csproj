@@ -28,6 +28,7 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="ExceptionsHandler\" />
+    <Folder Include="RoleAuthorization\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
