@@ -16,25 +16,27 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   const logout = () => {
-    console.log('logout');
     setRole(Role.Guest);
     Logout();
   };
 
-  const authenticate = () => {
-    updateRole();
+  const authenticate = async () => {
+    await updateRole();
   };
 
   const updateRole = () => {
     setLoading(true);
     return GetRole()
       .then((role) => {
+        console.log('Role', role);
         setRole(role);
       })
       .catch(() => {
         logout();
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {

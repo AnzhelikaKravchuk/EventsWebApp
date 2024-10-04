@@ -1,9 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { LoginRequest, RegisterRequest, Role } from '../types/types';
-import { error } from 'console';
 
 export async function Login(request: LoginRequest): Promise<AxiosResponse> {
-  console.log(request);
   return axios.post('https://localhost:7127/login', request, {
     withCredentials: true,
   });
@@ -12,7 +10,6 @@ export async function Login(request: LoginRequest): Promise<AxiosResponse> {
 export async function Register(
   request: RegisterRequest
 ): Promise<AxiosResponse> {
-  console.log(request);
   const response = await axios.post(
     'https://localhost:7127/register',
     request,
@@ -25,40 +22,38 @@ export async function Register(
 }
 
 export async function GetRole(): Promise<Role> {
-  let response;
-  response = await axios
+  const response: Role = await axios
     .get('https://localhost:7127/getRole', {
       withCredentials: true,
     })
-    .then((resp) => (response = resp))
-    .catch((error) => {
+    .then((response) => response?.data)
+    .catch(async (error) => {
       if (error.status === 401) {
         console.log('Here2');
-        TryRefreshToken()
-          .then((res) => (response = res))
-          .catch((err) => {
-            if (err.status === 401) {
-              Logout();
-            }
-          });
-        axios.get('https://localhost:7127/getRole', {
-          withCredentials: true,
-        });
+        return TryRefreshToken(GetRole);
       }
     });
-  console.log(response?.data as Role);
-  return response?.data as Role;
+  return response ?? Role.Guest;
 }
 
-export async function TryRefreshToken(): Promise<AxiosResponse> {
-  console.log('Refresh');
-  const response = await axios.post(
-    'https://localhost:7127/refresh',
-    {},
-    {
-      withCredentials: true,
-    }
-  );
+export async function TryRefreshToken<Data>(
+  callback: () => Promise<Data>
+): Promise<Data | null> {
+  const response: Data | null = await axios
+    .post(
+      'https://localhost:7127/refresh',
+      {},
+      {
+        withCredentials: true,
+      }
+    )
+    .then(() => {
+      return callback();
+    })
+    .catch(() => {
+      Logout();
+      return null;
+    });
 
   return response;
 }

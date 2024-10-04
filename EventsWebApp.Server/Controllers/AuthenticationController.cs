@@ -67,10 +67,9 @@ namespace EventsWebApp.Server.Controllers
             var accessToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "accessToken").Value;
             var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
 
-            (accessToken, refreshToken) = await _userService.RefreshToken(accessToken, refreshToken);
+            accessToken = await _userService.RefreshToken(accessToken, refreshToken);
             
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
-            HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
         }
     }

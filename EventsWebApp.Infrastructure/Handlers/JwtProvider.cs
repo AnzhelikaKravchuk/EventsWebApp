@@ -23,7 +23,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             var refreshToken = GenerateRefreshToken(user);
 
             user.RefreshToken = refreshToken;
-            user.ExpiresRefreshToken = DateTime.UtcNow.AddSeconds(60);
+            user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(1);
 
             return (accessToken, refreshToken);
 
@@ -41,18 +41,13 @@ namespace EventsWebApp.Infrastructure.Handlers
             var token = new JwtSecurityToken(
                 claims: claims,
                 signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddSeconds(30)//_options.ExpiresTime)
+                expires: DateTime.UtcNow.AddMinutes(_options.ExpiresTime)
                 );
 
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
             return tokenValue;
         }
-
-        //public string ValidateAccessToken(string token)
-        //{
-        //    new JwtSecurityTokenHandler().ValidateToken(token);
-        //}
 
         public string GenerateRefreshToken(User user)
         {
@@ -80,7 +75,6 @@ namespace EventsWebApp.Infrastructure.Handlers
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            //securityToken
 
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if(jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))

@@ -107,7 +107,7 @@ namespace EventsWebApp.Application.Services
             return principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
         }
 
-        public async Task<(string,string)> RefreshToken(string accessToken, string refreshToken)
+        public async Task<string> RefreshToken(string accessToken, string refreshToken)
         {
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
@@ -118,9 +118,9 @@ namespace EventsWebApp.Application.Services
                 throw new Exception("Token invalid");
             }
 
-            (accessToken, refreshToken)  = _jwtProvider.CreateTokens(user);
+            accessToken  = _jwtProvider.GenerateAccessToken(user);
             _appUnitOfWork.Save();
-            return (accessToken, refreshToken);
+            return accessToken;
         }
 
         private void ValidateUser(User user)
