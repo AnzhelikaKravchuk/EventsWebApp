@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace EventsWebApp.Application.Services
 {
@@ -21,6 +23,19 @@ namespace EventsWebApp.Application.Services
             }
 
             return Path.Combine("images", fileName);
+        }
+
+        public Task DeleteImage(string filePath)
+        {
+            try
+            {
+                FileInfo file = new FileInfo(filePath);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+            }catch (Exception) { }
+            return Task.CompletedTask;
         }
     }
 }

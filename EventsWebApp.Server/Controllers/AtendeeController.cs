@@ -9,6 +9,7 @@ namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
     [Authorize(Roles = "User")]
+    [Authorize("Admin")]
     [Route("[controller]")]
     public class AtendeeController : ControllerBase
     {

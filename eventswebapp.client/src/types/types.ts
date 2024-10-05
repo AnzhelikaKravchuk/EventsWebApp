@@ -26,6 +26,16 @@ export interface SocialEventModel {
   image: string;
 }
 
+export interface EditSocialEventRequest {
+  id: string;
+  nameOfEvent: string;
+  description: string;
+  place: string;
+  date: Date;
+  category: string;
+  maxAttendee: number;
+}
+
 export interface SocialEventsResponse {
   items: Array<SocialEventModel>;
   pageIndex: number;

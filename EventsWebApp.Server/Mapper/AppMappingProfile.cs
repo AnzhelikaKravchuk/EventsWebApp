@@ -36,13 +36,13 @@ namespace EventsWebApp.Server.Mapper
                 ;
 
             CreateMap<UpdateSocialEventRequest, SocialEvent>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.NameOfEvent))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date)))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), src.Category)))
-                .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
+                .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee)) 
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
                 ;
 

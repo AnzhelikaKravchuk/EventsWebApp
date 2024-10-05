@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { TryRefreshToken } from './user';
-import { SocialEventsResponse } from '../types/types';
+import { SocialEventModel, SocialEventsResponse } from '../types/types';
 
 export async function GetSocialEvents(
   pageIndex: number,
@@ -12,13 +12,31 @@ export async function GetSocialEvents(
       withCredentials: true,
     }
   );
-  console.log(response);
-
-  console.log(response.data as SocialEventsResponse);
   // .catch((error: AxiosError) => {
   //   if (error.status === 401) {
   //     return TryRefreshToken(GetSocialEvents);
   //   }
   // });
   return response.data as SocialEventsResponse;
+}
+
+export async function EditEvent(
+  socialEvent: SocialEventModel
+): Promise<boolean> {
+  console.log(socialEvent);
+
+  const response = await axios.put(
+    `https://localhost:7127/SocialEvents/updateEvent`,
+    socialEvent,
+    {
+      withCredentials: true,
+    }
+  );
+
+  // .catch((error: AxiosError) => {
+  //   if (error.status === 401) {
+  //     return TryRefreshToken(GetSocialEvents);
+  //   }
+  // });
+  return true;
 }

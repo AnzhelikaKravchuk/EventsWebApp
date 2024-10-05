@@ -12,6 +12,8 @@ export default function Items(props: Props) {
         props.currentItems.map((item) => (
           <NavLink to='/eventPage' state={item}>
             <p>{item.nameOfEvent}</p>
+            <i>{item.category}</i>
+            <i>{item.date.toString()}</i>
           </NavLink>
         ))}
     </>

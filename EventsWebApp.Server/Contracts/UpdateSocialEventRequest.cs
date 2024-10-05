@@ -1,7 +1,7 @@
 namespace EventsWebApp.Server.Contracts
 {
-    public record UpdateSocialEventRequest(Guid Id, 
-                                            string Name, 
+    public record UpdateSocialEventRequest(string Id, 
+                                            string NameOfEvent, 
                                             string Description, 
                                             string Place, 
                                             string Date, 

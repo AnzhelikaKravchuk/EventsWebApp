@@ -6,11 +6,13 @@ using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
     [Authorize("User")]
+    [Authorize("Admin")]
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase { 
         private readonly SocialEventService _socialEventService;
@@ -79,15 +81,9 @@ namespace EventsWebApp.Server.Controllers
 
         [HttpPost]
         [Authorize("Admin")]
-        public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request, IFormFile formFile)
+        public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request)
         {
-            
             var socialEvent = _mapper.Map<SocialEvent>(request);
-            if (formFile != null && formFile.IsImage())
-            {
-                socialEvent.Image = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, formFile);
-            }
-
             var socialEvents = await _socialEventService.CreateSocialEvent(socialEvent);
             return Ok(socialEvents);
         }
@@ -102,9 +98,27 @@ namespace EventsWebApp.Server.Controllers
 
         [HttpPut("updateEvent")]
         [Authorize("Admin")]
-        public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request)
+        public async Task<IActionResult> Update( UpdateSocialEventRequest request)
         {
             var socialEvent = _mapper.Map<SocialEvent>(request);
+            await _socialEventService.UpdateSocialEvent(socialEvent);
+            return Ok();
+        }
+
+        [HttpPut("upload")]
+        [Authorize("Admin")]
+        public async Task<IActionResult> Upload([FromQuery] Guid id, [FromForm] IFormFile formFile)
+        {
+            var socialEvent = await _socialEventService.GetSocialEventById(id);
+            if (formFile != null && formFile.IsImage())
+            {
+               string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, formFile);
+                if (!socialEvent.Image.IsNullOrEmpty())
+                {
+                    await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
+                }
+                socialEvent.Image = newPath;
+            }
             await _socialEventService.UpdateSocialEvent(socialEvent);
             return Ok();
         }
