@@ -11,84 +11,67 @@ import EventPage from './routes/SocialEvents/EventPage';
 import CreateSocialEventPage from './routes/SocialEvents/CreateSocialEventPage';
 import EditSocialEventPage from './routes/SocialEvents/EditSocialEventPage';
 import { CreateAttendeePage } from './routes/EventsAdmissions/CreateAttendeePage';
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <Root />,
-//     children: [
-//       {
-//         path: '/socialEvents',
-//         element: <SocialEvents />,
-//       },
-//       {
-//         path: '/applications',
-//         element: <EventsApplications />,
-//       },
-//     ],
-//   },
-// ]);
+import MUIThemeProvider from './provider/MUIThemeProvider';
 
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path='/' element={<Root />}>
-          <Route path='login' element={<LoginPage />} />
-          <Route path='register' element={<RegisterPage />} />
-          <Route
-            path='socialEvents'
-            element={
-              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
-                <SocialEvents />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='eventPage'
-            element={
-              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
-                <EventPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='attendeePage'
-            element={
-              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
-                <CreateAttendeePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='createEvent'
-            element={
-              <ProtectedRoute allowedRoles={[Role.Admin]}>
-                <CreateSocialEventPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='editEvent'
-            element={
-              <ProtectedRoute allowedRoles={[Role.Admin]}>
-                <EditSocialEventPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='admissions'
-            element={
-              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
-                <EventsAdmissions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='admin'
-            element={<ProtectedRoute allowedRoles={[Role.Admin]} />}
-          />
-        </Route>
-      </Routes>
+      <MUIThemeProvider>
+        <Routes>
+          <Route path='/' element={<Root />}>
+            <Route path='login' element={<LoginPage />} />
+            <Route path='register' element={<RegisterPage />} />
+            <Route
+              path='socialEvents'
+              element={
+                <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                  <SocialEvents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='eventPage'
+              element={
+                <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                  <EventPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='attendeePage'
+              element={
+                <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                  <CreateAttendeePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='createEvent'
+              element={
+                <ProtectedRoute allowedRoles={[Role.Admin]}>
+                  <CreateSocialEventPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='editEvent'
+              element={
+                <ProtectedRoute allowedRoles={[Role.Admin]}>
+                  <EditSocialEventPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='admissions'
+              element={
+                <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                  <EventsAdmissions />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </MUIThemeProvider>
     </AuthProvider>
   );
 }

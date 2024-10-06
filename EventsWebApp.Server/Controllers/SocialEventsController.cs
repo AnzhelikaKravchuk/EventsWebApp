@@ -72,6 +72,14 @@ namespace EventsWebApp.Server.Controllers
             return Ok(socialEvents);
         }
 
+        [HttpGet("getAttendeesByEventId")]
+        public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id)
+        {
+            var attendees = await _socialEventService.GetAttendeesById(id);
+
+            return Ok(attendees);
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {

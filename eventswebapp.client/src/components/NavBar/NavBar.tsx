@@ -1,29 +1,79 @@
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
-import { NavLink } from 'react-router-dom';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
-interface Props {
-  isAuthenticated: boolean;
-}
+import { Role } from '../../types/types';
 
-export default function NavBar(props: Props) {
-  const { logout } = useAuth();
+const authenticatedUserMenu = [
+  {
+    link: '/socialEvents',
+    text: 'Events',
+  },
+  {
+    link: '/admissions',
+    text: 'Admissions',
+  },
+];
+
+const unauthenticatedUserMenu = [
+  {
+    link: '/login',
+    text: 'Login',
+  },
+  {
+    link: '/register',
+    text: 'Sign Up',
+  },
+];
+
+export default function NavBar() {
+  const { role, logout } = useAuth();
+
+  const isAuthenticated = role !== Role.Guest;
+
+  const buttonSx = {
+    display: 'block',
+    color: 'white',
+    '&.active': {
+      background: '#ffffff50',
+      fontWeight: 'bold',
+    },
+  };
+
   return (
-    <AppBar position='static'>
-      <Toolbar variant='dense'>
-        <Typography variant='h2'>Events Web Application</Typography>
-        {props.isAuthenticated ? (
-          <div>
-            <NavLink to='/socialEvents'>Social Events</NavLink>
-            <NavLink to='/admissions'>Your Admissions</NavLink>
-            <Button onClick={logout}>Logout</Button>
-          </div>
-        ) : (
-          <div>
-            <NavLink to='/login'>Login</NavLink>
-            <NavLink to='/register'>Register</NavLink>
-          </div>
-        )}
-      </Toolbar>
+    <AppBar
+      position='fixed'
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Container maxWidth='xl'>
+        <Toolbar variant='dense' sx={{ my: 2 }}>
+          <Box border={2} padding={0.5}>
+            <Typography variant='h6'>Events App</Typography>
+          </Box>
+          <Box sx={{ ml: 2, flexGrow: 1, display: 'flex' }}>
+            {isAuthenticated
+              ? authenticatedUserMenu.map(({ link, text }) => (
+                  <Button href={link} sx={buttonSx}>
+                    {text}
+                  </Button>
+                ))
+              : unauthenticatedUserMenu.map(({ link, text }) => (
+                  <Button href={link} sx={buttonSx}>
+                    {text}
+                  </Button>
+                ))}
+          </Box>
+          {isAuthenticated && (
+            <Button onClick={logout} sx={buttonSx}>
+              Logout
+            </Button>
+          )}
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 }

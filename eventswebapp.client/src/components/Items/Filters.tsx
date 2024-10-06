@@ -2,8 +2,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { AppliedFilters, SocialEventModel } from '../../types/types';
 import { useForm } from 'react-hook-form';
 import {
+  Box,
   Button,
+  FormControl,
   Grid2,
+  InputLabel,
   MenuItem,
   Select,
   TextField,
@@ -20,7 +23,6 @@ type Props = {
 };
 
 export default function Filters(props: Props) {
-  const navigate = useNavigate();
   const { register, handleSubmit } = useForm<AppliedFilters>();
 
   function onSubmitFilters(data: AppliedFilters) {
@@ -43,68 +45,62 @@ export default function Filters(props: Props) {
     //   .catch();
   }
   return (
-    <div>
-      <Typography variant='h3'>Apply Filters</Typography>
-      <form onSubmit={handleSubmit(onSubmitFilters)}>
+    <Grid2 container direction={'column'} sx={{ padding: 6 }}>
+      <form onSubmit={handleSubmit(onSubmitFilters)} css={{ width: '100%' }}>
         <Grid2
           container
           direction={'column'}
           gap={'20px'}
           alignItems={'center'}>
-          <Grid2 size={5}>
-            <TextField
-              fullWidth
-              {...register('name')}
-              name='name'
-              id='name'
-              type='text'
-              label='Name'
-            />
-          </Grid2>
-          <Grid2 size={5}>
-            <TextField
-              fullWidth
-              {...register('date')}
-              name='date'
-              id='date'
-              type='text'
-              label='Date'
-            />
-          </Grid2>
-          <Grid2 size={5}>
-            <TextField
-              fullWidth
-              {...register('place')}
-              name='place'
-              id='place'
-              type='text'
-              label='Place'
-            />
-          </Grid2>
-          <Grid2 size={5}>
+          <TextField
+            fullWidth
+            {...register('name')}
+            name='name'
+            id='name'
+            type='text'
+            label='Name'
+          />
+          <TextField
+            fullWidth
+            {...register('date')}
+            name='date'
+            id='date'
+            type='date'
+            label='Date'
+          />
+          <TextField
+            fullWidth
+            {...register('place')}
+            name='place'
+            id='place'
+            type='text'
+            label='Place'
+          />
+          <FormControl fullWidth>
+            <InputLabel>Category</InputLabel>{' '}
             <Select
+              label='Category'
               fullWidth
               {...register('category')}
               name='category'
-              id='category'
-              label='Category'>
+              id='category'>
+              <MenuItem value={''}>
+                <em>All</em>
+              </MenuItem>
               <MenuItem value={'Other'}>Other</MenuItem>
               <MenuItem value={'Conference'}>Conference</MenuItem>
               <MenuItem value={'Convention'}>Convention</MenuItem>
               <MenuItem value={'Lecture'}>Lecture</MenuItem>
               <MenuItem value={'MasterClass'}>MasterClass</MenuItem>
               <MenuItem value={'QnA'}>Q&A</MenuItem>
-              <MenuItem value={''}>None</MenuItem>
             </Select>
-          </Grid2>
+          </FormControl>
 
-          <Grid2 size={5}>
-            <Button type='submit' variant='contained'>
-              Filter
-            </Button>
-          </Grid2>
+          <Button fullWidth type='submit' variant='contained'>
+            Apply Filters
+          </Button>
         </Grid2>
       </form>
-    </div>
+    </Grid2>
   );
 }

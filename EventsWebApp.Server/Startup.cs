@@ -11,6 +11,7 @@ using EventsWebApp.Server.Extensions;
 using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.FileProviders;
 
 namespace EventsWebApp.Server
 {
@@ -84,7 +85,11 @@ namespace EventsWebApp.Server
             });
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")),
+                RequestPath = "/images"
+            });
 
             app.UseCors();
 

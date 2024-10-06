@@ -20,15 +20,20 @@ const RegisterPage = () => {
   }
 
   return (
-    <section>
-      <Typography variant='h1'>Register</Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid2
-          container
-          direction={'column'}
-          gap={'20px'}
-          alignItems={'center'}>
-          <Grid2 size={5}>
+    <Grid2
+      container
+      direction={'column'}
+      alignItems='center'
+      gap={'40px'}
+      margin={20}>
+      <Grid2 size={3}>
+        <Typography variant='h4' component='h1' textAlign='center'>
+          Create New Account
+        </Typography>
+      </Grid2>
+      <Grid2 size={3}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid2 container direction={'column'} gap={'20px'}>
             <TextField
               fullWidth
               {...register('email')}
@@ -38,8 +43,6 @@ const RegisterPage = () => {
               label='Email'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <TextField
               fullWidth
               {...register('password')}
@@ -49,8 +52,6 @@ const RegisterPage = () => {
               label='Password'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <TextField
               fullWidth
               {...register('username')}
@@ -60,15 +61,13 @@ const RegisterPage = () => {
               label='Username'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <Button type='submit' variant='contained'>
-              Register
+              Sign Up
             </Button>
           </Grid2>
-        </Grid2>
-      </form>
-    </section>
+        </form>
+      </Grid2>
+    </Grid2>
   );
 };
 

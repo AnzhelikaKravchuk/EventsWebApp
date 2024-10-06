@@ -27,15 +27,20 @@ const LoginPage = () => {
   }
 
   return (
-    <section>
-      <Typography variant='h1'>Enter your credentials</Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid2
-          container
-          direction={'column'}
-          gap={'20px'}
-          alignItems={'center'}>
-          <Grid2 size={5}>
+    <Grid2
+      container
+      direction={'column'}
+      alignItems='center'
+      gap={'40px'}
+      margin={20}>
+      <Grid2 size={3}>
+        <Typography variant='h4' component='h1' textAlign='center'>
+          Login to Your Account
+        </Typography>
+      </Grid2>
+      <Grid2 size={3}>
+        <form onSubmit={handleSubmit(onSubmit)} css={{ width: '100%' }}>
+          <Grid2 container direction={'column'} gap={'20px'}>
             <TextField
               {...register('email')}
               fullWidth
@@ -45,8 +50,6 @@ const LoginPage = () => {
               label='Email'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <TextField
               {...register('password')}
               fullWidth
@@ -56,16 +59,14 @@ const LoginPage = () => {
               label='Password'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <Button type='submit' variant='contained'>
               Login
             </Button>
           </Grid2>
-        </Grid2>
-      </form>
+        </form>
+      </Grid2>
       <Typography variant='h6'>{errorMessage}</Typography>
-    </section>
+    </Grid2>
   );
 };
 
