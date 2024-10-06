@@ -1,4 +1,5 @@
 using AutoMapper;
+using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
@@ -71,10 +72,10 @@ namespace EventsWebApp.Server.Controllers
             return Ok(socialEvents);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSocialEvents([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+        [HttpPost]
+        public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var socialEvents = await _socialEventService.GetAllSocialEvents(pageIndex, pageSize);
+            var socialEvents = await _socialEventService.GetAllSocialEvents(filters,pageIndex, pageSize);
             var responseList = new PaginatedList<SocialEventResponse>(null, socialEvents.PageIndex, socialEvents.TotalPages);
             responseList.Items = socialEvents.Items.Select(s => _mapper.Map<SocialEventResponse>(s)).ToList();
             return Ok(responseList);

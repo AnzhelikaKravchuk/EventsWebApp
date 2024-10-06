@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Filters;
+using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
@@ -17,9 +18,9 @@ namespace EventsWebApp.Application.Services
             _validator = validator;
         }
 
-        public async Task<PaginatedList<SocialEvent>> GetAllSocialEvents(int pageIndex = 1, int pageSize = 10)
+        public async Task<PaginatedList<SocialEvent>> GetAllSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10)
         {
-            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(pageIndex, pageSize);
+            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(filters, pageIndex, pageSize);
             return socialEvents;
         }
 

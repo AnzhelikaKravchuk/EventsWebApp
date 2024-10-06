@@ -26,7 +26,7 @@ const EventPage = (props: Props) => {
   }, [eventLoading]);
 
   const handleDelete = async () => {
-    const result = await DeleteEvent(socialEvent.id);
+    const result = await DeleteEvent(socialEvent.id).then();
     if (result) {
       navigate('/socialEvents');
     }

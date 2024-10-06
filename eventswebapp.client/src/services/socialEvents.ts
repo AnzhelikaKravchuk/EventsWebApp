@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  AppliedFilters,
   CreateSocialEventRequest,
   EditSocialEventRequest,
   SocialEventModel,
@@ -7,11 +8,13 @@ import {
 } from '../types/types';
 
 export async function GetSocialEvents(
+  filters: FormData,
   pageIndex: number,
   pageSize: number
 ): Promise<SocialEventsResponse> {
-  const response = await axios.get(
+  const response = await axios.post(
     `https://localhost:7127/SocialEvents?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+    filters,
     {
       withCredentials: true,
     }

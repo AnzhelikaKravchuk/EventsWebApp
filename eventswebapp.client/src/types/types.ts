@@ -14,6 +14,13 @@ export enum Role {
   Admin = 'Admin',
   Guest = 'Guest',
 }
+
+export interface AppliedFilters {
+  name: string;
+  date: Date;
+  place: string;
+  category: string;
+}
 export interface SocialEventModel {
   id: string;
   eventName: string;

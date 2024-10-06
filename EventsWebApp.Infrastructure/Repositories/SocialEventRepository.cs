@@ -1,8 +1,10 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Filters;
+using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
 namespace EventsWebApp.Infrastructure.Repositories
@@ -49,13 +51,20 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvents;
         }
 
-        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(int pageIndex, int pageSize)
+        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize)
         {
-            var events =  await _dbContext.SocialEvents.OrderBy(s => s.EventName)
-                                                    .Skip((pageIndex - 1) * pageSize)
-                                                    .Take(pageSize)
+            var a = filters.Date.IsNullOrEmpty();
+            var b = filters.Category.IsNullOrEmpty();
+            var events = await _dbContext.SocialEvents
                                                     .Include(s => s.ListOfAttendees)
                                                     .AsNoTracking()
+                                                    .Where(s => s.EventName.Contains(filters.Name ?? ""))
+                                                    .Where(s => filters.Date.IsNullOrEmpty() || s.Date == DateTime.Parse(filters.Date).Date)
+                                                    .Where(s => filters.Category.IsNullOrEmpty() || s.Category == (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), filters.Category))
+                                                    .Where(s => s.Place.Contains(filters.Place ?? ""))
+                                                    .OrderBy(s => s.EventName)
+                                                    .Skip((pageIndex - 1) * pageSize)
+                                                    .Take(pageSize)
                                                     .ToListAsync();
             var count = await _dbContext.SocialEvents.CountAsync();
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);

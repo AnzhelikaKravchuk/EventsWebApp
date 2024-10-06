@@ -44,11 +44,10 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete]
-        [Authorize("Admin")]
-        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid attendeeId)
+        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id)
         {
-            var id = await _attendeeService.DeleteAttendee(attendeeId);
-            return Ok(id);
+            var attendeeId = await _attendeeService.DeleteAttendee(id);
+            return Ok(attendeeId);
         }
     }
 }

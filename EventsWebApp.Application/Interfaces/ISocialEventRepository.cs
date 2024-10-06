@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Domain.Enums;
+﻿using EventsWebApp.Application.Filters;
+using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 
@@ -14,10 +15,11 @@ namespace EventsWebApp.Application.Interfaces
         Task<Attendee> GetAttendeeById(Guid socialEventId, Guid attendeeId);
         Task<Guid> Update(SocialEvent socialEvent);
         Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail);
-        Task<PaginatedList<SocialEvent>> GetSocialEvents(int pageIndex, int pageSize);
+        //Task<PaginatedList<SocialEvent>> GetSocialEvents(int pageIndex, int pageSize);
         Task<List<SocialEvent>> GetByDate(DateTime date);
         Task<List<SocialEvent>> GetByCategory(E_SocialEventCategory category);
         Task<List<SocialEvent>> GetByPlace(string place);
         Task<List<SocialEvent>> GetByName(string name);
+        Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize);
     }
 }

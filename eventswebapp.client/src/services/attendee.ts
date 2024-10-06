@@ -34,3 +34,20 @@ export async function AddAttendeeToEvent(
   // });
   return response;
 }
+
+export async function DeleteAttendee(attendeeId: string): Promise<boolean> {
+  const response = await axios
+    .delete(`https://localhost:7127/Attendee?id=${attendeeId}`, {
+      withCredentials: true,
+    })
+    .then(() => true)
+    .catch(() => false);
+
+  console.log(response);
+  // .catch((error: AxiosError) => {
+  //   if (error.status === 401) {
+  //     return TryRefreshToken(GetSocialEvents);
+  //   }
+  // });
+  return response;
+}
