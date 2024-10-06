@@ -10,6 +10,7 @@ import EventsAdmissions from './routes/EventsAdmissions/EventsAdmissions';
 import EventPage from './routes/SocialEvents/EventPage';
 import CreateSocialEventPage from './routes/SocialEvents/CreateSocialEventPage';
 import EditSocialEventPage from './routes/SocialEvents/EditSocialEventPage';
+import { CreateAttendeePage } from './routes/EventsAdmissions/CreateAttendeePage';
 // const router = createBrowserRouter([
 //   {
 //     path: '/',
@@ -47,6 +48,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
                 <EventPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='attendeePage'
+            element={
+              <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
+                <CreateAttendeePage />
               </ProtectedRoute>
             }
           />

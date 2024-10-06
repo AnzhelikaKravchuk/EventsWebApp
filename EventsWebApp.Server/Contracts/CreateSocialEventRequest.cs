@@ -7,5 +7,6 @@ namespace EventsWebApp.Server.Contracts
                                             string Place, 
                                             string Date, 
                                             string Category, 
-                                            int MaxAttendee);
+                                            int MaxAttendee,
+                                            IFormFile? File);
 }

@@ -1,23 +1,39 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace EventsWebApp.Application.Services
 {
     public class AttendeeService : IDisposable
     {
+        private readonly IJwtProvider _jwtProvider;
         private readonly IAppUnitOfWork _appUnitOfWork;
         private readonly AttendeeValidator _validator;
-        public AttendeeService(IAppUnitOfWork appUnitOfWork, AttendeeValidator validator)
+        public AttendeeService(IAppUnitOfWork appUnitOfWork, AttendeeValidator validator, IJwtProvider jwtProvider)
         {
             _appUnitOfWork = appUnitOfWork;
             _validator = validator;
+            _jwtProvider = jwtProvider;
         }
 
         public async Task<Attendee> GetAttendeeById(Guid id)
         {
             return await _appUnitOfWork.AttendeeRepository.GetById(id);
+        }
+
+        public async Task<List<Attendee>> GetAttendeesByToken(string accessToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            if(userId == null)
+            {
+                throw new Exception("No user id found");
+            }
+
+            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(Guid.Parse(userId));
         }
 
         public async Task<List<Attendee>> GetAllAttendeesByUserId(Guid userId)
@@ -50,6 +66,18 @@ namespace EventsWebApp.Application.Services
             await _appUnitOfWork.AttendeeRepository.Add(attendee);
             _appUnitOfWork.Save();
             return attendee.Id;
+        }
+
+        public async Task<Guid> AddAttendeeToEventWithToken(Attendee attendee, Guid socialEventId, string accessToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            if (userId == null)
+            {
+                throw new Exception("No user id found");
+            }
+            return await AddAttendeeToEvent(attendee, socialEventId, Guid.Parse(userId));
         }
 
         public async Task<Guid> UpdateAttendee(Attendee attendee)

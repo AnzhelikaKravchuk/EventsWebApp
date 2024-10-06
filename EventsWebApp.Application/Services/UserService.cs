@@ -58,9 +58,9 @@ namespace EventsWebApp.Application.Services
             User user = new User(email, hashedPassword, username, "User");
             ValidateUser(user);
 
-            await _appUnitOfWork.UserRepository.Add(user);
+            var addedUser =await _appUnitOfWork.UserRepository.Add(user);
 
-            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(user);
+            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(addedUser);
             _appUnitOfWork.Save();
 
             return (accessToken, refreshToken);

@@ -5,13 +5,12 @@ interface Props {
   currentItems: Array<SocialEventModel>;
 }
 export default function Items(props: Props) {
-  console.log(props.currentItems);
   return (
     <>
       {props.currentItems &&
         props.currentItems.map((item) => (
-          <NavLink to='/eventPage' state={item}>
-            <p>{item.nameOfEvent}</p>
+          <NavLink key={item.id} to='/eventPage' state={item.id}>
+            <p>{item.eventName}</p>
             <i>{item.category}</i>
             <i>{item.date.toString()}</i>
           </NavLink>

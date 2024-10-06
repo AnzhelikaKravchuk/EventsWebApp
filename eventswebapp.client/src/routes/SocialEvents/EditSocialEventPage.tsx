@@ -9,13 +9,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EditSocialEventRequest, SocialEventModel } from '../../types/types';
+import { EditSocialEventRequest } from '../../types/types';
 import { useForm } from 'react-hook-form';
-import { EditEvent } from '../../services/socialEvents';
-import axios from 'axios';
+import { EditEvent, UploadImage } from '../../services/socialEvents';
 
-type Props = {};
-const EditSocialEventPage = (props: Props) => {
+const EditSocialEventPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   let { state } = location;
@@ -24,7 +22,7 @@ const EditSocialEventPage = (props: Props) => {
   const { register, handleSubmit, watch } = useForm<EditSocialEventRequest>({
     defaultValues: {
       id: state.id,
-      nameOfEvent: state.nameOfEvent,
+      eventName: state.eventName,
       description: state.description,
       place: state.place,
       date: state.date,
@@ -33,56 +31,31 @@ const EditSocialEventPage = (props: Props) => {
     },
   });
 
-  function onSubmit(data: EditSocialEventRequest) {
-    const target: EditSocialEventRequest = {
-      id: state.id,
-      nameOfEvent: data.nameOfEvent,
-      description: data.description,
-      place: data.place,
-      date: data.date,
-      category: data.category,
-      maxAttendee: data.maxAttendee,
-    };
-
+  const onSubmitEdit = (data: EditSocialEventRequest) => {
     EditEvent(data)
       .then(() => {
         navigate('/socialEvents');
       })
-      .catch();
-  }
+      .catch((err) => console.log(err));
+  };
 
   const handleFileUpload = async (event) => {
     event.preventDefault();
     const imageInput = document.getElementById('image');
     const formData = new FormData();
     const file = imageInput.files[0];
-    if (!file) {
-      return;
-    }
     formData.append('formFile', file);
 
-    await axios
-      .put(
-        `https://localhost:7127/SocialEvents/upload?id=${state.id}`,
-        formData,
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    UploadImage(formData, state.id);
   };
 
   const selectedCategory = watch('category');
   const selectedDate = watch('date');
+
   return (
     <section>
       <Typography variant='h1'>Edit Event</Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmitEdit)}>
         <Grid2
           container
           direction={'column'}
@@ -90,10 +63,10 @@ const EditSocialEventPage = (props: Props) => {
           alignItems={'center'}>
           <Grid2 size={5}>
             <TextField
-              {...register('nameOfEvent')}
+              {...register('eventName')}
               fullWidth
-              name='nameOfEvent'
-              id='nameOfEvent'
+              name='eventName'
+              id='eventName'
               type='text'
               label='Name'
               required
@@ -117,7 +90,7 @@ const EditSocialEventPage = (props: Props) => {
               name='place'
               id='place'
               type='text'
-              label='place'
+              label='Place'
               required
             />
           </Grid2>
@@ -194,48 +167,3 @@ const EditSocialEventPage = (props: Props) => {
 };
 
 export default EditSocialEventPage;
-
-// const ProfilePicture = ({ edit }) => {
-//   const hiddenInputRef = useRef();
-
-//   const [preview, setPreview] = useState<string>();
-
-//   const { ref: registerRef, ...rest } = edit('profilePicture');
-
-//   const handleUploadedFile = (event) => {
-//     const file = event.target.files[0];
-
-//     const urlImage = URL.createObjectURL(file);
-
-//     setPreview(urlImage);
-//   };
-
-//   const onUpload = () => {
-//     hiddenInputRef.current.click();
-//   };
-
-//   const uploadButtonLabel = preview ? 'Change image' : 'Upload image';
-
-//   return (
-//     <div>
-//       <Label>Profile picture</Label>
-
-//       <Input
-//         type='file'
-//         name='profilePicture'
-//         {...rest}
-//         onChange={handleUploadedFile}
-//         ref={(e) => {
-//           registerRef(e);
-//           hiddenInputRef.current = e;
-//         }}
-//       />
-
-//       <Avatar src={preview} sx={{ width: 80, height: 80 }} />
-
-//       <Button variant='text' onClick={onUpload}>
-//         {uploadButtonLabel}
-//       </Button>
-//     </div>
-//   );
-// };

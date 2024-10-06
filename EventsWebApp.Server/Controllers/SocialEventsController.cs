@@ -5,6 +5,7 @@ using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -79,20 +80,25 @@ namespace EventsWebApp.Server.Controllers
             return Ok(responseList);
         }
 
-        [HttpPost]
+        [HttpPost("createEvent")]
         [Authorize("Admin")]
         public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request)
         {
-            var socialEvent = _mapper.Map<SocialEvent>(request);
-            var socialEvents = await _socialEventService.CreateSocialEvent(socialEvent);
-            return Ok(socialEvents);
+            var data = _mapper.Map<SocialEvent>(request); 
+            if (request.File != null && request.File.IsImage())
+            {
+                string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
+                data.Image = newPath;
+            }
+            var socialEvent = await _socialEventService.CreateSocialEvent(data);
+            return Ok(socialEvent);
         }
 
         [HttpDelete("deleteEvent")]
         [Authorize("Admin")]
-        public async Task<IActionResult> Delete([FromBody] Guid guid)
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
         {
-            await _socialEventService.DeleteSocialEvent(guid);
+            await _socialEventService.DeleteSocialEvent(id);
             return Ok();
         }
 

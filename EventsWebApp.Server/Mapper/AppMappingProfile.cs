@@ -24,7 +24,7 @@ namespace EventsWebApp.Server.Mapper
 
             CreateMap<SocialEvent, SocialEventResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.NameOfEvent, opt => opt.MapFrom(src => src.EventName))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString()))
@@ -37,7 +37,7 @@ namespace EventsWebApp.Server.Mapper
 
             CreateMap<UpdateSocialEventRequest, SocialEvent>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
-                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.NameOfEvent))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date)))
@@ -57,6 +57,15 @@ namespace EventsWebApp.Server.Mapper
                 .ForMember(dest => dest.SocialEvent, opt => opt.Ignore())
                 ;
 
+            CreateMap<Attendee, AttendeeResponse>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.Surname))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.ToString()))
+                .ForMember(dest => dest.DateOfRegistration, opt => opt.MapFrom(src => src.DateOfRegistration.ToString()))
+                .ForMember(dest => dest.SocialEventName, opt => opt.MapFrom(src => src.SocialEvent.EventName))
+                ;
         }
     }
 }

@@ -8,38 +8,43 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "User")]
+    [Authorize("User")]
     [Authorize("Admin")]
     [Route("[controller]")]
-    public class AtendeeController : ControllerBase
+    public class AttendeeController : ControllerBase    
     {
         private readonly AttendeeService _attendeeService;
         private readonly IMapper _mapper;
 
-        public AtendeeController(AttendeeService attendeeService, IMapper mapper)
+        public AttendeeController(AttendeeService attendeeService, IMapper mapper)
         {
             _attendeeService = attendeeService;
             _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByUser([FromQuery] Guid guid)
+        [Authorize]
+        public async Task<IActionResult> GetAllByUser()
         {
-            var attendees = await _attendeeService.GetAllAttendeesByUserId(guid);
-            return Ok(attendees);
+            var accessToken = HttpContext.Request.Cookies["accessToken"];
+            var attendees = await _attendeeService.GetAttendeesByToken(accessToken);
+
+            var responseList = attendees.Select(_mapper.Map<AttendeeResponse>).ToList();
+            return Ok(responseList);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAttendee([FromForm] CreateAttendeeRequest request,[FromQuery] Guid eventId, [FromQuery] Guid userId)
+        public async Task<IActionResult> CreateAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId)
         {
+            var accessToken = HttpContext.Request.Cookies["accessToken"];
             var attendee = _mapper.Map<Attendee>(request);
             attendee.DateOfRegistration = DateTime.Now.Date;
-            var attendees = await _attendeeService.AddAttendeeToEvent(attendee, eventId, userId);
+            var attendees = await _attendeeService.AddAttendeeToEventWithToken(attendee, eventId, accessToken);
             return Ok(attendees);
         }
 
         [HttpDelete]
-        [Authorize(Policy = "Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> DeleteAttendee([FromQuery] Guid attendeeId)
         {
             var id = await _attendeeService.DeleteAttendee(attendeeId);

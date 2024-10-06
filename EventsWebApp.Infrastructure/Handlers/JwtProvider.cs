@@ -31,7 +31,8 @@ namespace EventsWebApp.Infrastructure.Handlers
 
         public string GenerateAccessToken(User user)
         {
-            Claim[] claims = [new Claim(ClaimTypes.Email,user.Email),
+            Claim[] claims = [new Claim("Id",user.Id.ToString()),
+                new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Name,user.Username),
                 new Claim(ClaimTypes.Role,user.Role)];
 

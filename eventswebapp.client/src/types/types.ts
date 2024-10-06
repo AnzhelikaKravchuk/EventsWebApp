@@ -16,7 +16,7 @@ export enum Role {
 }
 export interface SocialEventModel {
   id: string;
-  nameOfEvent: string;
+  eventName: string;
   description: string;
   place: string;
   date: Date;
@@ -28,7 +28,16 @@ export interface SocialEventModel {
 
 export interface EditSocialEventRequest {
   id: string;
-  nameOfEvent: string;
+  eventName: string;
+  description: string;
+  place: string;
+  date: Date;
+  category: string;
+  maxAttendee: number;
+}
+
+export interface CreateSocialEventRequest {
+  eventName: string;
   description: string;
   place: string;
   date: Date;
@@ -50,5 +59,13 @@ export interface AttendeeModel {
   surname: string;
   email: string;
   dateOfBirth: Date;
-  dateOfAdmission: Date;
+  dateOfRegistration: Date;
+  socialEventName: string;
+}
+
+export interface CreateAttendeeRequest {
+  name: string;
+  surname: string;
+  email: string;
+  dateOfBirth: Date;
 }

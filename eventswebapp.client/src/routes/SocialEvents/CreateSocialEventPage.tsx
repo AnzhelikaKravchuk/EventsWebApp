@@ -7,26 +7,31 @@ import {
   Typography,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Repository } from '../../utils/Repository';
+import { useForm } from 'react-hook-form';
+import { CreateSocialEventRequest } from '../../types/types';
+import { CreateEvent } from '../../services/socialEvents';
 
-type Props = {};
-const CreateSocialEventPage = (props: Props) => {
+const CreateSocialEventPage = () => {
   const navigate = useNavigate();
+  const { register, handleSubmit } = useForm<CreateSocialEventRequest>();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const target = {
-      eventName: event.currentTarget.eventName.value,
-      description: event.currentTarget.description.value,
-      place: event.currentTarget.place.value,
-      category: event.currentTarget.category.value,
-      date: event.currentTarget.date.value,
-      maxAttendee: event.currentTarget.maxAttendee.value,
-      //image: event.currentTarget.image.value,
-    };
-    Repository.CreateEvent(target)
-      .then(() => {
-        navigate('/socialEvents');
+  function onSubmitCreate(data: CreateSocialEventRequest) {
+    const imageInput = document.getElementById('image');
+
+    const formData = new FormData();
+    const file = imageInput.files[0];
+    formData.append('eventName', data.eventName);
+    formData.append('description', data.description);
+    formData.append('category', data.category);
+    formData.append('date', data.date.toString());
+    formData.append('maxAttendee', data.maxAttendee.toString());
+    formData.append('place', data.place);
+    formData.append('file', file);
+
+    console.log(formData);
+    CreateEvent(formData)
+      .then((res) => {
+        navigate('/eventPage', { state: { ...res } });
       })
       .catch();
   }
@@ -34,7 +39,7 @@ const CreateSocialEventPage = (props: Props) => {
   return (
     <section>
       <Typography variant='h1'>Create Event</Typography>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmitCreate)}>
         <Grid2
           container
           direction={'column'}
@@ -43,7 +48,8 @@ const CreateSocialEventPage = (props: Props) => {
           <Grid2 size={5}>
             <TextField
               fullWidth
-              name='name'
+              {...register('eventName')}
+              name='eventName'
               id='eventName'
               type='text'
               label='Name'
@@ -53,6 +59,7 @@ const CreateSocialEventPage = (props: Props) => {
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('description')}
               name='description'
               id='description'
               type='text'
@@ -63,6 +70,7 @@ const CreateSocialEventPage = (props: Props) => {
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('place')}
               name='place'
               id='place'
               type='text'
@@ -73,6 +81,7 @@ const CreateSocialEventPage = (props: Props) => {
           <Grid2 size={5}>
             <Select
               fullWidth
+              {...register('category')}
               name='category'
               id='category'
               label='Category'
@@ -88,16 +97,18 @@ const CreateSocialEventPage = (props: Props) => {
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('date')}
               name='date'
               id='date'
               type='date'
-              label='date'
+              label='Date'
               required
             />
           </Grid2>
           <Grid2 size={5}>
             <TextField
               fullWidth
+              {...register('maxAttendee')}
               name='maxAttendee'
               id='maxAttendee'
               type='number'
@@ -105,20 +116,14 @@ const CreateSocialEventPage = (props: Props) => {
               required
             />
           </Grid2>
-          {/* <Grid2 size={5}>
-            <TextField
-              fullWidth
-              name='Image'
-              id='Image'
-              type='image'
-              label='Image'
-            />
-          </Grid2> */}
           <Grid2 size={5}>
             <Button type='submit' variant='contained'>
               Create
             </Button>
           </Grid2>
+        </Grid2>
+        <Grid2 size={5}>
+          <input accept='image/*' id='image' type='file' />
         </Grid2>
       </form>
     </section>

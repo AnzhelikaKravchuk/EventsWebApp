@@ -4,7 +4,7 @@ namespace EventsWebApp.Application.Interfaces
 {
     public interface IUserRepository
     {
-        Task<Guid> Add(User user);
+        Task<User> Add(User user);
         Task<Guid> Delete(Guid id);
         Task<User> GetById(Guid id);
         Task<User> GetByEmail(string email);

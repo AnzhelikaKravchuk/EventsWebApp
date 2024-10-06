@@ -59,7 +59,7 @@ namespace EventsWebApp.Application.Services
             return attendees;
         }
 
-        public async Task<Guid> CreateSocialEvent(SocialEvent socialEvent)
+        public async Task<SocialEvent> CreateSocialEvent(SocialEvent socialEvent)
         {
             //var user = await _appUnitOfWork.UserRepository.GetById(userId);
             //ValidateSocialEvent(socialEvent);
@@ -75,7 +75,7 @@ namespace EventsWebApp.Application.Services
 
             await _appUnitOfWork.SocialEventRepository.Add(socialEvent);
             _appUnitOfWork.Save();
-            return socialEvent.Id;
+            return socialEvent;
         }
 
         public async Task<Guid> UpdateSocialEvent(SocialEvent socialEvent)

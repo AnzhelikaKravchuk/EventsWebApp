@@ -12,12 +12,21 @@ const SocialEvents = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  const [itemsLoading, setItemsLoading] = useState(true);
 
   useEffect(() => {
-    GetSocialEvents(pageIndex, pageSize).then((res) => {
-      setItems(res.items.$values);
-      setTotalPages(res.totalPages);
-    });
+    const fetchEvents = async () => {
+      setItemsLoading(true);
+      return await GetSocialEvents(pageIndex, pageSize)
+        .then((res) => {
+          setItems(res.items.$values);
+          setTotalPages(res.totalPages);
+        })
+        .finally(() => {
+          setItemsLoading(false);
+        });
+    };
+    fetchEvents();
   }, [pageIndex, pageSize]);
 
   const handlePageClick = (event) => {
@@ -27,7 +36,7 @@ const SocialEvents = () => {
   return (
     <div>
       <NavLink to='/createEvent'>Create New Social Event</NavLink>
-      <Items currentItems={items} />
+      {!itemsLoading ? <Items currentItems={items} /> : 'Loading...'}
       <ReactPaginate
         breakLabel='...'
         nextLabel='next >'

@@ -1,4 +1,3 @@
-using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Server.Contracts
@@ -6,7 +5,7 @@ namespace EventsWebApp.Server.Contracts
     public record SocialEventResponse
     {
         public Guid Id { get; set; }
-        public string NameOfEvent { get; set; } = string.Empty;
+        public string EventName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Date { get; set; }
         public string Place { get; set; } = string.Empty;
@@ -27,7 +26,7 @@ namespace EventsWebApp.Server.Contracts
                                             string image)
         {
             Id = id;
-            NameOfEvent = name;
+            EventName = name;
             Description = description;
             Place = place;
             Date = date;

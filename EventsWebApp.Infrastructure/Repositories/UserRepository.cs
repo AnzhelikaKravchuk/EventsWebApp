@@ -36,11 +36,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
 
-        public async Task<Guid> Add(User user)
+        public async Task<User> Add(User user)
         { 
-            await _dbContext.Users.AddAsync(user);
+            var addedUser = _dbContext.Users.AddAsync(user).Result.Entity;
 
-            return user.Id;
+            return addedUser;
         }
 
         public async Task<Guid> Update(User user)
