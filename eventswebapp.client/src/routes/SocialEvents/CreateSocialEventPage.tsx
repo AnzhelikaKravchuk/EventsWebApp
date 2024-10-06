@@ -74,7 +74,7 @@ const CreateSocialEventPage = () => {
               name='place'
               id='place'
               type='text'
-              label='place'
+              label='Place'
               required
             />
           </Grid2>

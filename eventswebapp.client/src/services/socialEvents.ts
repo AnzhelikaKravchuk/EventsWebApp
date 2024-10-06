@@ -12,6 +12,7 @@ export async function GetSocialEvents(
   pageIndex: number,
   pageSize: number
 ): Promise<SocialEventsResponse> {
+  console.log(filters);
   const response = await axios.post(
     `https://localhost:7127/SocialEvents?pageIndex=${pageIndex}&pageSize=${pageSize}`,
     filters,

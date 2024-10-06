@@ -6,18 +6,20 @@ import EventPage from './EventPage';
 import { NavLink } from 'react-router-dom';
 import { GetSocialEvents } from '../../services/socialEvents';
 import Items from '../../components/Items/Items';
+import Filters from '../../components/Items/Filters';
 
 const SocialEvents = () => {
   const [items, setItems] = useState<Array<SocialEventModel>>([]);
+  const [filters, setFilters] = useState(new FormData());
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(2);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsLoading, setItemsLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
       setItemsLoading(true);
-      return await GetSocialEvents(pageIndex, pageSize)
+      return await GetSocialEvents(filters, pageIndex, pageSize)
         .then((res) => {
           setItems(res.items.$values);
           setTotalPages(res.totalPages);
@@ -27,7 +29,9 @@ const SocialEvents = () => {
         });
     };
     fetchEvents();
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, filters]);
+
+  useEffect(() => console.log(totalPages), [totalPages]);
 
   const handlePageClick = (event) => {
     setPageIndex(event.selected + 1);
@@ -37,11 +41,18 @@ const SocialEvents = () => {
     <div>
       <NavLink to='/createEvent'>Create New Social Event</NavLink>
       {!itemsLoading ? <Items currentItems={items} /> : 'Loading...'}
+      <Filters
+        pageSize={pageSize}
+        setItems={setItems}
+        setPages={setTotalPages}
+        setFilters={setFilters}
+        setPageIndex={setPageIndex}
+      />
       <ReactPaginate
         breakLabel='...'
         nextLabel='next >'
         onPageChange={handlePageClick}
-        pageRangeDisplayed={pageSize}
+        pageRangeDisplayed={totalPages}
         pageCount={totalPages}
         previousLabel='< previous'
         renderOnZeroPageCount={null}

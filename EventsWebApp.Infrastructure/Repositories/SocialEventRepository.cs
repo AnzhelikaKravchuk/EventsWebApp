@@ -55,21 +55,20 @@ namespace EventsWebApp.Infrastructure.Repositories
         {
             var a = filters.Date.IsNullOrEmpty();
             var b = filters.Category.IsNullOrEmpty();
-            var events = await _dbContext.SocialEvents
+            var allEvents = await _dbContext.SocialEvents
                                                     .Include(s => s.ListOfAttendees)
                                                     .AsNoTracking()
                                                     .Where(s => s.EventName.Contains(filters.Name ?? ""))
                                                     .Where(s => filters.Date.IsNullOrEmpty() || s.Date == DateTime.Parse(filters.Date).Date)
                                                     .Where(s => filters.Category.IsNullOrEmpty() || s.Category == (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), filters.Category))
                                                     .Where(s => s.Place.Contains(filters.Place ?? ""))
-                                                    .OrderBy(s => s.EventName)
-                                                    .Skip((pageIndex - 1) * pageSize)
-                                                    .Take(pageSize)
-                                                    .ToListAsync();
-            var count = await _dbContext.SocialEvents.CountAsync();
-            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+                                                    .OrderBy(s => s.EventName).ToListAsync();
+            
+            var onPageEvents = allEvents.Skip((pageIndex - 1) * pageSize)
+                                        .Take(pageSize).ToList();
+            var totalPages = (int)Math.Ceiling(allEvents.Count / (double)pageSize);
 
-            return new PaginatedList<SocialEvent>(events, pageIndex, totalPages);
+            return new PaginatedList<SocialEvent>(onPageEvents, pageIndex, totalPages);
         }
 
         public async Task<List<Attendee>> GetAllAttendeesByEventId(Guid id)
