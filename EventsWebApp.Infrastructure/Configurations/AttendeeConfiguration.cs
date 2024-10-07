@@ -13,6 +13,7 @@ namespace EventsWebApp.Infrastructure.Configurations
             builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
             builder.Property(x => x.Surname).HasMaxLength(100).IsRequired();
             builder.Property(x => x.DateOfBirth).IsRequired();
+            builder.Property(x => x.DateOfRegistration).IsRequired();
             builder.Property(x => x.Email).IsRequired();
             builder.HasOne(x => x.SocialEvent).WithMany(e => e.ListOfAttendees);
             builder.HasOne(x => x.User).WithMany();

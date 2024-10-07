@@ -28,6 +28,8 @@ namespace EventsWebApp.Tests.ControllersTests
             _webHostEnvironment = A.Fake<IWebHostEnvironment>();
         }
 
+
+        //-------------------------------GetEventById-----------------------
         [Fact]
         public async void SocialEventControllerTests_GetEventById_ReturnsOk()
         {
@@ -45,6 +47,7 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkObjectResult>();
         }
 
+        //-------------------------------GetAttendeesByEventId-----------------------
         [Fact]
         public async void SocialEventControllerTests_GetAttendeesByEventId_ReturnsOk()
         {
@@ -62,6 +65,8 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkObjectResult>();
         }
 
+
+        //-------------------------------GetSocialEvents-----------------------
         [Fact]
         public async void SocialEventControllerTests_GetSocialEvents_ReturnsOk()
         {
@@ -83,6 +88,8 @@ namespace EventsWebApp.Tests.ControllersTests
             var okResult =result.Should().BeOfType<OkObjectResult>();
         }
 
+
+        //-------------------------------CreateSocialEvent-----------------------
         [Fact]
         public async void SocialEventControllerTests_CreateSocialEvent_ReturnsOk()
         {
@@ -99,6 +106,7 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().NotBeNull();
             result.Should().BeOfType<OkObjectResult>();
         }
+
 
         [Fact]
         public async void SocialEventControllerTests_CreateSocialEvent_ReturnsOkWithImage()
@@ -127,6 +135,8 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkObjectResult>();
         }
 
+
+        //-------------------------------AddAttendee-----------------------
         [Fact]
         public async void SocialEventControllerTests_AddAttendee_ReturnsOk()
         {
@@ -149,6 +159,8 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkObjectResult>();
         }
 
+
+        //-------------------------------DeleteEvent-----------------------
         [Fact]
         public async void SocialEventControllerTests_DeleteEvent_ReturnsOk()
         {
@@ -165,6 +177,8 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkResult>();
         }
 
+
+        //-------------------------------UpdateEvent-----------------------
         [Fact]
         public async void SocialEventControllerTests_UpdateEvent_ReturnsOk()
         {
@@ -184,6 +198,8 @@ namespace EventsWebApp.Tests.ControllersTests
             result.Should().BeOfType<OkResult>();
         }
 
+
+        //-------------------------------Upload-----------------------
         [Fact]
         public async void SocialEventControllerTests_Upload_ReturnsOk()
         {

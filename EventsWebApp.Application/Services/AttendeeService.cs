@@ -3,7 +3,6 @@ using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
-using System.Security.Claims;
 using System.Text;
 
 namespace EventsWebApp.Application.Services
@@ -90,7 +89,6 @@ namespace EventsWebApp.Application.Services
 
             socialEvent.ListOfAttendees.Remove(attendee);
             await _appUnitOfWork.SocialEventRepository.Update(socialEvent);
-            //var deletedId = await _appUnitOfWork.AttendeeRepository.Delete(id);
 
             _appUnitOfWork.Save();
             return id;

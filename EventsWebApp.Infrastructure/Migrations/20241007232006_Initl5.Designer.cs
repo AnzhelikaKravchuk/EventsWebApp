@@ -4,6 +4,7 @@ using EventsWebApp.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventsWebApp.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241007232006_Initl5")]
+    partial class Initl5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,36 +68,36 @@ namespace EventsWebApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dc46dfad-3f56-4720-86d3-de1338a52793"),
+                            Id = new Guid("aa2f1447-103d-458d-a9c1-32882069366f"),
                             DateOfBirth = new DateTime(1960, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 49, 46, 542, DateTimeKind.Local).AddTicks(5227),
+                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 20, 6, 524, DateTimeKind.Local).AddTicks(382),
                             Email = "example@gmail.com",
                             Name = "Peter",
-                            SocialEventId = new Guid("7487e5ce-418b-4f53-a62b-86c47ccd0d9a"),
+                            SocialEventId = new Guid("e355bd39-7810-4216-99af-964912b659d2"),
                             Surname = "Parker",
-                            UserId = new Guid("71252927-119c-4cb2-8722-facff9e493d5")
+                            UserId = new Guid("ebec568a-f3ec-46c0-9e38-8deaf6a581e0")
                         },
                         new
                         {
-                            Id = new Guid("81efed88-0d98-4d30-825d-8d58fb85ac72"),
+                            Id = new Guid("e6618266-a95a-412c-9e64-f3adec53b14b"),
                             DateOfBirth = new DateTime(1980, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 49, 46, 542, DateTimeKind.Local).AddTicks(5250),
+                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 20, 6, 524, DateTimeKind.Local).AddTicks(412),
                             Email = "great@gmail.com",
                             Name = "Bruce",
-                            SocialEventId = new Guid("78943cc5-b0f5-49cb-92b7-a1e07d99eb2c"),
+                            SocialEventId = new Guid("e7b2ffc0-6895-4368-ab01-40f8debc7593"),
                             Surname = "Banner",
-                            UserId = new Guid("879acf08-83f9-44d7-8447-eaa203dc8ff8")
+                            UserId = new Guid("5d5d1024-5b7c-43d7-bbcc-685fe6a5d4c1")
                         },
                         new
                         {
-                            Id = new Guid("c65e796f-5133-49a0-b519-52382a27e868"),
+                            Id = new Guid("03663ce6-895e-4098-bb67-17e3cd2e1237"),
                             DateOfBirth = new DateTime(1990, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 49, 46, 542, DateTimeKind.Local).AddTicks(5256),
+                            DateOfRegistration = new DateTime(2024, 10, 8, 2, 20, 6, 524, DateTimeKind.Local).AddTicks(418),
                             Email = "great@gmail.com",
                             Name = "Clark",
-                            SocialEventId = new Guid("242c723e-fc49-43ef-9dd4-4a82a6457770"),
+                            SocialEventId = new Guid("0117d2b8-c515-43f8-9a5c-d4b5640dfb80"),
                             Surname = "Kent",
-                            UserId = new Guid("11a368e8-3acf-4b8f-a82a-a2e6841ee4c1")
+                            UserId = new Guid("b58923bc-c002-422f-a751-5e5eeb3bb068")
                         });
                 });
 
@@ -138,133 +141,133 @@ namespace EventsWebApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7487e5ce-418b-4f53-a62b-86c47ccd0d9a"),
+                            Id = new Guid("e355bd39-7810-4216-99af-964912b659d2"),
                             Category = 6,
                             Date = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A fun-filled trivia night where teams compete to answer questions across various categories. Great prizes await the winners!",
                             EventName = "Trivia Night Extravaganza",
-                            Image = "images\\dc7ea763-8d70-43d5-bf36-c05242b31029-изображение_2024-10-08_024226418.png",
+                            Image = "",
                             MaxAttendee = 1,
                             Place = "Minsk"
                         },
                         new
                         {
-                            Id = new Guid("78943cc5-b0f5-49cb-92b7-a1e07d99eb2c"),
+                            Id = new Guid("e7b2ffc0-6895-4368-ab01-40f8debc7593"),
                             Category = 2,
                             Date = new DateTime(2025, 10, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A comprehensive conference focused on the latest trends and techniques in digital marketing, featuring expert speakers and interactive sessions.",
                             EventName = "Marketing Strategies Conference",
-                            Image = "images\\af73310b-bd4a-4731-a052-5c19865f4c7a-изображение_2024-10-08_023853621.png",
+                            Image = "",
                             MaxAttendee = 2,
                             Place = "Gomel"
                         },
                         new
                         {
-                            Id = new Guid("242c723e-fc49-43ef-9dd4-4a82a6457770"),
+                            Id = new Guid("0117d2b8-c515-43f8-9a5c-d4b5640dfb80"),
                             Category = 3,
                             Date = new DateTime(2025, 11, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An exciting convention showcasing the latest technology and innovations. Meet industry leaders, attend panel discussions, and explore cutting-edge products.",
                             EventName = "Tech Innovations Convention",
-                            Image = "images\\2c3a971f-0bfc-4dda-9675-ed75d7d07db5-изображение_2024-10-08_024255264.png",
+                            Image = "",
                             MaxAttendee = 20,
                             Place = "Gomel"
                         },
                         new
                         {
-                            Id = new Guid("5e2d9347-8a95-49d2-b58b-28adeeb0d21e"),
+                            Id = new Guid("8a554725-b634-42aa-b817-12548fb666c8"),
                             Category = 5,
                             Date = new DateTime(2025, 12, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An interactive Q&A session with financial experts who will provide insights on personal finance management, investment strategies, and wealth building.",
                             EventName = "Financial Freedom Q&A Session",
-                            Image = "images\\fcefd765-202c-433b-b98c-b03065d019a5-изображение_2024-10-08_024038630.png",
+                            Image = "",
                             MaxAttendee = 50,
                             Place = "Polotsk"
                         },
                         new
                         {
-                            Id = new Guid("fd600952-f8e6-4a73-a346-9a70ac0fbabe"),
+                            Id = new Guid("99305762-280e-498f-9934-bb7e43563622"),
                             Category = 4,
                             Date = new DateTime(2025, 1, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A lecture by a renowned art historian covering the evolution and impact of modern art movements in the 20th and 21st centuries.",
                             EventName = "Modern Art Lecture",
-                            Image = "images\\be1df92e-4250-4ce7-8d3e-b82b1a3ea6fe-изображение_2024-10-08_024330991.png",
+                            Image = "",
                             MaxAttendee = 20,
                             Place = "Mogilev"
                         },
                         new
                         {
-                            Id = new Guid("3582f285-5166-451d-be8b-3d151f61c07b"),
+                            Id = new Guid("d71ef3e9-92a5-4014-89ad-468e6686cf6a"),
                             Category = 1,
                             Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A masterclass led by a successful entrepreneur, sharing insights on how to start and grow a business, including tips on funding, marketing, and scaling.",
                             EventName = "Entrepreneurship MasterClass",
-                            Image = "images\\4b4fd120-0fce-49ef-b9fb-178c5eba4f72-изображение_2024-10-08_024111696.png",
+                            Image = "",
                             MaxAttendee = 55,
                             Place = "Vitebsk"
                         },
                         new
                         {
-                            Id = new Guid("aa3a61ec-8f2f-4bec-a7d9-380bf68cb047"),
+                            Id = new Guid("16e94dac-13c1-4b12-bc38-bf16dc5e97af"),
                             Category = 2,
                             Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A conference discussing the impact of climate change, featuring experts from environmental science, policy-making, and sustainable practices.",
                             EventName = "Climate Change Conference",
-                            Image = "images\\d57d7aba-fa51-48f8-bc13-8a250489e219-изображение_2024-10-08_024142528.png",
+                            Image = "",
                             MaxAttendee = 100,
                             Place = "Brest"
                         },
                         new
                         {
-                            Id = new Guid("7436896f-e363-4890-a67d-d151a498c0f4"),
+                            Id = new Guid("12fe139e-ceb0-46fa-ac9c-052fcdb07500"),
                             Category = 4,
                             Date = new DateTime(2025, 10, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A lecture by a health expert on holistic wellness practices, covering topics like nutrition, mental health, and exercise for a balanced lifestyle.",
                             EventName = "Health & Wellness Lecture",
-                            Image = "images\\e4343661-d697-49ed-bf9c-cb10a4ec7cf4-изображение_2024-10-08_023959172.png",
+                            Image = "",
                             MaxAttendee = 10,
                             Place = "Grodno"
                         },
                         new
                         {
-                            Id = new Guid("58295261-1669-4981-977d-7e15440efa52"),
+                            Id = new Guid("ca175e55-d602-42fb-b2b4-7dc405e04a7d"),
                             Category = 1,
                             Date = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A hands-on masterclass with a professional photographer, focusing on advanced techniques in portrait and landscape photography.",
                             EventName = "Photography MasterClass",
-                            Image = "images\\ac7044ab-c598-42c0-8624-e5a8f157624b-изображение_2024-10-08_024317048.png",
+                            Image = "",
                             MaxAttendee = 30,
                             Place = "Minsk"
                         },
                         new
                         {
-                            Id = new Guid("b2111853-c49d-4606-adb6-1e029ebb304d"),
+                            Id = new Guid("47a67a9a-5e9e-43c4-84e7-1645752ee74d"),
                             Category = 3,
                             Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A convention designed for professionals looking to enhance their leadership skills, featuring workshops, panel discussions, and keynote speeches by industry leaders.",
                             EventName = "Leadership Development Convention",
-                            Image = "images\\2f85a33e-04a7-42c9-9974-67b033c66d6f-изображение_2024-10-08_023935489.png",
+                            Image = "",
                             MaxAttendee = 50,
                             Place = "Minsk"
                         },
                         new
                         {
-                            Id = new Guid("097c029b-53c9-460d-9b7f-e1978a42ef78"),
+                            Id = new Guid("af2d76eb-d68d-40f5-b603-be42e19535f3"),
                             Category = 6,
                             Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A high-energy, outdoor fitness session led by a professional trainer. Suitable for all fitness levels.",
                             EventName = "Fitness Boot Camp",
-                            Image = "images\\2006cffb-cd31-4fc8-ad90-1e20452dc255-изображение_2024-10-08_024022180.png",
+                            Image = "",
                             MaxAttendee = 11,
                             Place = "Polotsk"
                         },
                         new
                         {
-                            Id = new Guid("7c3eff58-b71b-4e32-86e6-8a5255f2e4c8"),
+                            Id = new Guid("6b093954-45f3-40a4-8f85-a22eda54bec5"),
                             Category = 6,
                             Date = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A monthly book club meeting to discuss the chosen book. Enjoy lively discussions, snacks, and a chance to meet fellow book enthusiasts",
                             EventName = "Book Club Gathering",
-                            Image = "images\\0dcc6bce-65ee-4555-8495-5b9b8f7e8fc0-изображение_2024-10-08_024204332.png",
+                            Image = "",
                             MaxAttendee = 10,
                             Place = "Vitebsk"
                         });
@@ -308,27 +311,27 @@ namespace EventsWebApp.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("71252927-119c-4cb2-8722-facff9e493d5"),
+                            Id = new Guid("ebec568a-f3ec-46c0-9e38-8deaf6a581e0"),
                             Email = "example@gmail.com",
-                            PasswordHash = "$2a$11$9G6W9TMbak.tEln.2UZs.eV7wijqdbsfGi0bxQXbTvHATlNxvplBW",
+                            PasswordHash = "$2a$11$G/glNmIWbUDDTKwThLNvbuvCv.4Cu.Rt8euoJVrGffWcOu0csnYt.",
                             RefreshToken = "",
                             Role = "User",
                             Username = "Jake"
                         },
                         new
                         {
-                            Id = new Guid("879acf08-83f9-44d7-8447-eaa203dc8ff8"),
+                            Id = new Guid("5d5d1024-5b7c-43d7-bbcc-685fe6a5d4c1"),
                             Email = "admin@gmail.com",
-                            PasswordHash = "$2a$11$JIQLxNwlInQ0HUvMbQQsDOKY5jbdfWXPmkZeH6iH5uZ/WUiKPea4m",
+                            PasswordHash = "$2a$11$FSYBbB6WwzissusHth7lIeVQS63Of.nJ59XIJ0bnemQ8t7DjsGgXm",
                             RefreshToken = "",
                             Role = "Admin",
                             Username = "Mark"
                         },
                         new
                         {
-                            Id = new Guid("11a368e8-3acf-4b8f-a82a-a2e6841ee4c1"),
+                            Id = new Guid("b58923bc-c002-422f-a751-5e5eeb3bb068"),
                             Email = "great@gmail.com",
-                            PasswordHash = "$2a$11$PWLX6tR4Eq8pw657iF8eAep19WYQ5S4qXBzPGuZV62pwBSN.TRDtW",
+                            PasswordHash = "$2a$11$DmTeCkbVNtxPhQyLOgXXf.q2DR4SjVu7lp0nOk4lrvFozTC3GmJ1e",
                             RefreshToken = "",
                             Role = "User",
                             Username = "Victor"

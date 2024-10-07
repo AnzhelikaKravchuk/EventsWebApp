@@ -2,11 +2,11 @@
 {
     public class User
     {
-        public Guid Id { get; private set; }
-        public string Email { get; private set; } = string.Empty;
-        public string PasswordHash { get; private set; } = string.Empty;
-        public string Username { get; private set; } = string.Empty;
-        public string Role { get; private set; } = string.Empty;
+        public Guid Id { get;  set; }
+        public string Email { get;  set; } = string.Empty;
+        public string PasswordHash { get;  set; } = string.Empty;
+        public string Username { get;  set; } = string.Empty;
+        public string Role { get;  set; } = string.Empty;
         public string? RefreshToken { get;  set; } = string.Empty;
         public DateTime? ExpiresRefreshToken { get;  set; } 
 
