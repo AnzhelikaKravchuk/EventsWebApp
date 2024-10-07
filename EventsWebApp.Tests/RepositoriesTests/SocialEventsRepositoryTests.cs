@@ -46,12 +46,15 @@ namespace EventsWebApp.Tests.RepositoriesTests
         [Fact]
         public async void SocialEventsRepository_GetById_ReturnsSocialEvent()
         {
+            //Arrange
             Guid id = Guid.Parse("6B29FC40-CA47-1067-B31D-00DD010662DA");
             var context = await GetDatabaseContext();
             var socialEventsRepository = new SocialEventRepository(context);
 
+            //Act
             var result = await socialEventsRepository.GetById(id);
 
+            //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<SocialEvent>();
             result.Id.Should().Be(id);
@@ -60,12 +63,15 @@ namespace EventsWebApp.Tests.RepositoriesTests
         [Fact]
         public async void SocialEventsRepository_GetById_ReturnNull()
         {
+            //Arrange
             Guid id = Guid.Parse("12345689-1234-1234-1234-1234567890DA");
             var context = await GetDatabaseContext();
             var socialEventsRepository = new SocialEventRepository(context);
 
+            //Act
             var result = await socialEventsRepository.GetById(id);
 
+            //Assert
             result.Should().BeNull();
         }
 
@@ -73,6 +79,7 @@ namespace EventsWebApp.Tests.RepositoriesTests
         [Fact]
         public async void SocialEventsRepository_Add_ReturnsSocialEventId()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -87,11 +94,13 @@ namespace EventsWebApp.Tests.RepositoriesTests
             };
             var context = await GetDatabaseContext();
             var socialEventsRepository = new SocialEventRepository(context);
-
+            
+            //Act
             var id = await socialEventsRepository.Add(socialEvent);
             await context.SaveChangesAsync();
             var result = await socialEventsRepository.GetById(id);
 
+            //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<SocialEvent>();
             result.Id.Should().Be(id);

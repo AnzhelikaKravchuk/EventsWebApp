@@ -51,9 +51,9 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var socialEvents = await _socialEventService.GetSocialEvents(filters,pageIndex, pageSize);
+            var socialEvents = await _socialEventService.GetSocialEvents(filters, pageIndex, pageSize);
             var responseList = new PaginatedList<SocialEventResponse>(null, socialEvents.PageIndex, socialEvents.TotalPages);
-            responseList.Items = socialEvents.Items.Select(s => _mapper.Map<SocialEventResponse>(s)).ToList();
+            responseList.Items = socialEvents.Items.ConvertAll(_mapper.Map<SocialEventResponse>).ToList();
             return Ok(responseList);
         }
 

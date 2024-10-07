@@ -31,7 +31,6 @@ namespace EventsWebApp.Server.Mapper
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.ToString()))
                 .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
-                //MAP TO CORRECT ATTENDEE IN LIST
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.MapFrom(src => src.ListOfAttendees))
                 ;
 

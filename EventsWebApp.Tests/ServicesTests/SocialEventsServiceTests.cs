@@ -33,6 +33,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_GetSocialEvents_ReturnsPaginatedListSocialEvent()
         {
+            //Arrange
             int pageIndex = 10;
             int pageSize = 10;
             var socialEvents = new PaginatedList<SocialEvent>();
@@ -40,8 +41,10 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetSocialEvents(appliedFilters, pageIndex, pageSize)).Returns(socialEvents);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var list = await socialEventService.GetSocialEvents(appliedFilters, pageIndex, pageSize);
 
+            //Assert
             list.Should().NotBeNull();
             list.Should().BeOfType<PaginatedList<SocialEvent>>();
         }
@@ -50,13 +53,16 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_GetSocialEventById_ReturnsSocialEvent()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             var socialEvent = new SocialEvent();
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var entity = await socialEventService.GetSocialEventById(id);
 
+            //Assert
             entity.Should().NotBeNull();
             entity.Should().BeOfType<SocialEvent>();
         }
@@ -64,13 +70,16 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_GetSocialEventById_ThrowsException()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             SocialEvent socialEvent = null;
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var exception = await Assert.ThrowsAsync<Exception>(() => socialEventService.GetSocialEventById(id));
 
+            //Assert
             exception.Should().NotBeNull();
             exception.Message.Should().Be("No social event was found");
         }
@@ -80,6 +89,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_GetAttendeesById_ReturnsAttendeesList()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             SocialEvent socialEvent = new SocialEvent
             {
@@ -96,21 +106,26 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var list = await socialEventService.GetAttendeesById(id);
 
+            //Assert
             list.Should().NotBeNull();
             list.Should().BeOfType<List<Attendee>>();
         }
 
         public async void SocialEventsServiceTests_GetAttendeesById_ThrowsException()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             SocialEvent socialEvent = null;
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var exception = await Assert.ThrowsAsync<Exception>(() => socialEventService.GetAttendeesById(id));
 
+            //Assert
             exception.Should().NotBeNull();
             exception.Message.Should().Be("No social event was found");
         }
@@ -119,6 +134,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_CreateSocialEvent_ReturnsId()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -135,8 +151,10 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.Add(socialEvent)).Returns(socialEvent.Id);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var id = await socialEventService.CreateSocialEvent(socialEvent);
 
+            //Assert
             id.Should().NotBeEmpty();
             id.Should().Be(socialEvent.Id);
         }
@@ -145,6 +163,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_UpdateSocialEvent_ReturnsId()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -173,8 +192,10 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.Update(updatedEvent)).Returns(updatedEvent.Id);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var id = await socialEventService.UpdateSocialEvent(updatedEvent);
 
+            //Assert
             id.Should().NotBeEmpty();
             id.Should().Be(socialEvent.Id);
         }
@@ -182,6 +203,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_UpdateSocialEvent_ThrowsException()
         {
+            //Arrange
             SocialEvent socialEvent = null;
             SocialEvent updatedEvent = new SocialEvent
             {
@@ -198,8 +220,10 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(updatedEvent.Id)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var exception = await Assert.ThrowsAsync<Exception>(() => socialEventService.UpdateSocialEvent(updatedEvent));
 
+            //Assert
             exception.Should().NotBeNull();
             exception.Message.Should().Be("No social event found found");
         }
@@ -209,13 +233,16 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_DeleteSocialEvent_ReturnsId()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             int rowsDeleted = 1;
             A.CallTo(() => _unitOfWork.SocialEventRepository.Delete(id)).Returns(rowsDeleted);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var result = await socialEventService.DeleteSocialEvent(id);
 
+            //Assert
             result.Should().NotBeEmpty();
             result.Should().Be(id);
         }
@@ -223,13 +250,16 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_DeleteSocialEvent_ThrowsException()
         {
+            //Arrange
             Guid id = Guid.NewGuid();
             int rowsDeleted = 0;
             A.CallTo(() => _unitOfWork.SocialEventRepository.Delete(id)).Returns(rowsDeleted);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var result = await Assert.ThrowsAsync<Exception>(() => socialEventService.DeleteSocialEvent(id));
 
+            //Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("Social event wasn't deleted");
         }
@@ -239,6 +269,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEvent_ReturnsId()
         {
+            //Arrange
             Guid userId = Guid.NewGuid();
             Guid attendeeId = Guid.NewGuid();
             SocialEvent socialEvent = new SocialEvent
@@ -260,9 +291,11 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
             A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendee);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
-
+            
+            //Act
             var result = await socialEventService.AddAttendeeToEvent(socialEvent.Id, attendee, userId);
-
+            
+            //Assert
             result.Should().NotBeEmpty();
             result.Should().Be(attendeeId);
         }
@@ -270,6 +303,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEvent_ThrowsExceptionSocialEvent()
         {
+            //Arrange
             Guid userId = Guid.NewGuid();
             Guid socialEventId = Guid.NewGuid();
             SocialEvent socialEvent = null;
@@ -277,14 +311,17 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEventId)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var result = await Assert.ThrowsAsync<Exception>(() => socialEventService.AddAttendeeToEvent(socialEventId, attendee, userId));
 
+            //Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("No social event was found");
         }
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEvent_ThrowsExceptionAttendeeExists()
         {
+            //Arrange
             Guid userId = Guid.NewGuid();
             Attendee attendee = new Attendee("Test", "Testoviy", "ex@gmail.com", DateTime.Now.AddDays(-1), DateTime.Now, null, null);
             SocialEvent socialEvent = new SocialEvent
@@ -305,8 +342,10 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(attendee);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
+            //Act
             var result = await Assert.ThrowsAsync<Exception>(() => socialEventService.AddAttendeeToEvent(socialEvent.Id, attendee, userId));
 
+            //Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("This attendee already in the list");
         }
@@ -314,6 +353,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEvent_ThrowsExceptionMaxAttendeesReached()
         {
+            //Arrange
             Guid userId = Guid.NewGuid();
             Attendee attendee = new Attendee("Test", "Testoviy", "ex@gmail.com", DateTime.Now.AddDays(-1), DateTime.Now, null, null);
             SocialEvent socialEvent = new SocialEvent
@@ -332,9 +372,11 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEvent.Id)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
-
+            
+            //Act
             var result = await Assert.ThrowsAsync<Exception>(() => socialEventService.AddAttendeeToEvent(socialEvent.Id, attendee, userId));
 
+            //Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("Max attendee number reached");
         }
@@ -344,6 +386,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEventWithToken_ReturnsId()
         {
+            //Arrange
             string accessToken = string.Empty;
             Guid userId = Guid.NewGuid();
             Guid attendeeId = Guid.NewGuid();
@@ -368,9 +411,11 @@ namespace EventsWebApp.Tests.ServicesTests
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
             A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendee);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
-
+            
+            //Act
             var result = await socialEventService.AddAttendeeToEventWithToken(socialEvent.Id, attendee, accessToken);
-
+            
+            //Assert
             result.Should().NotBeEmpty();
             result.Should().Be(attendeeId);
         }
@@ -378,6 +423,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public async void SocialEventsServiceTests_AddAttendeeToEventWithToken_ThrowsException()
         {
+            //Arrange
             string accessToken = string.Empty;
             Guid userId = Guid.NewGuid();
             Guid attendeeId = Guid.NewGuid();
@@ -399,9 +445,11 @@ namespace EventsWebApp.Tests.ServicesTests
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
-
+            
+            //Act
             var result = await Assert.ThrowsAsync<Exception>(() => socialEventService.AddAttendeeToEventWithToken(socialEvent.Id, attendee, accessToken));
 
+            //Assert
             result.Should().NotBeNull();
             result.Message.Should().Be("Invalid token");
         }
@@ -410,17 +458,20 @@ namespace EventsWebApp.Tests.ServicesTests
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_Exists()
         {
+            //Arrange
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
-
+            
+            //Act
             MethodInfo method = typeof(SocialEventService).GetMethod("ValidateSocialEvent", BindingFlags.NonPublic
                                                                                             | BindingFlags.Instance);
-
+            //Assert
             method.Should().NotBeNull();
         }
 
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_IsValid()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -437,9 +488,10 @@ namespace EventsWebApp.Tests.ServicesTests
 
             MethodInfo method = typeof(SocialEventService).GetMethod("ValidateSocialEvent", BindingFlags.NonPublic
                                                                                             | BindingFlags.Instance);
-
+            //Act
             method.Invoke(socialEventService, [socialEvent]);
 
+            //Assert
             Assert.True(true);
         }
 
@@ -449,6 +501,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(-1000)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidDate(int days)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -461,12 +514,14 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Date' must be greater");
         }
 
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidEventName()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -479,7 +534,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Event Name' must not be empty");
         }
 
@@ -489,6 +544,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(10000)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidLength(int length)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -501,13 +557,14 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "The length of 'Event Name' must be 100 characters or fewer.");
         }
 
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidDescription()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -520,7 +577,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Description' must not be empty");
         }
 
@@ -530,6 +587,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(100_000)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionMaxDescription(int length)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -542,13 +600,14 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "The length of 'Description' must be 1000 characters or fewer.");
         }
 
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidCategory()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -561,13 +620,14 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Category' must not be empty");
         }
 
         [Fact]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionInvalidPlace()
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -580,7 +640,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Place' must not be empty");
         }
 
@@ -590,6 +650,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(10000)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionMaxLength(int length)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -602,7 +663,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 Image = "image.png",
                 ListOfAttendees = new List<Attendee>()
             };
-
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "The length of 'Place' must be 100 characters or fewer.");
         }
 
@@ -613,6 +674,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(-10000)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionGreaterThanZero(int maxAttendee)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -626,6 +688,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 ListOfAttendees = new List<Attendee>()
             };
 
+            //Act - Assert
             ValidateSocialEvent_HelperFunction(socialEvent, "'Max Attendee' must be greater");
         }
 
@@ -635,6 +698,7 @@ namespace EventsWebApp.Tests.ServicesTests
         [InlineData(1000001)]
         public void SocialEventsServiceTests_ValidateSocialEvent_ThrowsExceptionLowerThan(int maxAttendee)
         {
+            //Arrange
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -653,13 +717,16 @@ namespace EventsWebApp.Tests.ServicesTests
 
         private void ValidateSocialEvent_HelperFunction(SocialEvent socialEvent, string message)
         {
+            //Arrange
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _validator);
 
             MethodInfo method = typeof(SocialEventService).GetMethod("ValidateSocialEvent", BindingFlags.NonPublic
                                                                                             | BindingFlags.Instance);
 
+            //Act
             var exception = Assert.Throws<TargetInvocationException>(() => method.Invoke(socialEventService, [socialEvent]));
 
+            //Assert
             exception.Should().NotBeNull();
             exception.InnerException.Message.Should().Contain(message);
         }
