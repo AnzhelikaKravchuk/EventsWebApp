@@ -26,7 +26,7 @@ export interface SocialEventModel {
   eventName: string;
   description: string;
   place: string;
-  date: Date;
+  date: string;
   category: string;
   maxAttendee: number;
   listOfAttendees: Array<AttendeeModel>;

@@ -27,7 +27,7 @@ namespace EventsWebApp.Server.Mapper
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString()))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("o")))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.ToString()))
                 .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))

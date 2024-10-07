@@ -8,16 +8,25 @@ import { GetSocialEvents } from '../../services/socialEvents';
 import Items from '../../components/Items/Items';
 import Filters from '../../components/Items/Filters';
 import { useAuth } from '../../hooks/useAuth';
-import { Drawer, Grid2, Toolbar } from '@mui/material';
+import {
+  BottomNavigation,
+  Button,
+  Container,
+  Drawer,
+  Grid2,
+  Pagination,
+  Toolbar,
+} from '@mui/material';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 const drawerWidth = 500;
+const pageSize = 8;
 
 const SocialEvents = () => {
   const { role } = useAuth();
   const [items, setItems] = useState<Array<SocialEventModel>>([]);
   const [filters, setFilters] = useState(new FormData());
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsLoading, setItemsLoading] = useState(true);
 
@@ -26,6 +35,7 @@ const SocialEvents = () => {
       setItemsLoading(true);
       return await GetSocialEvents(filters, pageIndex, pageSize)
         .then((res) => {
+          console.log('dermo', res.totalPages);
           setItems(res.items.$values);
           setTotalPages(res.totalPages);
         })
@@ -34,50 +44,57 @@ const SocialEvents = () => {
         });
     };
     fetchEvents();
-  }, [pageIndex, pageSize, filters]);
+  }, [pageIndex, filters]);
 
   useEffect(() => console.log(totalPages), [totalPages]);
 
-  const handlePageClick = (event) => {
-    setPageIndex(event.selected + 1);
+  const handlePageClick = (event: unknown, value: number) => {
+    setPageIndex(value);
   };
 
   return (
-    <>
-      <NavLink hidden={role !== Role.Admin} to='/createEvent'>
-        Create New Social Event
-      </NavLink>
+    <Grid2
+      container
+      direction={'column'}
+      justifyContent={'space-between'}
+      alignItems={'center'}
+      sx={{ height: '90vh' }}>
+      <Container maxWidth='xl'>
+        <NavLink hidden={role !== Role.Admin} to='/createEvent'>
+          Create New Social Event
+        </NavLink>
 
-      {!itemsLoading ? <Items currentItems={items} /> : 'Loading...'}
-      <Drawer
-        variant='permanent'
-        anchor='right'
-        sx={{
-          width: drawerWidth,
-          '& .MuiDrawer-paper': {
+        {!itemsLoading ? (
+          <Items currentItems={items} drawerWidth={drawerWidth} />
+        ) : (
+          'Loading...'
+        )}
+        <Drawer
+          variant='permanent'
+          anchor='right'
+          sx={{
             width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}>
-        <Toolbar />
-        <Filters
-          pageSize={pageSize}
-          setItems={setItems}
-          setPages={setTotalPages}
-          setFilters={setFilters}
-          setPageIndex={setPageIndex}
-        />
-      </Drawer>
-      <ReactPaginate
-        breakLabel='...'
-        nextLabel='next >'
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={totalPages}
-        pageCount={totalPages}
-        previousLabel='< previous'
-        renderOnZeroPageCount={null}
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+            },
+          }}>
+          <Toolbar />
+          <Filters
+            pageSize={pageSize}
+            setItems={setItems}
+            setPages={setTotalPages}
+            setFilters={setFilters}
+            setPageIndex={setPageIndex}
+          />
+        </Drawer>
+      </Container>
+      <Pagination
+        count={totalPages}
+        onChange={handlePageClick}
+        sx={{ mr: 50 }}
       />
-    </>
+    </Grid2>
   );
 };
 

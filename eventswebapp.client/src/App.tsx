@@ -30,7 +30,7 @@ function App() {
               }
             />
             <Route
-              path='eventPage'
+              path='eventPage/:id'
               element={
                 <ProtectedRoute allowedRoles={[Role.User, Role.Admin]}>
                   <EventPage />
