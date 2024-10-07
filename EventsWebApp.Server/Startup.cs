@@ -12,6 +12,8 @@ using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
+using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Application.Interfaces.Services;
 
 namespace EventsWebApp.Server
 {
@@ -51,10 +53,10 @@ namespace EventsWebApp.Server
             services.AddScoped<SocialEventValidator>();
             services.AddScoped<AttendeeValidator>();
 
-            services.AddScoped<UserService>();
-            services.AddScoped<SocialEventService>();
-            services.AddScoped<AttendeeService>();
-            services.AddScoped<ImageService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISocialEventService, SocialEventService>();
+            services.AddScoped<IAttendeeService, AttendeeService>();
+            services.AddScoped<IImageService, ImageService>();
 
             services.AddApiAuthentication(Configuration);
 

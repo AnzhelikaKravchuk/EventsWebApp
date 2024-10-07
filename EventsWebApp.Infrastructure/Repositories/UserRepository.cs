@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

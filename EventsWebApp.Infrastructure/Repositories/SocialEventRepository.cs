@@ -1,11 +1,10 @@
 ﻿using EventsWebApp.Application.Filters;
-using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {
@@ -23,38 +22,8 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvent;
         }
 
-        public async Task<List<SocialEvent>> GetByName(string name)
-        {
-            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.EventName.Contains(name)).AsNoTracking().ToListAsync();
-
-            return socialEvents;
-        }
-
-        public async Task<List<SocialEvent>> GetByDate(DateTime date)
-        {
-            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Date.Date == date.Date).AsNoTracking().ToListAsync();
-
-            return socialEvents;
-        }
-
-        public async Task<List<SocialEvent>> GetByCategory(E_SocialEventCategory category)
-        {
-            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Category == category).AsNoTracking().ToListAsync();
-
-            return socialEvents;
-        }
-
-        public async Task<List<SocialEvent>> GetByPlace(string place)
-        {
-            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).Where(x => x.Place.Contains(place)).AsNoTracking().ToListAsync();
-
-            return socialEvents;
-        }
-
         public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize)
         {
-            var a = filters.Date.IsNullOrEmpty();
-            var b = filters.Category.IsNullOrEmpty();
             var allEvents = await _dbContext.SocialEvents
                                                     .Include(s => s.ListOfAttendees)
                                                     .AsNoTracking()
@@ -71,33 +40,6 @@ namespace EventsWebApp.Infrastructure.Repositories
             return new PaginatedList<SocialEvent>(onPageEvents, pageIndex, totalPages);
         }
 
-        public async Task<List<Attendee>> GetAllAttendeesByEventId(Guid id)
-        {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
-            if (socialEvent == null)
-            {
-                throw new Exception("No event was found");
-            }
-            return socialEvent.ListOfAttendees;
-        }
-
-        //REFACTOR
-        public async Task<Attendee> GetAttendeeById(Guid socialEventId, Guid attendeeId)
-        {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
-            if (socialEvent == null)
-            {
-                throw new Exception("No event was found");
-            }
-            var attendeeList = socialEvent.ListOfAttendees;
-            if(attendeeList == null)
-            {
-                throw new Exception("Attendee list is empty");
-            }
-            var attendee = attendeeList.FirstOrDefault(a => a.Id == attendeeId);
-
-            return attendee;
-        }
 
         public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail)
         {
@@ -118,9 +60,9 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<Guid> Add(SocialEvent socialEvent)
         {
-            await _dbContext.SocialEvents.AddAsync(socialEvent);
+            var entity = await _dbContext.SocialEvents.AddAsync(socialEvent);
 
-            return socialEvent.Id;
+            return entity.Entity.Id;
         }
 
         public async Task<Guid> Update(SocialEvent socialEvent)
@@ -139,35 +81,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvent.Id;
         }
 
-        public async Task<Guid> AddAttendee(Guid socialEventId, Attendee attendee)
+        public async Task<int> Delete(Guid id)
         {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
+            int rowsDeleted = await _dbContext.SocialEvents.Where(x => x.Id == id).ExecuteDeleteAsync();
 
-            if (socialEvent == null)
-            {
-                throw new Exception("No event was found");
-            }
-
-            var attendeesList = socialEvent.ListOfAttendees;
-            if (attendeesList != null && attendeesList.Count + 1 > socialEvent.MaxAttendee)
-            {
-                throw new Exception("Max attendee number reached");
-            }
-
-            if (attendeesList == null)
-            {
-                attendeesList = new List<Attendee>();
-            }
-            attendeesList.Add(attendee);
-
-            return socialEventId;
-        }
-
-        public async Task<Guid> Delete(Guid id)
-        {
-            await _dbContext.SocialEvents.Where(x => x.Id == id).ExecuteDeleteAsync();
-
-            return id;
+            return rowsDeleted;
         }
     }
 }

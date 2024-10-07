@@ -1,4 +1,5 @@
 using AutoMapper;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Contracts;
@@ -13,10 +14,10 @@ namespace EventsWebApp.Server.Controllers
     [Route("[controller]")]
     public class AttendeeController : ControllerBase    
     {
-        private readonly AttendeeService _attendeeService;
+        private readonly IAttendeeService _attendeeService;
         private readonly IMapper _mapper;
 
-        public AttendeeController(AttendeeService attendeeService, IMapper mapper)
+        public AttendeeController(IAttendeeService attendeeService, IMapper mapper)
         {
             _attendeeService = attendeeService;
             _mapper = mapper;
@@ -31,16 +32,6 @@ namespace EventsWebApp.Server.Controllers
 
             var responseList = attendees.Select(_mapper.Map<AttendeeResponse>).ToList();
             return Ok(responseList);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId)
-        {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
-            var attendee = _mapper.Map<Attendee>(request);
-            attendee.DateOfRegistration = DateTime.Now.Date;
-            var attendees = await _attendeeService.AddAttendeeToEventWithToken(attendee, eventId, accessToken);
-            return Ok(attendees);
         }
 
         [HttpDelete]

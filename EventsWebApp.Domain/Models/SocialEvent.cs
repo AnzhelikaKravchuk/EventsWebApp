@@ -4,13 +4,13 @@ namespace EventsWebApp.Domain.Models
 {
     public class SocialEvent
     {
-        public Guid Id { get; private set; }
-        public string EventName { get; private set; } = string.Empty;
-        public string Description { get; private set; } = string.Empty;
-        public DateTime Date { get; private set; }
-        public string Place { get; private set; } = string.Empty;
-        public E_SocialEventCategory Category { get; private set; }
-        public int MaxAttendee { get; private set; }
+        public Guid Id { get;  set; }
+        public string EventName { get;  set; } = string.Empty;
+        public string Description { get;  set; } = string.Empty;
+        public DateTime Date { get;  set; }
+        public string Place { get;  set; } = string.Empty;
+        public E_SocialEventCategory Category { get;  set; }
+        public int MaxAttendee { get;  set; }
         public List<Attendee> ListOfAttendees { get; set; } = [];
         public string Image { get; set; } = string.Empty;
 

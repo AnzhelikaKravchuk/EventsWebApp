@@ -1,5 +1,6 @@
 using AutoMapper;
 using EventsWebApp.Application.Filters;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
@@ -17,12 +18,12 @@ namespace EventsWebApp.Server.Controllers
     [Authorize("Admin")]
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase { 
-        private readonly SocialEventService _socialEventService;
-        private readonly ImageService _imageService;
+        private readonly ISocialEventService _socialEventService;
+        private readonly IImageService _imageService;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public SocialEventsController(SocialEventService socialEventService, ImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public SocialEventsController(ISocialEventService socialEventService, IImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _socialEventService = socialEventService;
             _imageService = imageService;
@@ -39,39 +40,6 @@ namespace EventsWebApp.Server.Controllers
         }
 
 
-        [HttpGet("getSocialEventByName")]
-        public async Task<IActionResult> GetEventByName([FromQuery] string name)
-        {
-            var socialEvents = await _socialEventService.GetSocialEventsByName(name);
-
-            return Ok(socialEvents);
-        }
-
-        [HttpGet("getSocialEventByDate")]
-        public async Task<IActionResult> GetEventByDate([FromQuery] string date)
-        {
-            var socialEvents = await _socialEventService.GetSocialEventsByDate(DateTime.Parse(date));
-
-            return Ok(socialEvents);
-        }
-
-        [HttpGet("getSocialEventByCategory")]
-        public async Task<IActionResult> GetEventByCategory([FromQuery] string category)
-        {
-            var socialEvents = await _socialEventService.GetSocialEventsByCategory((E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), category));
-
-            return Ok(socialEvents);
-        }
-
-
-        [HttpGet("getSocialEventByPlace")]
-        public async Task<IActionResult> GetEventByPlace([FromQuery] string place)
-        {
-            var socialEvents = await _socialEventService.GetSocialEventsByPlace(place);
-
-            return Ok(socialEvents);
-        }
-
         [HttpGet("getAttendeesByEventId")]
         public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id)
         {
@@ -83,7 +51,7 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var socialEvents = await _socialEventService.GetAllSocialEvents(filters,pageIndex, pageSize);
+            var socialEvents = await _socialEventService.GetSocialEvents(filters,pageIndex, pageSize);
             var responseList = new PaginatedList<SocialEventResponse>(null, socialEvents.PageIndex, socialEvents.TotalPages);
             responseList.Items = socialEvents.Items.Select(s => _mapper.Map<SocialEventResponse>(s)).ToList();
             return Ok(responseList);
@@ -99,8 +67,18 @@ namespace EventsWebApp.Server.Controllers
                 string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
                 data.Image = newPath;
             }
-            var socialEvent = await _socialEventService.CreateSocialEvent(data);
-            return Ok(socialEvent);
+            var id = await _socialEventService.CreateSocialEvent(data);
+            return Ok(id);
+        }
+
+        [HttpPost("addAttendee")]
+        public async Task<IActionResult> AddAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId)
+        {
+            var accessToken = HttpContext.Request.Cookies["accessToken"];
+            var attendee = _mapper.Map<Attendee>(request);
+            attendee.DateOfRegistration = DateTime.Now.Date;
+            var resultId = await _socialEventService.AddAttendeeToEventWithToken(eventId, attendee, accessToken);
+            return Ok(resultId);
         }
 
         [HttpDelete("deleteEvent")]

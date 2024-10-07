@@ -53,9 +53,9 @@ namespace EventsWebApp.Infrastructure
             //    );
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=DESKTOP-ESUGBMO;Database=EventsWebApp;Trusted_Connection=True;TrustServerCertificate=True");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("Server=DESKTOP-ESUGBMO;Database=EventsWebApp;Trusted_Connection=True;TrustServerCertificate=True");
+        //}
     }
 }

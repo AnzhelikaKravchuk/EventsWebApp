@@ -14,6 +14,10 @@ namespace EventsWebApp.Domain.PaginationHandlers
             PageIndex = pageIndex;
             TotalPages = totalPages;
         }
+
+        public PaginatedList()
+        {
+        }
     }
 
 } 

@@ -1,4 +1,6 @@
 ﻿using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
@@ -6,7 +8,7 @@ using System.Text;
 
 namespace EventsWebApp.Application.Services
 {
-    public class AttendeeService : IDisposable
+    public class AttendeeService : IDisposable, IAttendeeService
     {
         private readonly IJwtProvider _jwtProvider;
         private readonly IAppUnitOfWork _appUnitOfWork;
@@ -28,7 +30,7 @@ namespace EventsWebApp.Application.Services
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
             var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-            if(userId == null)
+            if (userId == null)
             {
                 throw new Exception("No user id found");
             }
@@ -44,40 +46,25 @@ namespace EventsWebApp.Application.Services
         public async Task<List<Attendee>> GetAllAttendees()
         {
             return await _appUnitOfWork.AttendeeRepository.GetAll();
-            
+
         }
 
-        public async Task<Guid> AddAttendeeToEvent(Attendee attendee, Guid socialEventId, Guid userId)
+        public async Task<Attendee> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId)
         {
-            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email);
-            SocialEvent socialEvent= await _appUnitOfWork.SocialEventRepository.GetById(socialEventId);
             User user = await _appUnitOfWork.UserRepository.GetById(userId);
 
-            if (candidate != null)
+            if (user == null)
             {
-                throw new Exception("This attendee already in the list");
+                throw new Exception("No user was found");
             }
             attendee.SocialEvent = socialEvent;
             attendee.User = user;
 
             ValidateAttendee(attendee);
 
-            await _appUnitOfWork.SocialEventRepository.AddAttendee(socialEventId, attendee);
-            await _appUnitOfWork.AttendeeRepository.Add(attendee);
+            var result = await _appUnitOfWork.AttendeeRepository.Add(attendee);
             _appUnitOfWork.Save();
-            return attendee.Id;
-        }
-
-        public async Task<Guid> AddAttendeeToEventWithToken(Attendee attendee, Guid socialEventId, string accessToken)
-        {
-            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
-
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-            if (userId == null)
-            {
-                throw new Exception("No user id found");
-            }
-            return await AddAttendeeToEvent(attendee, socialEventId, Guid.Parse(userId));
+            return result;
         }
 
         public async Task<Guid> UpdateAttendee(Attendee attendee)
@@ -94,7 +81,7 @@ namespace EventsWebApp.Application.Services
         {
             var attendee = await _appUnitOfWork.AttendeeRepository.GetById(id);
 
-            if(attendee == null)
+            if (attendee == null)
             {
                 throw new Exception("No attendee found");
             }

@@ -1,5 +1,4 @@
-﻿
-namespace EventsWebApp.Application.Interfaces
+﻿namespace EventsWebApp.Application.Interfaces.Repositories
 {
     public interface IAppUnitOfWork
     {

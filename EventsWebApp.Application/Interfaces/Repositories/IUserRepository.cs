@@ -1,6 +1,6 @@
 ﻿using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.Interfaces
+namespace EventsWebApp.Application.Interfaces.Repositories
 {
     public interface IUserRepository
     {

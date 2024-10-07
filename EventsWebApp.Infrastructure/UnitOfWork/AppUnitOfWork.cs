@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Interfaces.Repositories;
 
 namespace EventsWebApp.Infrastructure.UnitOfWork
 {

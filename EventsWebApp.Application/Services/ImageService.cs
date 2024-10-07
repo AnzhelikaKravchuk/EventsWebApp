@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using EventsWebApp.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
 namespace EventsWebApp.Application.Services
 {
-    public class ImageService
+    public class ImageService : IImageService
     {
         public ImageService() { }
 
         public async Task<string> StoreImage(string webRootPath, IFormFile image)
         {
-            if(image == null)
+            if (image == null)
             {
                 return string.Empty;
             }
@@ -34,7 +35,8 @@ namespace EventsWebApp.Application.Services
                 {
                     file.Delete();
                 }
-            }catch (Exception) { }
+            }
+            catch (Exception) { }
             return Task.CompletedTask;
         }
     }

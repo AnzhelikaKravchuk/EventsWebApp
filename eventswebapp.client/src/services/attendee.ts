@@ -20,9 +20,13 @@ export async function AddAttendeeToEvent(
   eventId: string
 ): Promise<boolean> {
   const response = await axios
-    .post(`https://localhost:7127/Attendee?eventId=${eventId}`, data, {
-      withCredentials: true,
-    })
+    .post(
+      `https://localhost:7127/SocialEvents/addAttendee?eventId=${eventId}`,
+      data,
+      {
+        withCredentials: true,
+      }
+    )
     .then(() => true)
     .catch(() => false);
 

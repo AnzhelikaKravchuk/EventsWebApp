@@ -1,4 +1,6 @@
 ﻿using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
@@ -6,7 +8,7 @@ using System.Text;
 
 namespace EventsWebApp.Application.Services
 {
-    public class UserService : IDisposable
+    public class UserService : IDisposable, IUserService
     {
         private readonly IAppUnitOfWork _appUnitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -58,7 +60,7 @@ namespace EventsWebApp.Application.Services
             User user = new User(email, hashedPassword, username, "User");
             ValidateUser(user);
 
-            var addedUser =await _appUnitOfWork.UserRepository.Add(user);
+            var addedUser = await _appUnitOfWork.UserRepository.Add(user);
 
             var (accessToken, refreshToken) = _jwtProvider.CreateTokens(addedUser);
             _appUnitOfWork.Save();
@@ -66,7 +68,7 @@ namespace EventsWebApp.Application.Services
             return (accessToken, refreshToken);
         }
 
-        public async Task<(string,string)> Login(string email, string password)
+        public async Task<(string, string)> Login(string email, string password)
         {
             User candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
 
@@ -114,11 +116,12 @@ namespace EventsWebApp.Application.Services
             var user = await _appUnitOfWork.UserRepository.GetByEmail(
             principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value);
 
-            if(user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow) {
+            if (user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow)
+            {
                 throw new Exception("Token invalid");
             }
 
-            accessToken  = _jwtProvider.GenerateAccessToken(user);
+            accessToken = _jwtProvider.GenerateAccessToken(user);
             _appUnitOfWork.Save();
             return accessToken;
         }

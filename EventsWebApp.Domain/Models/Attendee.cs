@@ -2,11 +2,11 @@
 {
     public class Attendee
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; } = string.Empty;
-        public string Surname { get; private set; } = string.Empty;
-        public string Email { get; private set; } = string.Empty;
-        public DateTime DateOfBirth { get; private set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; }
         public DateTime DateOfRegistration { get; set; }
         public SocialEvent SocialEvent { get; set; }
         public User User { get; set; }

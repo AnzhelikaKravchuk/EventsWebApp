@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,11 +30,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().ToListAsync();
         }
 
-        public async Task<Guid> Add(Attendee attendee)
+        public async Task<Attendee> Add(Attendee attendee)
         {
-            await _dbContext.Attendees.AddAsync(attendee);
+            var result = await _dbContext.Attendees.AddAsync(attendee);
 
-            return attendee.Id;
+            return result.Entity;
         }
 
         public async Task<Guid> Update(Attendee attendee)

@@ -1,5 +1,7 @@
 ﻿using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Interfaces;
+using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
@@ -8,17 +10,21 @@ using System.Text;
 
 namespace EventsWebApp.Application.Services
 {
-    public class SocialEventService : IDisposable
+    public class SocialEventService : IDisposable, ISocialEventService
     {
         private readonly IAppUnitOfWork _appUnitOfWork;
+        private readonly IJwtProvider _jwtProvider;
+        private readonly IAttendeeService _attendeeService;
         private readonly SocialEventValidator _validator;
-        public SocialEventService(IAppUnitOfWork appUnitOfWork, SocialEventValidator validator)
+        public SocialEventService(IAppUnitOfWork appUnitOfWork, IJwtProvider jwtProvider, IAttendeeService attendeeService, SocialEventValidator validator)
         {
             _appUnitOfWork = appUnitOfWork;
+            _jwtProvider = jwtProvider;
+            _attendeeService = attendeeService;
             _validator = validator;
         }
 
-        public async Task<PaginatedList<SocialEvent>> GetAllSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10)
+        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10)
         {
             var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(filters, pageIndex, pageSize);
             return socialEvents;
@@ -29,54 +35,29 @@ namespace EventsWebApp.Application.Services
             SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
             if (socialEvent == null)
             {
-                throw new Exception("No such social event found");
+                throw new Exception("No social event was found");
             }
             return socialEvent;
         }
 
-        public async Task<List<SocialEvent>> GetSocialEventsByName(string name)
-        {
-            return await _appUnitOfWork.SocialEventRepository.GetByName(name);
-        }
-
-        public async Task<List<SocialEvent>> GetSocialEventsByDate(DateTime date)
-        {
-            return await _appUnitOfWork.SocialEventRepository.GetByDate(date);
-        }
-
-        public async Task<List<SocialEvent>> GetSocialEventsByCategory(E_SocialEventCategory category)
-        {
-            return await _appUnitOfWork.SocialEventRepository.GetByCategory(category);
-        }
-
-        public async Task<List<SocialEvent>> GetSocialEventsByPlace(string place)
-        {
-            return await _appUnitOfWork.SocialEventRepository.GetByPlace(place);
-        }
 
         public async Task<List<Attendee>> GetAttendeesById(Guid id)
         {
-            var attendees = await _appUnitOfWork.SocialEventRepository.GetAllAttendeesByEventId(id);
-            return attendees;
+            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
+            if (socialEvent == null)
+            {
+                throw new Exception("No social event was found");
+            }
+            return socialEvent.ListOfAttendees;
         }
 
-        public async Task<SocialEvent> CreateSocialEvent(SocialEvent socialEvent)
+        public async Task<Guid> CreateSocialEvent(SocialEvent socialEvent)
         {
-            //var user = await _appUnitOfWork.UserRepository.GetById(userId);
-            //ValidateSocialEvent(socialEvent);
-            //socialEvent.ListOfAttendees.Add(attendee);
-
-
-            //await _appUnitOfWork.SocialEventRepository.Add(socialEvent);
-            //await _appUnitOfWork.AttendeeRepository.Add(attendee);
-            //_appUnitOfWork.Save();
-            //return socialEvent.Id;
-
             ValidateSocialEvent(socialEvent);
 
-            await _appUnitOfWork.SocialEventRepository.Add(socialEvent);
+            var id = await _appUnitOfWork.SocialEventRepository.Add(socialEvent);
             _appUnitOfWork.Save();
-            return socialEvent;
+            return id;
         }
 
         public async Task<Guid> UpdateSocialEvent(SocialEvent socialEvent)
@@ -84,7 +65,7 @@ namespace EventsWebApp.Application.Services
             var candidate = await _appUnitOfWork.SocialEventRepository.GetById(socialEvent.Id);
             if (candidate == null)
             {
-                throw new Exception("No candidate found");
+                throw new Exception("No social event found found");
             }
             ValidateSocialEvent(socialEvent);
 
@@ -94,20 +75,59 @@ namespace EventsWebApp.Application.Services
             return id;
         }
 
-        public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee)
+        public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId)
         {
-            var id = await _appUnitOfWork.SocialEventRepository.AddAttendee(socialEventId, attendee);
+            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(socialEventId);
+
+            if (socialEvent == null)
+            {
+                throw new Exception("No social event was found");
+            }
+
+            var attendeesList = socialEvent.ListOfAttendees;
+
+            if (attendeesList == null)
+            {
+                attendeesList = new List<Attendee>();
+            }
+            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email);
+            if (candidate != null)
+            {
+                throw new Exception("This attendee already in the list");
+            }
+            if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
+            {
+                throw new Exception("Max attendee number reached");
+            }
+
+            var result = await _attendeeService.AddAttendee(attendee, socialEvent, userId);
 
             _appUnitOfWork.Save();
-            return id;
+            return result.Id;
+        }
+
+        public async Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            if (userId == null)
+            {
+                throw new Exception("Invalid token");
+            }
+            return await AddAttendeeToEvent(socialEventId, attendee, Guid.Parse(userId));
         }
 
         public async Task<Guid> DeleteSocialEvent(Guid id)
         {
-            var deletedId = await _appUnitOfWork.SocialEventRepository.Delete(id);
+            var rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(id);
+            if (rowsDeleted == 0)
+            {
+                throw new Exception("Social event wasn't deleted");
+            }
 
             _appUnitOfWork.Save();
-            return deletedId;
+            return id;
         }
 
         private void ValidateSocialEvent(SocialEvent socialEvent)

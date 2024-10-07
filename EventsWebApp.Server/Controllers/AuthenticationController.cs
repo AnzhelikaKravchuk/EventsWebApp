@@ -1,4 +1,5 @@
 using Azure.Core;
+using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +11,9 @@ namespace EventsWebApp.Server.Controllers
     [Route("[controller]")]
     public class AuthenticationController : Controller
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AuthenticationController(UserService userService)
+        public AuthenticationController(IUserService userService)
         {
             _userService = userService;
         }
