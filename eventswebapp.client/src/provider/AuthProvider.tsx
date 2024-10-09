@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Role } from '../types/types';
 import { GetRole, Logout } from '../services/user';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext({
   role: Role.Guest,
@@ -14,10 +15,12 @@ interface Props {
 export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const logout = () => {
     setRole(Role.Guest);
     Logout();
+    navigate('/login');
   };
 
   const authenticate = async () => {

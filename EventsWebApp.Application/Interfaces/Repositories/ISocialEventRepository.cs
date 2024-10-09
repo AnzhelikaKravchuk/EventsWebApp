@@ -16,5 +16,6 @@ namespace EventsWebApp.Application.Interfaces.Repositories
         Task<Guid> Update(SocialEvent socialEvent);
         Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail);
         Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize);
+        Task<SocialEvent> GetByName(string name);
     }
 }

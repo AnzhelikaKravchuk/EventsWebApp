@@ -75,6 +75,9 @@ const EventPage = () => {
                   : 'Sign Up For Event'}
               </Button>
             )}
+            <Typography variant='body2' textAlign={'center'}>
+              {event.maxAttendee} places
+            </Typography>
             {attendeesNumber !== 0 && (
               <Typography variant='body2' textAlign={'center'}>
                 {attendeesNumber} people signed

@@ -34,6 +34,14 @@ namespace EventsWebApp.Server.Controllers
             return Ok(responseList);
         }
 
+        [HttpGet("getAttendeeById")]
+        [Authorize]
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
+        {
+            var attendee = await _attendeeService.GetAttendeeById(id);
+            return Ok(attendee);
+        }
+
         [HttpDelete]
         public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id)
         {

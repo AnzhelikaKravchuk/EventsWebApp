@@ -55,6 +55,14 @@ namespace EventsWebApp.Server.Controllers
             return Ok(socialEventResponse);
         }
 
+        [HttpGet("getSocialEventByName")]
+        public async Task<IActionResult> GetEventByName([FromQuery] string name)
+        {
+            var socialEvent = await _socialEventService.GetSocialEventByName(name);
+
+            var socialEventResponse = _mapper.Map<SocialEventResponse>(socialEvent);
+            return Ok(socialEventResponse);
+        }
 
         [HttpGet("getAttendeesByEventId")]
         public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id)
@@ -101,6 +109,11 @@ namespace EventsWebApp.Server.Controllers
         [Authorize("Admin")]
         public async Task<IActionResult> Delete([FromQuery] Guid id)
         {
+            var socialEvent = await _socialEventService.GetSocialEventById(id);
+            if (!socialEvent.Image.IsNullOrEmpty())
+            {
+                await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
+            }
             await _socialEventService.DeleteSocialEvent(id);
             return Ok();
         }

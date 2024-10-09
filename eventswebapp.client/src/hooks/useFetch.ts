@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { RetryFetch } from '../services/user';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './useAuth';
 
 export function useFetch<Data>(
   fetch: () => Promise<Data>,
@@ -9,6 +10,7 @@ export function useFetch<Data>(
   const [data, setData] = useState<Data | null>(init);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     function makeFetch() {
@@ -21,6 +23,7 @@ export function useFetch<Data>(
             await RetryFetch(() => fetch())
               .then((data) => setData(data))
               .catch(() => {
+                logout();
                 navigate('/login');
               });
           }
@@ -46,6 +49,7 @@ export function useLazyFetch<Data, FetchArgs extends Array<unknown>>(
   const [data, setData] = useState<Data | null>(init);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   function makeFetch(...args: FetchArgs) {
     setLoading(true);
@@ -58,6 +62,7 @@ export function useLazyFetch<Data, FetchArgs extends Array<unknown>>(
           await RetryFetch(() => fetch(...args))
             .then((data) => setData(data))
             .catch(() => {
+              logout();
               navigate('/login');
             });
         }
@@ -73,6 +78,7 @@ export function useFetchAction<Response, FetchArgs extends Array<unknown>>(
 ): [makeFetch: (...args: FetchArgs) => Promise<Response>, loading: boolean] {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   function makeFetch(...args: FetchArgs) {
     setLoading(true);
@@ -80,6 +86,7 @@ export function useFetchAction<Response, FetchArgs extends Array<unknown>>(
       .catch(async (error) => {
         if (error.status === 401) {
           await RetryFetch(() => fetch(...args)).catch(() => {
+            logout();
             navigate('/login');
           });
         }

@@ -43,6 +43,16 @@ namespace EventsWebApp.Application.Services
             return socialEvent;
         }
 
+        public async Task<SocialEvent> GetSocialEventByName(string name)
+        {
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByName(name);
+            if (socialEvent == null)
+            {
+                throw new SocialEventException("No social event was found");
+            }
+            return socialEvent;
+        }
+
         public async Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken)
         {
             var userId = CheckToken(accessToken);
@@ -78,7 +88,12 @@ namespace EventsWebApp.Application.Services
             {
                 throw new SocialEventException("No social event found");
             }
-            
+
+            if (socialEvent.MaxAttendee < candidate.ListOfAttendees.Count)
+            {
+                throw new SocialEventException("Can't lower max attendee number");
+            }
+
             ValidateSocialEvent(socialEvent);
 
             bool isDateChanged = !candidate.Date.Equals(socialEvent.Date);

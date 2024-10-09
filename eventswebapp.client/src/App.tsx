@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './routes/ProtectedRoute/ProtectedRoute';
 import SocialEvents from './routes/SocialEvents/SocialEvents';
 import Root from './routes/Root/Root';
@@ -13,6 +13,7 @@ import { CreateAttendeePage } from './routes/EventsAdmissions/CreateAttendeePage
 import MUIThemeProvider from './provider/MUIThemeProvider';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import Error404 from './routes/Error404/Error404';
 
 function App() {
   return (
@@ -71,6 +72,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path='*' element={<Navigate to='/404' />} />
+              <Route path='404' element={<Error404 />} />
             </Route>
           </Routes>
         </MUIThemeProvider>

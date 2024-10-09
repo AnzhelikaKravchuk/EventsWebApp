@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ReactNode } from 'react';
 import { Role } from '../../types/types';
@@ -10,9 +10,9 @@ interface Props {
 
 export const ProtectedRoute: React.FC<Props> = ({ children, allowedRoles }) => {
   const { role } = useAuth();
-  const navigate = useNavigate();
+
   if (!allowedRoles.includes(role)) {
-    navigate('/login');
+    return <Navigate to='/404' />;
   }
   return children;
 };

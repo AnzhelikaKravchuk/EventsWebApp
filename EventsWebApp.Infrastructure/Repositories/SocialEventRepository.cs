@@ -23,6 +23,13 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvent;
         }
 
+        public async Task<SocialEvent> GetByName(string name)
+        {
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.EventName.Contains(name));
+
+            return socialEvent;
+        }
+
         public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize)
         {
             var allEvents = await _dbContext.SocialEvents

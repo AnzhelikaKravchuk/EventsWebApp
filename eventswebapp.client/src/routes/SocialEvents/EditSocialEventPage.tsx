@@ -108,6 +108,8 @@ const EditSocialEventPage = ({ isEdit }: Props) => {
     return <Loader fullPage />;
   }
 
+  const attendeesNumber = socialEvent?.listOfAttendees?.length || 1;
+
   return (
     <Container maxWidth='xl' component={'section'} sx={{ mt: 20 }}>
       <Grid2 container direction={'column'} alignItems={'center'}>
@@ -251,6 +253,9 @@ const EditSocialEventPage = ({ isEdit }: Props) => {
                 type='number'
                 label='Max Attendees'
                 required
+                slotProps={{
+                  input: { inputProps: { min: attendeesNumber } },
+                }}
               />
 
               <Button type='submit' fullWidth variant='contained'>

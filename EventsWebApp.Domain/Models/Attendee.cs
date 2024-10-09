@@ -10,9 +10,9 @@
         public DateTime DateOfRegistration { get; set; }
 
         public Guid SocialEventId { get; set; }
-        public SocialEvent SocialEvent { get; set; }
+        public SocialEvent? SocialEvent { get; set; }
         public Guid UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
 
         public Attendee()
         {
