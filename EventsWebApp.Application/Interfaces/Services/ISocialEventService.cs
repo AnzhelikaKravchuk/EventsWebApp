@@ -13,6 +13,7 @@ namespace EventsWebApp.Application.Interfaces.Services
         void Dispose();
         Task<List<Attendee>> GetAttendeesById(Guid id);
         Task<SocialEvent> GetSocialEventById(Guid id);
+        Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken);
         Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10);
         Task<Guid> UpdateSocialEvent(SocialEvent socialEvent);
     }

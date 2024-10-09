@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
+using EventsWebApp.Infrastructure.DataSeeder;
 
 namespace EventsWebApp.Server
 {
@@ -29,6 +30,7 @@ namespace EventsWebApp.Server
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No database connection string");
+            services.AddTransient<DataSeeder>();
 
             services.AddCors(options =>
             {
@@ -40,7 +42,7 @@ namespace EventsWebApp.Server
                     });
             });
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
-            
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendeeRepository, AttendeeRepository>();
@@ -51,6 +53,7 @@ namespace EventsWebApp.Server
             services.AddScoped<UserValidator>();
             services.AddScoped<SocialEventValidator>();
             services.AddScoped<AttendeeValidator>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISocialEventService, SocialEventService>();
@@ -75,9 +78,12 @@ namespace EventsWebApp.Server
             services.AddAutoMapper(typeof(AppMappingProfile));
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(WebApplication app, IWebHostEnvironment env, string[] args)
         {
-
+            if (args.Length == 1 && args[0].ToLower() == "seeddata")
+            {
+                SeedData(app);
+            }
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.None,
@@ -89,7 +95,11 @@ namespace EventsWebApp.Server
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")),
-                RequestPath = "/images"
+                RequestPath = "/images",
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Add("Cache-Control", "public,max-age=1800");
+                }
             });
 
             app.UseCors();
@@ -108,6 +118,17 @@ namespace EventsWebApp.Server
             app.UseExceptionHandler();
 
         }
-        
+
+        private void SeedData(IHost app)
+        {
+            var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+            using (var scope = scopedFactory.CreateScope())
+            {
+                var service = scope.ServiceProvider.GetService<DataSeeder>();
+                service.Seed();
+            }
+        }
+
     }
 }

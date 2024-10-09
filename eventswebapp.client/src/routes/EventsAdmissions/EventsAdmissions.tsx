@@ -1,28 +1,18 @@
-import { useEffect, useState } from 'react';
-import { AttendeeModel } from '../../types/types';
 import { GetAttendeesByUser } from '../../services/attendee';
 import AttendeeItems from '../../components/Items/AttendeeItems';
+import { Container } from '@mui/material';
+import { useFetch } from '../../hooks/useFetch';
+import Loader from '../../components/Loader';
 
 export default function EventsAdmissions() {
-  const [attendeeList, setAttendeeList] = useState<Array<AttendeeModel>>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAttendees = async () => {
-      return await GetAttendeesByUser()
-        .then((res) => {
-          setAttendeeList(res);
-          console.log(res);
-        })
-        .catch((err) => console.log(err))
-        .finally(() => setLoading(false));
-    };
-    fetchAttendees();
-  }, [loading]);
-
+  const [attendees, attendeesLoading] = useFetch(() => GetAttendeesByUser());
   return (
-    <div>
-      {!loading ? <AttendeeItems currentItems={attendeeList} /> : 'Loading...'}
-    </div>
+    <Container maxWidth='xl'>
+      {!attendeesLoading && attendees ? (
+        <AttendeeItems currentItems={attendees} />
+      ) : (
+        <Loader fullPage />
+      )}
+    </Container>
   );
 }

@@ -1,13 +1,7 @@
 import { NavLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 import { LinkProps } from '@mui/material/Link';
 import React, { ReactNode } from 'react';
-import {
-  colors,
-  createTheme,
-  CssBaseline,
-  GlobalStyles,
-  ThemeProvider,
-} from '@mui/material';
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 
 const LinkBehavior = React.forwardRef<
   HTMLAnchorElement,

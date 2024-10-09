@@ -31,23 +31,14 @@ export interface SocialEventModel {
   maxAttendee: number;
   listOfAttendees: Array<AttendeeModel>;
   image: string;
+  isAlreadyInList: boolean;
 }
 
-export interface EditSocialEventRequest {
-  id: string;
+export interface SocialEventRequest {
   eventName: string;
   description: string;
   place: string;
-  date: Date;
-  category: string;
-  maxAttendee: number;
-}
-
-export interface CreateSocialEventRequest {
-  eventName: string;
-  description: string;
-  place: string;
-  date: Date;
+  date: string;
   category: string;
   maxAttendee: number;
 }

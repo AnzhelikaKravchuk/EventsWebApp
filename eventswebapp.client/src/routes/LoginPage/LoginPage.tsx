@@ -39,7 +39,7 @@ const LoginPage = () => {
         </Typography>
       </Grid2>
       <Grid2 size={3}>
-        <form onSubmit={handleSubmit(onSubmit)} css={{ width: '100%' }}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
           <Grid2 container direction={'column'} gap={'20px'}>
             <TextField
               {...register('email')}

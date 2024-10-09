@@ -1,33 +1,40 @@
-import { Button, Grid2, Select, TextField } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Container, Grid2, TextField, Typography } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CreateAttendeeRequest } from '../../types/types';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { AddAttendeeToEvent } from '../../services/attendee';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import { useFetchAction } from '../../hooks/useFetch';
 
 export const CreateAttendeePage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { state } = location;
-  const { register, handleSubmit } = useForm<CreateAttendeeRequest>();
+  const { id } = useParams();
+  const { register, control, handleSubmit } = useForm<CreateAttendeeRequest>();
+  const [addAttendee] = useFetchAction(AddAttendeeToEvent);
 
   const onSubmitAttendee = (data: CreateAttendeeRequest) => {
-    console.log(state);
-    AddAttendeeToEvent(data, state)
-      .then(() => {
-        navigate('/admissions');
-      })
-      .catch((err) => console.log(err));
+    if (!id) {
+      return;
+    }
+    addAttendee(data, id).then(() => {
+      navigate('/admissions');
+    });
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmitAttendee)}>
-        <Grid2
-          container
-          direction={'column'}
-          gap={'20px'}
-          alignItems={'center'}>
-          <Grid2 size={5}>
+    <Container maxWidth='xl' component='section' sx={{ mt: 20 }}>
+      <Grid2 container direction={'column'} alignItems={'center'} gap={5}>
+        <Typography variant='h4' component='h1'>
+          Sign Up For Event
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmitAttendee)}>
+          <Grid2
+            container
+            direction={'column'}
+            gap={'20px'}
+            alignItems={'center'}
+            width={700}>
             <TextField
               {...register('email')}
               fullWidth
@@ -37,8 +44,6 @@ export const CreateAttendeePage = () => {
               label='Contact Email'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <TextField
               {...register('name')}
               fullWidth
@@ -48,8 +53,6 @@ export const CreateAttendeePage = () => {
               label='Name'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
             <TextField
               {...register('surname')}
               fullWidth
@@ -59,26 +62,26 @@ export const CreateAttendeePage = () => {
               label='Surname'
               required
             />
-          </Grid2>
-          <Grid2 size={5}>
-            <TextField
-              {...register('dateOfBirth')}
-              fullWidth
+            <Controller
+              control={control}
               name='dateOfBirth'
-              id='dateOfBirth'
-              type='date'
-              label='Date Of Birth'
-              required
+              rules={{ required: true }}
+              render={({ field: { value, ...props } }) => (
+                <DatePicker
+                  label='Date of Birth *'
+                  value={value ? dayjs(value) : null}
+                  {...props}
+                  sx={{ width: '100%' }}
+                />
+              )}
             />
 
-            <Grid2 size={5}>
-              <Button type='submit' variant='contained'>
-                Participate
-              </Button>
-            </Grid2>
+            <Button type='submit' variant='contained' fullWidth sx={{ mt: 2 }}>
+              Sign Up
+            </Button>
           </Grid2>
-        </Grid2>
-      </form>
-    </div>
+        </form>
+      </Grid2>
+    </Container>
   );
 };

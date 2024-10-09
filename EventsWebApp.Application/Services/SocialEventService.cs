@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Enums;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using System.Text;
@@ -15,12 +16,14 @@ namespace EventsWebApp.Application.Services
         private readonly IAppUnitOfWork _appUnitOfWork;
         private readonly IJwtProvider _jwtProvider;
         private readonly IAttendeeService _attendeeService;
+        private readonly IEmailSender _emailSender;
         private readonly SocialEventValidator _validator;
-        public SocialEventService(IAppUnitOfWork appUnitOfWork, IJwtProvider jwtProvider, IAttendeeService attendeeService, SocialEventValidator validator)
+        public SocialEventService(IAppUnitOfWork appUnitOfWork, IJwtProvider jwtProvider, IAttendeeService attendeeService, IEmailSender emailSender, SocialEventValidator validator)
         {
             _appUnitOfWork = appUnitOfWork;
             _jwtProvider = jwtProvider;
             _attendeeService = attendeeService;
+            _emailSender = emailSender;
             _validator = validator;
         }
 
@@ -35,9 +38,17 @@ namespace EventsWebApp.Application.Services
             SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
             if (socialEvent == null)
             {
-                throw new Exception("No social event was found");
+                throw new SocialEventException("No social event was found");
             }
             return socialEvent;
+        }
+
+        public async Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken)
+        {
+            var userId = CheckToken(accessToken);
+            var socialEvent = await GetSocialEventById(id);
+            var attendee = socialEvent.ListOfAttendees.FirstOrDefault((a) => a.UserId == userId);
+            return (socialEvent, attendee != null);
         }
 
 
@@ -46,7 +57,7 @@ namespace EventsWebApp.Application.Services
             var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
             if (socialEvent == null)
             {
-                throw new Exception("No social event was found");
+                throw new SocialEventException("No social event was found");
             }
             return socialEvent.ListOfAttendees;
         }
@@ -65,13 +76,21 @@ namespace EventsWebApp.Application.Services
             var candidate = await _appUnitOfWork.SocialEventRepository.GetById(socialEvent.Id);
             if (candidate == null)
             {
-                throw new Exception("No social event found found");
+                throw new SocialEventException("No social event found");
             }
+            
             ValidateSocialEvent(socialEvent);
 
+            bool isDateChanged = !candidate.Date.Equals(socialEvent.Date);
+            bool isPlaceChanged = candidate.Place != socialEvent.Place;
             var id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent);
 
             _appUnitOfWork.Save();
+
+            if(isDateChanged || isPlaceChanged)
+            {
+                candidate.ListOfAttendees.ForEach((attendee) => _emailSender.SendEmailAsync(attendee.Email, "One of the social events that you applied to were changed!", $"Current Date of Event is {socialEvent.Date}, current Place of Event is {socialEvent.Place}"));
+            }
             return id;
         }
 
@@ -81,7 +100,7 @@ namespace EventsWebApp.Application.Services
 
             if (socialEvent == null)
             {
-                throw new Exception("No social event was found");
+                throw new SocialEventException("No social event was found");
             }
 
             var attendeesList = socialEvent.ListOfAttendees;
@@ -93,11 +112,11 @@ namespace EventsWebApp.Application.Services
             Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email);
             if (candidate != null)
             {
-                throw new Exception("This attendee already in the list");
+                throw new SocialEventException("This attendee already in the list");
             }
             if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
             {
-                throw new Exception("Max attendee number reached");
+                throw new SocialEventException("Max attendee number reached");
             }
 
             var result = await _attendeeService.AddAttendee(attendee, socialEvent, userId);
@@ -108,14 +127,8 @@ namespace EventsWebApp.Application.Services
 
         public async Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken)
         {
-            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
-
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-            if (userId == null)
-            {
-                throw new Exception("Invalid token");
-            }
-            return await AddAttendeeToEvent(socialEventId, attendee, Guid.Parse(userId));
+            var userId = CheckToken(accessToken);
+            return await AddAttendeeToEvent(socialEventId, attendee,userId);
         }
 
         public async Task<Guid> DeleteSocialEvent(Guid id)
@@ -123,7 +136,7 @@ namespace EventsWebApp.Application.Services
             var rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(id);
             if (rowsDeleted == 0)
             {
-                throw new Exception("Social event wasn't deleted");
+                throw new SocialEventException("Social event wasn't deleted");
             }
 
             _appUnitOfWork.Save();
@@ -140,8 +153,20 @@ namespace EventsWebApp.Application.Services
                 {
                     stringBuilder.Append(error.ErrorMessage);
                 }
-                throw new Exception(stringBuilder.ToString());
+                throw new SocialEventException(stringBuilder.ToString());
             }
+        }
+
+        private Guid CheckToken(string accessToken)
+        {
+            var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
+
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            if (userId == null)
+            {
+                throw new TokenException("Invalid token");
+            }
+            return Guid.Parse(userId);
         }
 
         public void Dispose()

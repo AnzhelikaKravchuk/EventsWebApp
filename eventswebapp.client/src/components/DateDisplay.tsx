@@ -1,18 +1,25 @@
 import { Typography } from '@mui/material';
-import React from 'react';
 
 type Props = {
   date: Date;
+  hideTime?: boolean;
 };
 
-const DateDisplay = ({ date }: Props) => {
+const DateDisplay = ({ date, hideTime }: Props) => {
   return (
     <Typography>
-      {date.toLocaleDateString()} at{' '}
-      {date.toLocaleTimeString(undefined, {
-        hour: 'numeric',
-        minute: '2-digit',
+      {date.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
       })}
+      {hideTime
+        ? ' ' +
+          date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+        : null}
     </Typography>
   );
 };

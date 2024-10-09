@@ -2,6 +2,7 @@
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
 using System.Text;
@@ -34,7 +35,7 @@ namespace EventsWebApp.Application.Services
             User user = await _appUnitOfWork.UserRepository.GetById(id);
             if (user == null)
             {
-                throw new Exception("No such user found");
+                throw new UserException("No such user found");
             }
             return user;
         }
@@ -44,7 +45,7 @@ namespace EventsWebApp.Application.Services
             User user = await _appUnitOfWork.UserRepository.GetByEmail(email);
             if (user == null)
             {
-                throw new Exception("No such user found");
+                throw new UserException("No such user found");
             }
             return user;
         }
@@ -53,7 +54,7 @@ namespace EventsWebApp.Application.Services
             var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
             if (candidate != null)
             {
-                throw new Exception("User already exists");
+                throw new UserException("User already exists");
             }
             string hashedPassword = _passwordHasher.Generate(password);
 
@@ -74,7 +75,7 @@ namespace EventsWebApp.Application.Services
 
             if (candidate == null || !_passwordHasher.Verify(password, candidate.PasswordHash))
             {
-                throw new Exception("No candidate found");
+                throw new UserException("No candidate found");
             }
 
 
@@ -118,7 +119,7 @@ namespace EventsWebApp.Application.Services
 
             if (user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow)
             {
-                throw new Exception("Token invalid");
+                throw new TokenException("Token invalid");
             }
 
             accessToken = _jwtProvider.GenerateAccessToken(user);
@@ -136,7 +137,7 @@ namespace EventsWebApp.Application.Services
                 {
                     stringBuilder.Append(error.ErrorMessage);
                 }
-                throw new Exception(stringBuilder.ToString());
+                throw new UserException(stringBuilder.ToString());
             }
         }
         public void Dispose()

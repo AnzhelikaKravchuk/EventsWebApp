@@ -2,6 +2,7 @@
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace EventsWebApp.Application.Services
             var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             if (userId == null)
             {
-                throw new Exception("No user id found");
+                throw new UserException("No user id found");
             }
 
             return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(Guid.Parse(userId));
@@ -54,7 +55,7 @@ namespace EventsWebApp.Application.Services
 
             if (user == null)
             {
-                throw new Exception("No user was found");
+                throw new UserException("No user was found");
             }
             attendee.SocialEvent = socialEvent;
             attendee.User = user;
@@ -82,7 +83,7 @@ namespace EventsWebApp.Application.Services
 
             if (attendee == null)
             {
-                throw new Exception("No attendee found");
+                throw new AttendeeException("No attendee found");
             }
 
             var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(attendee.SocialEvent.Id);
@@ -104,7 +105,7 @@ namespace EventsWebApp.Application.Services
                 {
                     stringBuilder.Append(error.ErrorMessage);
                 }
-                throw new Exception(stringBuilder.ToString());
+                throw new AttendeeException(stringBuilder.ToString());
             }
         }
 

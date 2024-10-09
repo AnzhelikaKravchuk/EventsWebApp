@@ -7,6 +7,7 @@
     <SpaRoot>..\eventswebapp.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+    <UserSecretsId>25d2f4b4-9bd7-47df-a416-cac25f01207d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
     <Folder Include="ExceptionsHandler\" />
     <Folder Include="RoleAuthorization\" />
     <Folder Include="wwwroot\images\" />

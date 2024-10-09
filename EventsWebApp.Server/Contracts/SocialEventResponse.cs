@@ -13,6 +13,7 @@ namespace EventsWebApp.Server.Contracts
         public int MaxAttendee { get; set; }
         public List<Attendee> ListOfAttendees { get; set; } = [];
         public string Image { get; set; }
+        public bool IsAlreadyInList { get; set; } = false;
 
         public SocialEventResponse() { }
 

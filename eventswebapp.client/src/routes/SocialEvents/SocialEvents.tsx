@@ -1,15 +1,11 @@
-import ReactPaginate from 'react-paginate';
-import { Repository } from '../../utils/Repository';
 import { useEffect, useState } from 'react';
-import { Role, SocialEventModel } from '../../types/types';
-import EventPage from './EventPage';
-import { NavLink } from 'react-router-dom';
+import { Role } from '../../types/types';
 import { GetSocialEvents } from '../../services/socialEvents';
 import Items from '../../components/Items/Items';
 import Filters from '../../components/Items/Filters';
 import { useAuth } from '../../hooks/useAuth';
 import {
-  BottomNavigation,
+  Box,
   Button,
   Container,
   Drawer,
@@ -17,38 +13,24 @@ import {
   Pagination,
   Toolbar,
 } from '@mui/material';
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import Loader from '../../components/Loader';
+import { useLazyFetch } from '../../hooks/useFetch';
 
 const drawerWidth = 500;
 const pageSize = 8;
 
 const SocialEvents = () => {
   const { role } = useAuth();
-  const [items, setItems] = useState<Array<SocialEventModel>>([]);
   const [filters, setFilters] = useState(new FormData());
   const [pageIndex, setPageIndex] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [itemsLoading, setItemsLoading] = useState(true);
+  const [requestEvents, events, eventsLoading] = useLazyFetch(GetSocialEvents);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      setItemsLoading(true);
-      return await GetSocialEvents(filters, pageIndex, pageSize)
-        .then((res) => {
-          console.log('dermo', res.totalPages);
-          setItems(res.items.$values);
-          setTotalPages(res.totalPages);
-        })
-        .finally(() => {
-          setItemsLoading(false);
-        });
-    };
-    fetchEvents();
+    requestEvents(filters, pageIndex, pageSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, filters]);
 
-  useEffect(() => console.log(totalPages), [totalPages]);
-
-  const handlePageClick = (event: unknown, value: number) => {
+  const handlePageClick = (_: unknown, value: number) => {
     setPageIndex(value);
   };
 
@@ -60,14 +42,10 @@ const SocialEvents = () => {
       alignItems={'center'}
       sx={{ height: '90vh' }}>
       <Container maxWidth='xl'>
-        <NavLink hidden={role !== Role.Admin} to='/createEvent'>
-          Create New Social Event
-        </NavLink>
-
-        {!itemsLoading ? (
-          <Items currentItems={items} drawerWidth={drawerWidth} />
+        {!eventsLoading || !events ? (
+          <Items currentItems={events?.items ?? []} drawerWidth={drawerWidth} />
         ) : (
-          'Loading...'
+          <Loader fullPage />
         )}
         <Drawer
           variant='permanent'
@@ -82,15 +60,25 @@ const SocialEvents = () => {
           <Toolbar />
           <Filters
             pageSize={pageSize}
-            setItems={setItems}
-            setPages={setTotalPages}
             setFilters={setFilters}
             setPageIndex={setPageIndex}
           />
+          {role === Role.Admin && (
+            <Box
+              border={2.5}
+              borderColor={(theme) => theme.palette.primary.light}
+              borderRadius={2}
+              padding={2}
+              m={3}>
+              <Button variant='contained' href='/createEvent' fullWidth>
+                Create New Event
+              </Button>
+            </Box>
+          )}
         </Drawer>
       </Container>
       <Pagination
-        count={totalPages}
+        count={events?.totalPages}
         onChange={handlePageClick}
         sx={{ mr: 50 }}
       />

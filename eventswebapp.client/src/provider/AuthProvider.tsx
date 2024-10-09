@@ -28,7 +28,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     setLoading(true);
     return GetRole()
       .then((role) => {
-        console.log('Role', role);
         setRole(role);
       })
       .catch(() => {

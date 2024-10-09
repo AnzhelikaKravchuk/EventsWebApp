@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 namespace EventsWebApp.Server.Contracts
 {
     public record UpdateSocialEventRequest(string Id, 
@@ -5,6 +7,8 @@ namespace EventsWebApp.Server.Contracts
                                             string Description, 
                                             string Place, 
                                             string Date, 
-                                            string Category, 
-                                            int MaxAttendee);
+                                            string Category,
+                                            string? Image,
+                                            int MaxAttendee,
+                                            IFormFile? File);
 }

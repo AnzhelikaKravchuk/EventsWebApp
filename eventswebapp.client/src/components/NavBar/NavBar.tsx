@@ -11,10 +11,12 @@ import { Role } from '../../types/types';
 
 const authenticatedUserMenu = [
   {
+    key: 'socialEvents',
     link: '/socialEvents',
     text: 'Events',
   },
   {
+    key: 'admissions',
     link: '/admissions',
     text: 'Admissions',
   },
@@ -22,10 +24,12 @@ const authenticatedUserMenu = [
 
 const unauthenticatedUserMenu = [
   {
+    key: 'login',
     link: '/login',
     text: 'Login',
   },
   {
+    key: 'register',
     link: '/register',
     text: 'Sign Up',
   },
@@ -56,13 +60,13 @@ export default function NavBar() {
           </Box>
           <Box sx={{ ml: 2, flexGrow: 1, display: 'flex' }}>
             {isAuthenticated
-              ? authenticatedUserMenu.map(({ link, text }) => (
-                  <Button href={link} sx={buttonSx}>
+              ? authenticatedUserMenu.map(({ key, link, text }) => (
+                  <Button key={key} href={link} sx={buttonSx}>
                     {text}
                   </Button>
                 ))
-              : unauthenticatedUserMenu.map(({ link, text }) => (
-                  <Button href={link} sx={buttonSx}>
+              : unauthenticatedUserMenu.map(({ key, link, text }) => (
+                  <Button key={key} href={link} sx={buttonSx}>
                     {text}
                   </Button>
                 ))}

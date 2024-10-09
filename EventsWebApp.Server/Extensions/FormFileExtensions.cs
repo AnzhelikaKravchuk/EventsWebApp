@@ -6,7 +6,7 @@ public static class FormFileExtensions
 
     public static bool IsImage(this IFormFile postedFile)
     {
-        if (postedFile.ContentType.ToLower() != "image/jpg" &&
+                if (postedFile.ContentType.ToLower() != "image/jpg" &&
                     postedFile.ContentType.ToLower() != "image/jpeg" &&
                     postedFile.ContentType.ToLower() != "image/pjpeg" &&
                     postedFile.ContentType.ToLower() != "image/gif" &&

@@ -1,57 +1,32 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { AppliedFilters, SocialEventModel } from '../../types/types';
-import { useForm } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid2,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { GetSocialEvents } from '../../services/socialEvents';
+import { AppliedFilters } from '../../types/types';
+import { Controller, useForm } from 'react-hook-form';
+import { Button, Grid2, MenuItem, TextField } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 type Props = {
   pageSize: number;
-  setItems: Function;
-  setPages: Function;
-  setFilters: Function;
-  setPageIndex: Function;
+  setFilters: (filters: FormData) => void;
+  setPageIndex: (pageIndex: number) => void;
 };
 
 export default function Filters(props: Props) {
-  const { register, handleSubmit } = useForm<AppliedFilters>();
+  const { register, control, handleSubmit } = useForm<AppliedFilters>();
 
   function onSubmitFilters(data: AppliedFilters) {
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('category', data.category);
-    formData.append('date', data.date.toString());
+    formData.append('date', data.date?.toString() ?? '');
     formData.append('place', data.place);
 
-    console.log(formData);
     props.setFilters(formData);
     props.setPageIndex(1);
-
-    // GetSocialEvents(formData, 1, props.pageSize)
-    //   .then((res) => {
-    //     console.log(res.totalPages);
-    //     props.setItems(res.items.$values);
-    //     props.setPages(res.totalPages);
-    //   })
-    //   .catch();
   }
   return (
     <Grid2 container direction={'column'} sx={{ padding: 6 }}>
-      <form onSubmit={handleSubmit(onSubmitFilters)} css={{ width: '100%' }}>
-        <Grid2
-          container
-          direction={'column'}
-          gap={'20px'}
-          alignItems={'center'}>
+      <form onSubmit={handleSubmit(onSubmitFilters)} style={{ width: '100%' }}>
+        <Grid2 container direction={'column'} gap={'20px'}>
           <TextField
             fullWidth
             {...register('name')}
@@ -60,13 +35,21 @@ export default function Filters(props: Props) {
             type='text'
             label='Name'
           />
-          <TextField
-            fullWidth
-            {...register('date')}
+          <Controller
+            control={control}
             name='date'
-            id='date'
-            type='date'
-            label='Date'
+            render={({ field: { onChange, value, ref } }) => {
+              return (
+                <DatePicker
+                  label='Date'
+                  value={value ? dayjs(value) : null}
+                  inputRef={ref}
+                  onChange={(date) => {
+                    onChange(date);
+                  }}
+                />
+              );
+            }}
           />
           <TextField
             fullWidth
@@ -76,25 +59,24 @@ export default function Filters(props: Props) {
             type='text'
             label='Place'
           />
-          <FormControl fullWidth>
-            <InputLabel>Category</InputLabel>{' '}
-            <Select
-              label='Category'
-              fullWidth
-              {...register('category')}
-              name='category'
-              id='category'>
-              <MenuItem value={''}>
-                <em>All</em>
-              </MenuItem>
-              <MenuItem value={'Other'}>Other</MenuItem>
-              <MenuItem value={'Conference'}>Conference</MenuItem>
-              <MenuItem value={'Convention'}>Convention</MenuItem>
-              <MenuItem value={'Lecture'}>Lecture</MenuItem>
-              <MenuItem value={'MasterClass'}>MasterClass</MenuItem>
-              <MenuItem value={'QnA'}>Q&A</MenuItem>
-            </Select>
-          </FormControl>
+          <TextField
+            select
+            label='Category'
+            fullWidth
+            defaultValue=''
+            {...register('category')}
+            name='category'
+            id='category'>
+            <MenuItem value={''}>
+              <em>All</em>
+            </MenuItem>
+            <MenuItem value={'Other'}>Other</MenuItem>
+            <MenuItem value={'Conference'}>Conference</MenuItem>
+            <MenuItem value={'Convention'}>Convention</MenuItem>
+            <MenuItem value={'Lecture'}>Lecture</MenuItem>
+            <MenuItem value={'MasterClass'}>MasterClass</MenuItem>
+            <MenuItem value={'QnA'}>Q&A</MenuItem>
+          </TextField>
 
           <Button fullWidth type='submit' variant='contained'>
             Apply Filters

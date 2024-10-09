@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Filters;
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Domain.Enums;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using Microsoft.EntityFrameworkCore;
@@ -46,12 +47,12 @@ namespace EventsWebApp.Infrastructure.Repositories
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
-                throw new Exception("No event was found");
+                throw new SocialEventException("No event was found");
             }
             var attendeeList = socialEvent.ListOfAttendees;
             if (attendeeList == null)
             {
-                throw new Exception("Attendee list is empty");
+                throw new SocialEventException("Attendee list is empty");
             }
             var attendee = attendeeList.FirstOrDefault(a => a.Email == attendeeEmail);
 

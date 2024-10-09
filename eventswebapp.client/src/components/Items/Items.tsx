@@ -1,10 +1,7 @@
 import { SocialEventModel } from '../../types/types';
 import {
-  Badge,
-  Box,
   ButtonBase,
   Card,
-  CardActionArea,
   CardContent,
   CardMedia,
   Chip,
@@ -12,7 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import DateDisplay from '../DateDisplay';
-import { NavLink } from 'react-router-dom';
 
 interface Props {
   currentItems: Array<SocialEventModel>;
@@ -23,7 +19,10 @@ export default function Items({ currentItems }: Props) {
     <Grid2 container gap={2} flexDirection={'row'} wrap='wrap' sx={{ mt: 20 }}>
       {currentItems &&
         currentItems.reverse().map((item) => (
-          <Card component='article' sx={{ width: 550, height: 140 }}>
+          <Card
+            key={item.id}
+            component='article'
+            sx={{ width: 550, height: 140 }}>
             <ButtonBase
               href={`/eventPage/${item.id}`}
               sx={{
@@ -49,7 +48,7 @@ export default function Items({ currentItems }: Props) {
               {item.image && (
                 <CardMedia
                   component='img'
-                  image={import.meta.env.VITE_IMAGES_HOST + item.image}
+                  image={`${import.meta.env.VITE_IMAGES_HOST}/${item.image}`}
                   alt={`${item.eventName} - cover`}
                   title={`${item.eventName} - cover`}
                   sx={{ width: 140, height: 140, objectFit: 'cover' }}

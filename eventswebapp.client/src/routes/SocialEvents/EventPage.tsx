@@ -1,52 +1,37 @@
-import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { DeleteEvent, GetSocialEventById } from '../../services/socialEvents';
-import { Role, SocialEventModel } from '../../types/types';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import {
+  DeleteEvent,
+  GetSocialEventByIdWithToken,
+} from '../../services/socialEvents';
+import { Role } from '../../types/types';
 import {
   Box,
   Button,
+  Chip,
   Container,
   Grid2,
-  IconButton,
   Paper,
+  Typography,
 } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth';
-import Image from '../../components/Image';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DateDisplay from '../../components/DateDisplay';
+import Loader from '../../components/Loader';
+import { useFetch, useFetchAction } from '../../hooks/useFetch';
 
 const EventPage = () => {
   const { role } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
-  const [socialEvent, setSocialEvent] = useState<SocialEventModel | null>(null);
-  const [eventLoading, setEventLoading] = useState(true);
-  const [allowedToParticipate, setAllowedToParticipate] = useState(true);
-
-  useEffect(() => {
-    const fetchEvent = async () => {
-      if (!id) {
-        return;
-      }
-      return await GetSocialEventById(id)
-        .then((res) => {
-          setSocialEvent(res);
-          setAllowedToParticipate(
-            res.listOfAttendees.$values.length < res.maxAttendee
-          );
-        })
-        .catch((err) => console.log(err))
-        .finally(() => setEventLoading(false));
-    };
-    fetchEvent();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventLoading]);
+  const [event, eventLoading] = useFetch(async () =>
+    id ? await GetSocialEventByIdWithToken(id) : null
+  );
+  const [deleteEvent] = useFetchAction(DeleteEvent);
 
   const handleDelete = async () => {
-    if (!socialEvent) {
+    if (!event) {
       return;
     }
-    const result = await DeleteEvent(socialEvent.id).then();
+    const result = await deleteEvent(event.id);
     if (result) {
       navigate('/socialEvents');
     }
@@ -56,59 +41,108 @@ const EventPage = () => {
     return <Navigate to='/socialEvents' />;
   }
 
+  if (eventLoading || !event) {
+    return <Loader fullPage />;
+  }
+
+  const allowedToParticipate =
+    event?.listOfAttendees.length < event?.maxAttendee &&
+    !event?.isAlreadyInList;
+  const attendeesNumber = event?.listOfAttendees?.length ?? 0;
+
   return (
-    <div>
-      {!eventLoading && socialEvent ? (
-        <Container maxWidth='xl' component={'section'} sx={{ mt: 20 }}>
-          <Grid2 container>
-            <Grid2 container direction={'column'}>
-              <Box
-                component='img'
-                src={import.meta.env.VITE_IMAGES_HOST + socialEvent.image}
-                alt={`${socialEvent.eventName} - cover`}
-                title={`${socialEvent.eventName} - cover`}
-                sx={{ width: 300, height: 300, mb: 2 }}
-              />
-              <Grid2 container flexDirection={'column'} gap={1}>
-                {!allowedToParticipate ? (
-                  <h3>No places left</h3>
-                ) : (
-                  <Button href='/attendeePage' variant='contained'>
-                    Sign Up For Event
-                  </Button>
-                )}
+    <Container maxWidth='xl' component={'section'} sx={{ mt: 20 }}>
+      <Grid2 container gap={2} justifyContent={'center'}>
+        <Grid2 container direction={'column'}>
+          {event.image ? (
+            <Box
+              component='img'
+              src={`${import.meta.env.VITE_IMAGES_HOST}/${event.image}`}
+              alt={`${event.eventName} - cover`}
+              title={`${event.eventName} - cover`}
+              sx={{ width: 300, height: 300, mb: 2, objectFit: 'cover' }}
+            />
+          ) : null}
+          <Grid2 container flexDirection={'column'} gap={1}>
+            {!allowedToParticipate ? (
+              <Button variant='contained' disabled>
+                {event.isAlreadyInList ? 'Already Signed Up' : 'No places left'}
+              </Button>
+            ) : (
+              <Button href={`/attendeePage/${event.id}`} variant='contained'>
+                {attendeesNumber === 0
+                  ? 'Be the First to Sign Up'
+                  : 'Sign Up For Event'}
+              </Button>
+            )}
+            {attendeesNumber !== 0 && (
+              <Typography variant='body2' textAlign={'center'}>
+                {attendeesNumber} people signed
+              </Typography>
+            )}
+            {role === Role.Admin && (
+              <Grid2
+                container
+                border={2.5}
+                borderColor={(theme) => theme.palette.primary.light}
+                borderRadius={2}
+                padding={2}
+                gap={2}
+                mt={2}>
+                <Button variant='contained' href={`/editEvent/${id}`} fullWidth>
+                  Edit
+                </Button>
                 <Button
-                  sx={{ display: role !== Role.Admin ? 'none' : 'flex' }}
                   variant='contained'
                   color='error'
                   onClick={handleDelete}
-                  startIcon={<DeleteIcon />}>
-                  Delete Event
+                  fullWidth>
+                  Delete
                 </Button>
               </Grid2>
-            </Grid2>
-            <Grid2>
-              <Paper>
-                <h1>{socialEvent.eventName}</h1>
-                <p>{socialEvent.description}</p>
-                <p>{socialEvent.date.toString()}</p>
-                <p>{socialEvent.place}</p>
-                <p>{socialEvent.category}</p>
-                <p>{socialEvent.maxAttendee}</p>
-                <p>{socialEvent.listOfAttendees.$values.length}</p>
-              </Paper>
-            </Grid2>
+            )}
           </Grid2>
-        </Container>
-      ) : (
-        'Loading...'
-      )}
-      <NavLink hidden={role !== Role.Admin} to='/editEvent' state={socialEvent}>
-        Edit Page
-      </NavLink>
-
-      <NavLink to='/socialEvents'>Back</NavLink>
-    </div>
+        </Grid2>
+        <Grid2
+          container
+          flexDirection={'column'}
+          sx={{
+            width: 800,
+          }}
+          gap={2}
+          justifyContent={'flex-start'}>
+          <Paper sx={{ p: 2 }}>
+            <Grid2
+              container
+              direction={'column'}
+              alignItems={'flex-start'}
+              gap={1}>
+              <Typography variant='h4' component='h1'>
+                {event.eventName}
+              </Typography>
+              <Chip label={event.category} />
+              <Grid2 container direction={'column'} sx={{ mt: 4 }}>
+                <Grid2 container gap={2}>
+                  <Typography fontWeight={'bold'}>Date:</Typography>
+                  <DateDisplay date={new Date(event.date)} />
+                </Grid2>
+                <Grid2 container gap={2}>
+                  <Typography fontWeight={'bold'}>Location:</Typography>
+                  <Typography>{event.place}</Typography>
+                </Grid2>
+              </Grid2>
+            </Grid2>
+          </Paper>
+          <Paper
+            sx={(theme) => ({
+              p: 2,
+              background: theme.palette.grey[100],
+            })}>
+            <Typography variant='body1'>{event.description}</Typography>
+          </Paper>
+        </Grid2>
+      </Grid2>
+    </Container>
   );
 };
 
