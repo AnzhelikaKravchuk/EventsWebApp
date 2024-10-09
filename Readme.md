@@ -17,7 +17,7 @@ dotnet user-secrets set "ClientUrl" "$client_url"
 dotnet user-secrets set "JWTSecretKey" "$jwt_secret_key"
 dotnet user-secrets set "SqlConnectionString" "$sql_connection_string"
 ```
-Replace <Your Email>, <Your Password> and <Your Jwt Secret> with credentials provided. <Client Url> with url of your client app (it's https://localhost:5173 by default). Replace <Your Database Name> and <Your Server Name> with your MSSQL server and database name
+Replace \<Your Email>, \<Your Password> and \<Your Jwt Secret> with credentials provided. \<Client Url> with url of your client app (it's https://localhost:5173 by default). Replace \<Your Database Name> and \<Your Server Name> with your MSSQL server and database name
 
 
 Run in PowerShell:
