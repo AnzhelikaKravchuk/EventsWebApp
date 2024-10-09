@@ -1,23 +1,16 @@
 using AutoMapper;
 using EventsWebApp.Application.Filters;
-using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Application.Services;
-using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
-    [Authorize("User")]
-    [Authorize("Admin")]
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase { 
         private readonly ISocialEventService _socialEventService;
@@ -34,6 +27,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("getSocialEventByIdWithToken")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventByIdWithToken([FromQuery] Guid id)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
@@ -47,6 +42,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("getSocialEventById")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventById([FromQuery] Guid id)
         {
             var socialEvent = await _socialEventService.GetSocialEventById(id);
@@ -56,6 +53,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("getSocialEventByName")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventByName([FromQuery] string name)
         {
             var socialEvent = await _socialEventService.GetSocialEventByName(name);
@@ -65,6 +64,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("getAttendeesByEventId")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id)
         {
             var attendees = await _socialEventService.GetAttendeesById(id);
@@ -73,6 +74,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
             var socialEvents = await _socialEventService.GetSocialEvents(filters, pageIndex, pageSize);
@@ -82,7 +85,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("createEvent")]
-        [Authorize("Admin")]
+        [Authorize(Policy ="Admin")]
         public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request)
         {
             var data = _mapper.Map<SocialEvent>(request); 
@@ -96,6 +99,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("addAttendee")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> AddAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
@@ -106,7 +111,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete("deleteEvent")]
-        [Authorize("Admin")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete([FromQuery] Guid id)
         {
             var socialEvent = await _socialEventService.GetSocialEventById(id);
@@ -119,7 +124,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPut("updateEvent")]
-        [Authorize("Admin")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request)
         {
             var socialEvent = _mapper.Map<SocialEvent>(request);

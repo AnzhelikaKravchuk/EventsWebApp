@@ -1,5 +1,3 @@
-using System.Reflection.Metadata;
-
 namespace EventsWebApp.Server.Contracts
 {
     public record UpdateSocialEventRequest(string Id, 

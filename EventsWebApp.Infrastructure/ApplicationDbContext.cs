@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EventsWebApp.Infrastructure
 {
-    public class ApplicationDbContext :DbContext
+    public class ApplicationDbContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<SocialEvent> SocialEvents { get; set; } = null!;

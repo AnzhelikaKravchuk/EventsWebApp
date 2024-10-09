@@ -10,8 +10,8 @@ namespace EventsWebApp.Infrastructure.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.EventName).HasMaxLength(100).IsRequired();
-            builder.Property(x => x.Description).IsRequired();
-            builder.Property(x => x.Place).IsRequired().HasMaxLength(100);
+            builder.Property(x => x.Description).HasMaxLength(1000).IsRequired();
+            builder.Property(x => x.Place).HasMaxLength(100).IsRequired();
             builder.Property(x => x.Category).IsRequired();
             builder.Property(x => x.Date).IsRequired();
             builder.Property(x => x.MaxAttendee).IsRequired();

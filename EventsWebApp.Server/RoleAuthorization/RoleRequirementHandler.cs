@@ -8,8 +8,6 @@ namespace EventsWebApp.Server.RoleAuthorization
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
         {
             IEnumerable<IAuthorizationRequirement> requirements = context.Requirements;
-            //context.User.Claims.
-            //context.Resource.Request;
 
             if (!context.User.Claims.Any(x => x.Type == ClaimTypes.Role))
             {

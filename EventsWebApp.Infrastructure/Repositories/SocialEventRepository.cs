@@ -84,7 +84,7 @@ namespace EventsWebApp.Infrastructure.Repositories
                     .SetProperty(s => s.Place, s => socialEvent.Place)
                     .SetProperty(s => s.MaxAttendee, s => socialEvent.MaxAttendee)
                     .SetProperty(s => s.Category, s => socialEvent.Category)
-                    .SetProperty(s => s.Image, s => socialEvent.Image)
+                    .SetProperty(s => s.Image, s => socialEvent.Image ?? "")
                     );
             return socialEvent.Id;
         }

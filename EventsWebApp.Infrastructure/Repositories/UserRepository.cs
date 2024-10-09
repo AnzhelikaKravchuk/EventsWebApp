@@ -38,9 +38,9 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<User> Add(User user)
         { 
-            var addedUser = _dbContext.Users.AddAsync(user).Result.Entity;
+            var addedUser = await _dbContext.Users.AddAsync(user);
 
-            return addedUser;
+            return addedUser.Entity;
         }
 
         public async Task<Guid> Update(User user)

@@ -7,7 +7,7 @@ namespace EventsWebApp.Application.Interfaces.Services
         Task<Guid> DeleteUser(Guid id);
         void Dispose();
         Task<List<User>> GetAllUsers();
-        string GetRoleByToken(string accessToken);
+        string? GetRoleByToken(string accessToken);
         Task<User> GetUserByEmail(string email);
         Task<User> GetUserById(Guid id);
         Task<(string, string)> Login(string email, string password);

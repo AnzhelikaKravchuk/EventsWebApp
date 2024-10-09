@@ -1,7 +1,5 @@
 using AutoMapper;
 using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Application.Services;
-using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
-    [Authorize("User")]
-    [Authorize("Admin")]
     [Route("[controller]")]
     public class AttendeeController : ControllerBase    
     {
@@ -24,7 +20,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetAllByUser()
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
@@ -35,7 +32,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("getAttendeeById")]
-        [Authorize]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             var attendee = await _attendeeService.GetAttendeeById(id);
@@ -43,6 +41,8 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id)
         {
             var attendeeId = await _attendeeService.DeleteAttendee(id);

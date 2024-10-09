@@ -3,7 +3,6 @@ using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
-using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
@@ -104,7 +103,7 @@ namespace EventsWebApp.Application.Services
 
             if(isDateChanged || isPlaceChanged)
             {
-                candidate.ListOfAttendees.ForEach((attendee) => _emailSender.SendEmailAsync(attendee.Email, "One of the social events that you applied to were changed!", $"Current Date of Event is {socialEvent.Date}, current Place of Event is {socialEvent.Place}"));
+                candidate.ListOfAttendees.ForEach((attendee) => _emailSender.SendEmailAsync(attendee.Email, "One of the social events that you applied to were changed!", $"Event {socialEvent.EventName} now has current Date of Event is {socialEvent.Date}, current Place of Event is {socialEvent.Place}"));
             }
             return id;
         }

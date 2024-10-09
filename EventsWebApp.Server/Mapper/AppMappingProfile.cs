@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EventsWebApp.Server.Dto;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Contracts;
 using EventsWebApp.Domain.Enums;
@@ -9,8 +8,6 @@ namespace EventsWebApp.Server.Mapper
     public class AppMappingProfile : Profile
     {
         public AppMappingProfile() {
-            CreateMap<User, UserDto>();
-
             CreateMap<CreateSocialEventRequest, SocialEvent>()
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))

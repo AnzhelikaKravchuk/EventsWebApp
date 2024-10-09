@@ -1,10 +1,8 @@
-using Azure.Core;
 using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Application.Services;
 using EventsWebApp.Server.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
+using Microsoft.IdentityModel.Tokens;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
@@ -37,7 +35,7 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpGet("/logout")]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
             if (HttpContext.Request.Cookies["accessToken"] != null)
             {
@@ -53,11 +51,11 @@ namespace EventsWebApp.Server.Controllers
 
         [HttpGet("/getRole")]
         [Authorize]
-        public async Task<IActionResult> GetRole()
+        public IActionResult GetRole()
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
 
-            var role = _userService.GetRoleByToken(accessToken);
+            var role = accessToken.IsNullOrEmpty() ? null : _userService.GetRoleByToken(accessToken);
 
             return Ok(role);
         }
@@ -65,8 +63,8 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost("/refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var accessToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "accessToken").Value;
-            var refreshToken = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == "refreshToken").Value;
+            var accessToken = HttpContext.Request.Cookies["accessToken"];
+            var refreshToken = HttpContext.Request.Cookies["refreshToken"];
 
             accessToken = await _userService.RefreshToken(accessToken, refreshToken);
             

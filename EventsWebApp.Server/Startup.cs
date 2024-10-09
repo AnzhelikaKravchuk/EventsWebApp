@@ -29,13 +29,12 @@ namespace EventsWebApp.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("No database connection string");
-            services.AddTransient<DataSeeder>();
+            string connection = Configuration["SqlConnectionString"] ?? throw new Exception("No database connection string");
 
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy => {
-                    policy.WithOrigins("https://localhost:5173");
+                    policy.WithOrigins(Configuration["ClientUrl"]);
                     policy.AllowAnyHeader();
                     policy.AllowAnyMethod();
                     policy.AllowCredentials();
@@ -44,6 +43,7 @@ namespace EventsWebApp.Server
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
+            services.AddTransient<DataSeeder>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendeeRepository, AttendeeRepository>();
             services.AddScoped<ISocialEventRepository, SocialEventRepository>();
@@ -65,8 +65,7 @@ namespace EventsWebApp.Server
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
-            services.AddControllers().AddJsonOptions(x =>
-   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve); ; ;
+            services.AddControllers().AddJsonOptions(x =>x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
@@ -84,6 +83,8 @@ namespace EventsWebApp.Server
             {
                 SeedData(app);
             }
+
+            app.MigrateDatabase();
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.None,
@@ -98,7 +99,7 @@ namespace EventsWebApp.Server
                 RequestPath = "/images",
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers.Add("Cache-Control", "public,max-age=1800");
+                    ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=1800");
                 }
             });
 
@@ -112,7 +113,6 @@ namespace EventsWebApp.Server
 
             app.UseHttpsRedirection();
 
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseExceptionHandler();
@@ -123,10 +123,10 @@ namespace EventsWebApp.Server
         {
             var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
 
-            using (var scope = scopedFactory.CreateScope())
+            using (var scope = scopedFactory?.CreateScope())
             {
-                var service = scope.ServiceProvider.GetService<DataSeeder>();
-                service.Seed();
+                var service = scope?.ServiceProvider.GetService<DataSeeder>();
+                service?.Seed();
             }
         }
 

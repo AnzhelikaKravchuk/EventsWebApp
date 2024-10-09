@@ -1,5 +1,3 @@
-using EventsWebApp.Domain.Models;
-
 namespace EventsWebApp.Server.Contracts
 {
     public record AttendeeResponse

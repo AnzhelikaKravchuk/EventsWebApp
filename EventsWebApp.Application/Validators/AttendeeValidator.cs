@@ -6,7 +6,6 @@ namespace EventsWebApp.Application.Validators
     public class AttendeeValidator : AbstractValidator<Attendee>
     {
         public AttendeeValidator() {
-            //RuleFor(attendee => attendee.Id).NotEmpty();
             RuleFor(attendee => attendee.Email).NotEmpty().EmailAddress();
             RuleFor(attendee => attendee.Name).NotEmpty().MaximumLength(100);
             RuleFor(attendee => attendee.Surname).NotEmpty().MaximumLength(100);

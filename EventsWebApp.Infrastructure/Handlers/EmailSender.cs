@@ -3,7 +3,7 @@ using System.Net;
 using Microsoft.Extensions.Configuration;
 using EventsWebApp.Application.Interfaces;
 
-namespace EventsWebApp.Application.Services
+namespace EventsWebApp.Infrastructure.Handlers
 {
     public class EmailSender : IEmailSender
     {

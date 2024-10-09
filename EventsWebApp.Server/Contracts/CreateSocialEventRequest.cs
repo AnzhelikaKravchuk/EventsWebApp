@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace EventsWebApp.Server.Contracts
 {
     public record CreateSocialEventRequest(string EventName, 

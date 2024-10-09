@@ -87,6 +87,41 @@ namespace EventsWebApp.Tests.ServicesTests
             exception.Message.Should().Be("No social event was found");
         }
 
+        //-------------------------------GetSocialEventByName-----------------------
+        [Fact]
+        public async void SocialEventsServiceTests_GetSocialEventByName_ReturnsSocialEvent()
+        {
+            //Arrange
+            string name = "Book";
+            var socialEvent = new SocialEvent { EventName= "Book"};
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByName(name)).Returns(socialEvent);
+            var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
+
+            //Act
+            var entity = await socialEventService.GetSocialEventByName(name);
+
+            //Assert
+            entity.Should().NotBeNull();
+            entity.Should().BeOfType<SocialEvent>();
+        }
+
+        [Fact]
+        public async void SocialEventsServiceTests_GetSocialEventByName_ThrowsException()
+        {
+            //Arrange
+            string name = "Book";
+            SocialEvent socialEvent = null;
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByName(name)).Returns(socialEvent);
+            var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
+
+            //Act
+            var exception = await Assert.ThrowsAsync<SocialEventException>(() => socialEventService.GetSocialEventByName(name));
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Message.Should().Be("No social event was found");
+        }
+
         //-------------------------------GetSocialEventByIdWithToken-----------------------
         [Fact]
         public async void SocialEventsServiceTests_GetSocialEventByIdWithToken_ReturnsSocialEventAndFalse()
@@ -313,6 +348,44 @@ namespace EventsWebApp.Tests.ServicesTests
             //Assert
             exception.Should().NotBeNull();
             exception.Message.Should().Be("No social event found");
+        }
+        [Fact]
+        public async void SocialEventsServiceTests_UpdateSocialEvent_ThrowsExceptionMaxAttendee()
+        {
+            //Arrange
+            SocialEvent socialEvent = new SocialEvent
+            {
+                Id = Guid.NewGuid(),
+                EventName = "Climate Change Conference",
+                Description = "Description",
+                Date = DateTime.Parse("2026-11-11 00:00:00.0000000"),
+                Category = E_SocialEventCategory.Conference,
+                Place = "Minsk",
+                MaxAttendee = 20,
+                Image = "image.png",
+                ListOfAttendees = new List<Attendee> { new Attendee(), new Attendee() }
+            }; ;
+            SocialEvent updatedEvent = new SocialEvent
+            {
+                Id = Guid.NewGuid(),
+                EventName = "Climate Change Conference",
+                Description = "Description",
+                Date = DateTime.Parse("2026-11-11 00:00:00.0000000"),
+                Category = E_SocialEventCategory.Conference,
+                Place = "Minsk",
+                MaxAttendee = 1,
+                Image = "image.png",
+                ListOfAttendees = new List<Attendee>()
+            };
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(updatedEvent.Id)).Returns(socialEvent);
+            var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
+
+            //Act
+            var exception = await Assert.ThrowsAsync<SocialEventException>(() => socialEventService.UpdateSocialEvent(updatedEvent));
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Message.Should().Be("Can't lower max attendee number");
         }
 
 

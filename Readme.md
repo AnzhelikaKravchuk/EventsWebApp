@@ -1,18 +1,31 @@
-## Connect to database
-In appsettings.json in "DefaultConnection" field specify your sql server and database name in the field "Server=Your server Name; Database=Your database name here;Trusted_Connection=True;TrustServerCertificate=True"
+## Prerequisites
+* MSSQL server and database should be set up
 
-## Seed data to database
+## Configure back-end environment
+
+Run in PowerShell
+```powershell
+cd EventsWebApp.Server
+$smtp_email="<Your Email>"
+$smtp_password="<Your Password>"
+$client_url="<Client Url>"
+$jwt_secret_key="<Your Jwt Secret>"
+$sql_connection_string="Server=<Your Server Name>;Database=<Your Database Name>;Trusted_Connection=True;TrustServerCertificate=True"
+dotnet user-secrets set "SMTPServerEmail" "$smtp_email"
+dotnet user-secrets set "SMTPServerPassword" "$smtp_password" 
+dotnet user-secrets set "ClientUrl" "$client_url"
+dotnet user-secrets set "JWTSecretKey" "$jwt_secret_key"
+dotnet user-secrets set "SqlConnectionString" "$sql_connection_string"
+```
+Replace <Your Email>, <Your Password> and <Your Jwt Secret> with credentials provided. <Client Url> with url of your client app (it's https://localhost:5173 by default). Replace <Your Database Name> and <Your Server Name> with your MSSQL server and database name
+
+
+Run in PowerShell:
 ```powershell
 cd EventsWebApp.Server
 dotnet run seeddata
-Ctrl+C
-
-## Add configuration options for SMTP server
-```powershell
-$smtp_email="Your Email Here"
-$smtp_password="Your Password Here"
-dotnet user-secrets set "SMTPServerEmail" "$smtp_email"
-dotnet user-secrets set "SMTPServerPassword" "$smtp_password"
+```
+Press Ctrl+C when script is finished
 
 ## Configure front-end environment
-Inside folder EventsWebApp.client copy .env file, rename it to .env.local and specify your server host URL (Both should be https://localhost:7127 as default configuration)
+Fill fields in _EventsWebApp.client/.env_ (all fields should be https://localhost:7127 by default)

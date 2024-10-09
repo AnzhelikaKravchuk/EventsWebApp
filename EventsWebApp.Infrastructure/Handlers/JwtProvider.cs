@@ -1,5 +1,6 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,9 +13,11 @@ namespace EventsWebApp.Infrastructure.Handlers
     public class JwtProvider : IJwtProvider
     {
         private readonly JwtOptions _options;
-        public JwtProvider(IOptions<JwtOptions> options)
+        private readonly string secretKey;
+        public JwtProvider(IConfiguration configuration, IOptions<JwtOptions> options)
         {
             _options = options.Value;
+            secretKey = configuration["JWTSecretKey"];
         }
 
         public (string,string) CreateTokens(User user)
@@ -23,7 +26,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             var refreshToken = GenerateRefreshToken(user);
 
             user.RefreshToken = refreshToken;
-            user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(1);
+            user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(_options.ExpiresTimeRefresh);
 
             return (accessToken, refreshToken);
                 
@@ -36,13 +39,13 @@ namespace EventsWebApp.Infrastructure.Handlers
                 new Claim(ClaimTypes.Name,user.Username),
                 new Claim(ClaimTypes.Role,user.Role)];
 
-            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                 SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 claims: claims,
                 signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddMinutes(_options.ExpiresTime)
+                expires: DateTime.UtcNow.AddMinutes(_options.ExpiresTimeAccess)
                 );
 
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
@@ -70,7 +73,7 @@ namespace EventsWebApp.Infrastructure.Handlers
                 ValidateLifetime = false,
                 ClockSkew = TimeSpan.Zero,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
