@@ -2,6 +2,7 @@
 using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
+using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
@@ -58,7 +59,7 @@ namespace EventsWebApp.Application.Services
             }
             string hashedPassword = _passwordHasher.Generate(password);
 
-            User user = new User(email, hashedPassword, username, "User");
+            User user = new User(email, hashedPassword, username, E_Role.User);
             ValidateUser(user);
 
             var addedUser = await _appUnitOfWork.UserRepository.Add(user);

@@ -32,9 +32,9 @@ namespace EventsWebApp.Infrastructure.DataSeeder
                 };
 
             List<User> users = new List<User> {
-                    new User{ Id = Guid.NewGuid(), Email = "example@example.com", PasswordHash = passwordHasher.Generate("cool"), Role = "User", Username="Jake"},
-                    new User { Id = Guid.NewGuid(), Email = "admin@example.com", PasswordHash = passwordHasher.Generate("admin"), Role = "Admin", Username = "Mark" },
-                    new User { Id = Guid.NewGuid(), Email = "great@example.com", PasswordHash = passwordHasher.Generate("very"), Role = "User", Username = "Victor" },
+                    new User{ Id = Guid.NewGuid(), Email = "example@example.com", PasswordHash = passwordHasher.Generate("cool"), Role = E_Role.User, Username="Jake"},
+                    new User { Id = Guid.NewGuid(), Email = "admin@example.com", PasswordHash = passwordHasher.Generate("admin"), Role = E_Role.Admin, Username = "Mark" },
+                    new User { Id = Guid.NewGuid(), Email = "great@example.com", PasswordHash = passwordHasher.Generate("very"), Role = E_Role.User, Username = "Victor" },
                 };
             List<Attendee> attendees = new List<Attendee>
                 {

@@ -37,7 +37,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             Claim[] claims = [new Claim("Id",user.Id.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Name,user.Username),
-                new Claim(ClaimTypes.Role,user.Role)];
+                new Claim(ClaimTypes.Role,user.Role.ToString())];
 
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                 SecurityAlgorithms.HmacSha256);
