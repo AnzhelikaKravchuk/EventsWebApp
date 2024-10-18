@@ -4,7 +4,7 @@ namespace EventsWebApp.Application.Interfaces.Services
 {
     public interface IAttendeeService
     {
-        Task<Attendee> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId);
+        Task<Guid> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId);
         Task<Guid> DeleteAttendee(Guid id);
         void Dispose();
         Task<List<Attendee>> GetAllAttendees();

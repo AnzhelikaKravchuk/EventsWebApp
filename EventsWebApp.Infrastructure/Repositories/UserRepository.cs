@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Interfaces.Repositories;
+﻿using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,21 +13,28 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
         public async Task<User> GetById(Guid id)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             
+            return user;
+        }
+
+        public async Task<User> GetByIdTracking(Guid id)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+
             return user;
         }
 
         public async Task<User> GetByEmail(string email)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }
 
         public async Task<User> GetByName(string name)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Username == name);
+            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == name);
 
             return user;
         }
@@ -36,11 +43,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
 
-        public async Task<User> Add(User user)
+        public async Task<Guid> Add(User user)
         { 
             var addedUser = await _dbContext.Users.AddAsync(user);
 
-            return addedUser.Entity;
+            return addedUser.Entity.Id;
         }
 
         public async Task<Guid> Update(User user)
@@ -55,11 +62,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return user.Id;
         }
 
-        public async Task<Guid> Delete(Guid id)
+        public async Task<int> Delete(Guid id)
         {
-            await _dbContext.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
+            int deletedRows = await _dbContext.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
 
-            return id;
+            return deletedRows;
         }
     }
 }

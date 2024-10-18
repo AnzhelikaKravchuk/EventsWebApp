@@ -1,5 +1,5 @@
 ﻿using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Exceptions;
@@ -49,9 +49,9 @@ namespace EventsWebApp.Application.Services
 
         }
 
-        public async Task<Attendee> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId)
+        public async Task<Guid> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId)
         {
-            User user = await _appUnitOfWork.UserRepository.GetById(userId);
+            User user = await _appUnitOfWork.UserRepository.GetByIdTracking(userId);
 
             if (user == null)
             {
@@ -62,9 +62,10 @@ namespace EventsWebApp.Application.Services
 
             ValidateAttendee(attendee);
 
-            var result = await _appUnitOfWork.AttendeeRepository.Add(attendee);
+            socialEvent.ListOfAttendees.Add(attendee);
+            var resultId = await _appUnitOfWork.AttendeeRepository.Add(attendee);
             _appUnitOfWork.Save();
-            return result;
+            return resultId;
         }
 
         public async Task<Guid> UpdateAttendee(Attendee attendee)
@@ -88,8 +89,8 @@ namespace EventsWebApp.Application.Services
 
             var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(attendee.SocialEvent.Id);
 
-            socialEvent.ListOfAttendees.Remove(attendee);
-            await _appUnitOfWork.SocialEventRepository.Update(socialEvent);
+            //socialEvent.ListOfAttendees.Remove(attendee);
+            await _appUnitOfWork.AttendeeRepository.Delete(id);
 
             _appUnitOfWork.Save();
             return id;

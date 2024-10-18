@@ -1,12 +1,12 @@
-namespace EventsWebApp.Server.Contracts
+using Microsoft.AspNetCore.Http;
+
+namespace EventsWebApp.Application.Dto
 {
-    public record UpdateSocialEventRequest(string Id, 
-                                            string EventName, 
+    public record CreateSocialEventRequest(string EventName, 
                                             string Description, 
                                             string Place, 
                                             string Date, 
-                                            string Category,
-                                            string? Image,
+                                            string Category, 
                                             int MaxAttendee,
                                             IFormFile? File);
 }

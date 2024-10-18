@@ -1,6 +1,6 @@
-﻿using EventsWebApp.Application.Filters;
+﻿using EventsWebApp.Domain.Filters;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Application.Validators;
@@ -447,9 +447,9 @@ namespace EventsWebApp.Tests.ServicesTests
             Attendee attendee = new Attendee("Test", "Testoviy", "ex@gmail.com", DateTime.Now.AddDays(-1), DateTime.Now, null, null);
             attendee.Id = attendeeId;
             Attendee candidate = null;
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEvent.Id)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdTracking(socialEvent.Id)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
-            A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendee);
+            A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendee.Id);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
             
             //Act
@@ -468,7 +468,7 @@ namespace EventsWebApp.Tests.ServicesTests
             Guid socialEventId = Guid.NewGuid();
             SocialEvent socialEvent = null;
             Attendee attendee = new Attendee("Test", "Testoviy", "ex@gmail.com", DateTime.Now.AddDays(-1), DateTime.Now, null, null);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEventId)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdTracking(socialEventId)).Returns(socialEvent);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
 
             //Act
@@ -498,7 +498,7 @@ namespace EventsWebApp.Tests.ServicesTests
             };
             socialEvent.ListOfAttendees.Add(attendee);
             attendee.SocialEvent = socialEvent;
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEvent.Id)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdTracking(socialEvent.Id)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(attendee);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
 
@@ -529,7 +529,7 @@ namespace EventsWebApp.Tests.ServicesTests
                 ListOfAttendees = new List<Attendee> { new Attendee() }
             };
             Attendee candidate = null;
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEvent.Id)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdTracking(socialEvent.Id)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
             
@@ -567,9 +567,9 @@ namespace EventsWebApp.Tests.ServicesTests
             Attendee candidate = null;
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("Id", userId.ToString()) }));
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(socialEvent.Id)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdTracking(socialEvent.Id)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEvent.Id, attendee.Email)).Returns(candidate);
-            A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendee);
+            A.CallTo(() => _attendeeService.AddAttendee(attendee, socialEvent, userId)).Returns(attendeeId);
             var socialEventService = new SocialEventService(_unitOfWork, _jwtProvider, _attendeeService, _emailSender, _validator);
             
             //Act

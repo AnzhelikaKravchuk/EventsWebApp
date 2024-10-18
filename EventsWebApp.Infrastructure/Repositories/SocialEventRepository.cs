@@ -1,11 +1,11 @@
-﻿using EventsWebApp.Application.Filters;
-using EventsWebApp.Application.Interfaces.Repositories;
+﻿using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using EventsWebApp.Domain.Filters;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {
@@ -18,6 +18,13 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
         public async Task<SocialEvent> GetById(Guid id)
         {
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+
+            return socialEvent;
+        }
+
+        public async Task<SocialEvent> GetByIdTracking(Guid id)
+        {
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
@@ -25,9 +32,16 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<SocialEvent> GetByName(string name)
         {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.EventName.Contains(name));
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.EventName.Contains(name));
 
             return socialEvent;
+        }
+
+        public async Task<List<SocialEvent>> GetAll()
+        {
+            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
+
+            return socialEvents;
         }
 
         public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize)
@@ -51,7 +65,7 @@ namespace EventsWebApp.Infrastructure.Repositories
 
         public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail)
         {
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No event was found");

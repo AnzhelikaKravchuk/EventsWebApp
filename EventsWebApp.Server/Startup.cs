@@ -12,9 +12,9 @@ using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
-using EventsWebApp.Application.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Infrastructure.DataSeeder;
+using EventsWebApp.Domain.Interfaces.Repositories;
 
 namespace EventsWebApp.Server
 {

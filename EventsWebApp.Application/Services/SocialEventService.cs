@@ -1,6 +1,6 @@
-﻿using EventsWebApp.Application.Filters;
+﻿using EventsWebApp.Domain.Filters;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Exceptions;
@@ -110,7 +110,7 @@ namespace EventsWebApp.Application.Services
 
         public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId)
         {
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(socialEventId);
+            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdTracking(socialEventId);
 
             if (socialEvent == null)
             {
@@ -133,10 +133,10 @@ namespace EventsWebApp.Application.Services
                 throw new SocialEventException("Max attendee number reached");
             }
 
-            var result = await _attendeeService.AddAttendee(attendee, socialEvent, userId);
+            var resultId = await _attendeeService.AddAttendee(attendee, socialEvent, userId);
 
             _appUnitOfWork.Save();
-            return result.Id;
+            return resultId;
         }
 
         public async Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken)

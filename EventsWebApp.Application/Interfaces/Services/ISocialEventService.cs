@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Filters;
+﻿using EventsWebApp.Domain.Filters;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 

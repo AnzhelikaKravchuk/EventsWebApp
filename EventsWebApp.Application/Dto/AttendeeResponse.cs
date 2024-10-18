@@ -1,4 +1,4 @@
-namespace EventsWebApp.Server.Contracts
+namespace EventsWebApp.Application.Dto
 {
     public record AttendeeResponse
     {

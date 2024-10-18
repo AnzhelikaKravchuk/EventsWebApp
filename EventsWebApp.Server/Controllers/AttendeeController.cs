@@ -1,6 +1,6 @@
 using AutoMapper;
 using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Server.Contracts;
+using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

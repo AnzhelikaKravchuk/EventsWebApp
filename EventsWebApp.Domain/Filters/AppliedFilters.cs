@@ -1,4 +1,4 @@
-namespace EventsWebApp.Application.Filters
+namespace EventsWebApp.Domain.Filters
 {
     public record AppliedFilters
     {

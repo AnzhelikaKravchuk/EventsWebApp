@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Controllers;
 using FluentAssertions;
-using EventsWebApp.Application.Filters;
+using EventsWebApp.Domain.Filters;
 using EventsWebApp.Domain.PaginationHandlers;
-using EventsWebApp.Server.Contracts;
+using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Http;
 
 namespace EventsWebApp.Tests.ControllersTests

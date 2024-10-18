@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.Interfaces.Repositories;
+﻿using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
         public async Task<Attendee> GetById(Guid id)
         {
-            var attendee = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).FirstOrDefaultAsync(x => x.Id == id);
+            var attendee = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             return attendee;
         }
@@ -30,11 +30,11 @@ namespace EventsWebApp.Infrastructure.Repositories
             return await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().ToListAsync();
         }
 
-        public async Task<Attendee> Add(Attendee attendee)
+        public async Task<Guid> Add(Attendee attendee)
         {
             var result = await _dbContext.Attendees.AddAsync(attendee);
 
-            return result.Entity;
+            return result.Entity.Id;
         }
 
         public async Task<Guid> Update(Attendee attendee)
@@ -49,11 +49,11 @@ namespace EventsWebApp.Infrastructure.Repositories
                     );
             return attendee.Id;
         }
-        public async Task<Guid> Delete(Guid id)
+        public async Task<int> Delete(Guid id)
         {
-            await _dbContext.Attendees.Where(x => x.Id == id).ExecuteDeleteAsync();
+            int rowsDeleted = await _dbContext.Attendees.Where(x => x.Id == id).ExecuteDeleteAsync();
 
-            return id;
+            return rowsDeleted;
         }
     }
 }

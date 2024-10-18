@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Domain.Models;
-using EventsWebApp.Server.Contracts;
+using EventsWebApp.Application.Dto;
 using EventsWebApp.Domain.Enums;
 
 namespace EventsWebApp.Server.Mapper

@@ -1,5 +1,5 @@
 ﻿using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.Interfaces.Repositories;
+using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Enums;
@@ -62,9 +62,10 @@ namespace EventsWebApp.Application.Services
             User user = new User(email, hashedPassword, username, E_Role.User);
             ValidateUser(user);
 
-            var addedUser = await _appUnitOfWork.UserRepository.Add(user);
+            var addedUserId = await _appUnitOfWork.UserRepository.Add(user);
+            user.Id = addedUserId;
 
-            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(addedUser);
+            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(user);
             _appUnitOfWork.Save();
 
             return (accessToken, refreshToken);
@@ -97,10 +98,14 @@ namespace EventsWebApp.Application.Services
 
         public async Task<Guid> DeleteUser(Guid id)
         {
-            var userId = await _appUnitOfWork.UserRepository.Delete(id);
+            int rowsDeleted = await _appUnitOfWork.UserRepository.Delete(id);
 
+            if (rowsDeleted == 0)
+            {
+                throw new SocialEventException("User wasn't deleted");
+            }
             _appUnitOfWork.Save();
-            return userId;
+            return id;
         }
 
         public string? GetRoleByToken(string accessToken)
