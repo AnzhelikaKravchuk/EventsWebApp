@@ -6,16 +6,16 @@ namespace EventsWebApp.Application.Interfaces.Services
 {
     public interface ISocialEventService
     {
-        Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId);
-        Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken);
-        Task<Guid> CreateSocialEvent(SocialEvent socialEvent);
-        Task<Guid> DeleteSocialEvent(Guid id);
+        Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId, CancellationToken cancellationToken);
+        Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken, CancellationToken cancellationToken);
+        Task<Guid> CreateSocialEvent(SocialEvent socialEvent, CancellationToken cancellationToken);
+        Task<Guid> DeleteSocialEvent(Guid id, CancellationToken cancellationToken);
         void Dispose();
-        Task<List<Attendee>> GetAttendeesById(Guid id);
-        Task<SocialEvent> GetSocialEventById(Guid id);
-        Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken);
-        Task<SocialEvent> GetSocialEventByName(string name);
-        Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10);
-        Task<Guid> UpdateSocialEvent(SocialEvent socialEvent);
+        Task<List<Attendee>> GetAttendeesById(Guid id, CancellationToken cancellationToken);
+        Task<SocialEvent> GetSocialEventById(Guid id, CancellationToken cancellationToken);
+        Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken, CancellationToken cancellationToken);
+        Task<SocialEvent> GetSocialEventByName(string name, CancellationToken cancellationToken);
+        Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize, CancellationToken cancellationToken);
+        Task<Guid> UpdateSocialEvent(SocialEvent socialEvent, CancellationToken cancellationToken);
     }
 }

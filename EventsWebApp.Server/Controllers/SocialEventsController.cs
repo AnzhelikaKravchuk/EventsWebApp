@@ -7,6 +7,7 @@ using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -29,13 +30,13 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getSocialEventByIdWithToken")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetEventByIdWithToken([FromQuery] Guid id)
+        public async Task<IActionResult> GetEventByIdWithToken([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
             SocialEvent socialEvent;
             bool isAlreadyInList;
-            (socialEvent, isAlreadyInList) = await _socialEventService.GetSocialEventByIdWithToken(id, accessToken);
-
+            (socialEvent, isAlreadyInList) = await _socialEventService.GetSocialEventByIdWithToken(id, accessToken, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEventResponse = _mapper.Map<SocialEventResponse>(socialEvent);
             socialEventResponse.IsAlreadyInList = isAlreadyInList;
             return Ok(socialEventResponse);
@@ -44,10 +45,11 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getSocialEventById")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetEventById([FromQuery] Guid id)
+        public async Task<IActionResult> GetEventById([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var socialEvent = await _socialEventService.GetSocialEventById(id);
+            var socialEvent = await _socialEventService.GetSocialEventById(id, cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEventResponse = _mapper.Map<SocialEventResponse>(socialEvent);
             return Ok(socialEventResponse);
         }
@@ -55,10 +57,11 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getSocialEventByName")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetEventByName([FromQuery] string name)
+        public async Task<IActionResult> GetEventByName([FromQuery] string name, CancellationToken cancellationToken)
         {
-            var socialEvent = await _socialEventService.GetSocialEventByName(name);
+            var socialEvent = await _socialEventService.GetSocialEventByName(name, cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEventResponse = _mapper.Map<SocialEventResponse>(socialEvent);
             return Ok(socialEventResponse);
         }
@@ -66,9 +69,9 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getAttendeesByEventId")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id)
+        public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var attendees = await _socialEventService.GetAttendeesById(id);
+            var attendees = await _socialEventService.GetAttendeesById(id, cancellationToken);
 
             return Ok(attendees);
         }
@@ -76,9 +79,10 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, CancellationToken cancellationToken, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var socialEvents = await _socialEventService.GetSocialEvents(filters, pageIndex, pageSize);
+            var socialEvents = await _socialEventService.GetSocialEvents(filters, pageIndex, pageSize, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             var responseList = new PaginatedList<SocialEventResponse>(null, socialEvents.PageIndex, socialEvents.TotalPages);
             responseList.Items = socialEvents.Items.ConvertAll(_mapper.Map<SocialEventResponse>).ToList();
             return Ok(responseList);
@@ -86,46 +90,51 @@ namespace EventsWebApp.Server.Controllers
 
         [HttpPost("createEvent")]
         [Authorize(Policy ="Admin")]
-        public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request)
+        public async Task<IActionResult> CreateSocialEvent([FromForm] CreateSocialEventRequest request, CancellationToken cancellationToken)
         {
             var data = _mapper.Map<SocialEvent>(request); 
             if (request.File != null && request.File.IsImage())
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
                 data.Image = newPath;
             }
-            var id = await _socialEventService.CreateSocialEvent(data);
+            cancellationToken.ThrowIfCancellationRequested();
+            var id = await _socialEventService.CreateSocialEvent(data, cancellationToken);
             return Ok(id);
         }
 
         [HttpPost("addAttendee")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AddAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId)
+        public async Task<IActionResult> AddAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId, CancellationToken cancellationToken)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
             var attendee = _mapper.Map<Attendee>(request);
             attendee.DateOfRegistration = DateTime.Now.Date;
-            var resultId = await _socialEventService.AddAttendeeToEventWithToken(eventId, attendee, accessToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var resultId = await _socialEventService.AddAttendeeToEventWithToken(eventId, attendee, accessToken, cancellationToken);
             return Ok(resultId);
         }
 
         [HttpDelete("deleteEvent")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Delete([FromQuery] Guid id)
+        public async Task<IActionResult> Delete([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var socialEvent = await _socialEventService.GetSocialEventById(id);
+            var socialEvent = await _socialEventService.GetSocialEventById(id, cancellationToken);
             if (!socialEvent.Image.IsNullOrEmpty())
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
             }
-            await _socialEventService.DeleteSocialEvent(id);
+            cancellationToken.ThrowIfCancellationRequested();
+            await _socialEventService.DeleteSocialEvent(id, cancellationToken);
             return Ok();
         }
 
         [HttpPut("updateEvent")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request)
+        public async Task<IActionResult> Update([FromForm] UpdateSocialEventRequest request, CancellationToken cancellationToken)
         {
             var socialEvent = _mapper.Map<SocialEvent>(request);
             if (request.File != null && request.File.IsImage())
@@ -133,11 +142,13 @@ namespace EventsWebApp.Server.Controllers
                 string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
                 if (!socialEvent.Image.IsNullOrEmpty())
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
                 }
                 socialEvent.Image = newPath;
             }
-            await _socialEventService.UpdateSocialEvent(socialEvent);
+            cancellationToken.ThrowIfCancellationRequested();
+            await _socialEventService.UpdateSocialEvent(socialEvent, cancellationToken);
             return Ok();
         }
     }

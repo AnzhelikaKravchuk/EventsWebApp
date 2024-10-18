@@ -7,6 +7,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 
 namespace EventsWebApp.Application.Services
 {
@@ -25,15 +26,18 @@ namespace EventsWebApp.Application.Services
             _validator = validator;
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers(CancellationToken cancellationToken)
         {
-            var users = await _appUnitOfWork.UserRepository.GetAll();
+            cancellationToken.ThrowIfCancellationRequested();
+            var users = await _appUnitOfWork.UserRepository.GetAll(cancellationToken);
             return users;
         }
 
-        public async Task<User> GetUserById(Guid id)
+        public async Task<User> GetUserById(Guid id, CancellationToken cancellationToken)
         {
-            User user = await _appUnitOfWork.UserRepository.GetById(id);
+            User user = await _appUnitOfWork.UserRepository.GetById(id, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
             if (user == null)
             {
                 throw new UserException("No such user found");
@@ -41,18 +45,20 @@ namespace EventsWebApp.Application.Services
             return user;
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            User user = await _appUnitOfWork.UserRepository.GetByEmail(email);
+            User user = await _appUnitOfWork.UserRepository.GetByEmail(email, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
             if (user == null)
             {
                 throw new UserException("No such user found");
             }
             return user;
         }
-        public async Task<(string, string)> Register(string email, string password, string username)
+        public async Task<(string, string)> Register(string email, string password, string username, CancellationToken cancellationToken)
         {
-            var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
+            var candidate = await _appUnitOfWork.UserRepository.GetByEmail(email, cancellationToken);
             if (candidate != null)
             {
                 throw new UserException("User already exists");
@@ -62,60 +68,66 @@ namespace EventsWebApp.Application.Services
             User user = new User(email, hashedPassword, username, E_Role.User);
             ValidateUser(user);
 
-            var addedUserId = await _appUnitOfWork.UserRepository.Add(user);
+            var addedUserId = await _appUnitOfWork.UserRepository.Add(user, cancellationToken);
             user.Id = addedUserId;
 
+            cancellationToken.ThrowIfCancellationRequested();
             var (accessToken, refreshToken) = _jwtProvider.CreateTokens(user);
             _appUnitOfWork.Save();
 
             return (accessToken, refreshToken);
         }
 
-        public async Task<(string, string)> Login(string email, string password)
+        public async Task<(string, string)> Login(string email, string password, CancellationToken cancellationToken)
         {
-            User candidate = await _appUnitOfWork.UserRepository.GetByEmail(email);
+            User candidate = await _appUnitOfWork.UserRepository.GetByEmail(email, cancellationToken);
 
             if (candidate == null || !_passwordHasher.Verify(password, candidate.PasswordHash))
             {
                 throw new UserException("No candidate found");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             var (accessToken, refreshToken) = _jwtProvider.CreateTokens(candidate);
 
             _appUnitOfWork.Save();
             return (accessToken, refreshToken);
         }
 
-        public async Task<Guid> UpdateUser(User user)
+        public async Task<Guid> UpdateUser(User user, CancellationToken cancellationToken)
         {
             ValidateUser(user);
 
-            var userId = await _appUnitOfWork.UserRepository.Update(user);
+            var userId = await _appUnitOfWork.UserRepository.Update(user, cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             _appUnitOfWork.Save();
             return userId;
         }
 
-        public async Task<Guid> DeleteUser(Guid id)
+        public async Task<Guid> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
-            int rowsDeleted = await _appUnitOfWork.UserRepository.Delete(id);
+            int rowsDeleted = await _appUnitOfWork.UserRepository.Delete(id, cancellationToken);
 
             if (rowsDeleted == 0)
             {
                 throw new SocialEventException("User wasn't deleted");
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
             _appUnitOfWork.Save();
             return id;
         }
 
-        public string? GetRoleByToken(string accessToken)
+        public string? GetRoleByToken(string accessToken, CancellationToken cancellationToken)
         {
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             return principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
         }
 
-        public async Task<string> RefreshToken(string accessToken, string refreshToken)
+        public async Task<string> RefreshToken(string accessToken, string refreshToken, CancellationToken cancellationToken)
         {
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
@@ -125,13 +137,16 @@ namespace EventsWebApp.Application.Services
             {
                 throw new UserException("No user id found");
             }
-            var user = await _appUnitOfWork.UserRepository.GetById(Guid.Parse(userId));
+
+            cancellationToken.ThrowIfCancellationRequested();
+            var user = await _appUnitOfWork.UserRepository.GetById(Guid.Parse(userId), cancellationToken);
 
             if (user == null || user.RefreshToken != refreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow)
             {
                 throw new TokenException("Invalid token");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             accessToken = _jwtProvider.GenerateAccessToken(user);
             _appUnitOfWork.Save();
             return accessToken;

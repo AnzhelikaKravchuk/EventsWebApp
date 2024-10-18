@@ -16,36 +16,41 @@ namespace EventsWebApp.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<SocialEvent> GetById(Guid id)
+        public async Task<SocialEvent> GetById(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
         }
 
-        public async Task<SocialEvent> GetByIdTracking(Guid id)
+        public async Task<SocialEvent> GetByIdTracking(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
         }
 
-        public async Task<SocialEvent> GetByName(string name)
+        public async Task<SocialEvent> GetByName(string name, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.EventName.Contains(name));
 
             return socialEvent;
         }
 
-        public async Task<List<SocialEvent>> GetAll()
+        public async Task<List<SocialEvent>> GetAll(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
 
             return socialEvents;
         }
 
-        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize)
+        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var allEvents = await _dbContext.SocialEvents
                                                     .Include(s => s.ListOfAttendees)
                                                     .AsNoTracking()
@@ -54,7 +59,8 @@ namespace EventsWebApp.Infrastructure.Repositories
                                                     .Where(s => filters.Category.IsNullOrEmpty() || s.Category == (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), filters.Category))
                                                     .Where(s => s.Place.Contains(filters.Place ?? ""))
                                                     .OrderBy(s => s.EventName).ToListAsync();
-            
+
+            cancellationToken.ThrowIfCancellationRequested();
             var onPageEvents = allEvents.Skip((pageIndex - 1) * pageSize)
                                         .Take(pageSize).ToList();
             var totalPages = (int)Math.Ceiling(allEvents.Count / (double)pageSize);
@@ -63,8 +69,9 @@ namespace EventsWebApp.Infrastructure.Repositories
         }
 
 
-        public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail)
+        public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
@@ -75,20 +82,23 @@ namespace EventsWebApp.Infrastructure.Repositories
             {
                 throw new SocialEventException("Attendee list is empty");
             }
+            cancellationToken.ThrowIfCancellationRequested();
             var attendee = attendeeList.FirstOrDefault(a => a.Email == attendeeEmail);
 
             return attendee;
         }
 
-        public async Task<Guid> Add(SocialEvent socialEvent)
+        public async Task<Guid> Add(SocialEvent socialEvent, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var entity = await _dbContext.SocialEvents.AddAsync(socialEvent);
 
             return entity.Entity.Id;
         }
 
-        public async Task<Guid> Update(SocialEvent socialEvent)
+        public async Task<Guid> Update(SocialEvent socialEvent, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await _dbContext.SocialEvents
                 .Where(x => x.Id == socialEvent.Id)
                 .ExecuteUpdateAsync(x => x
@@ -103,8 +113,9 @@ namespace EventsWebApp.Infrastructure.Repositories
             return socialEvent.Id;
         }
 
-        public async Task<int> Delete(Guid id)
+        public async Task<int> Delete(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             int rowsDeleted = await _dbContext.SocialEvents.Where(x => x.Id == id).ExecuteDeleteAsync();
 
             return rowsDeleted;

@@ -11,47 +11,54 @@ namespace EventsWebApp.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<User> GetById(Guid id)
+        public async Task<User> GetById(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             
             return user;
         }
 
-        public async Task<User> GetByIdTracking(Guid id)
+        public async Task<User> GetByIdTracking(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             return user;
         }
 
-        public async Task<User> GetByEmail(string email)
+        public async Task<User> GetByEmail(string email, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }
 
-        public async Task<User> GetByName(string name)
+        public async Task<User> GetByName(string name, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == name);
 
             return user;
         }
-        public async Task<List<User>> GetAll()
+        public async Task<List<User>> GetAll(CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             return await _dbContext.Users.AsNoTracking().ToListAsync();
         }
 
-        public async Task<Guid> Add(User user)
-        { 
+        public async Task<Guid> Add(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
             var addedUser = await _dbContext.Users.AddAsync(user);
 
             return addedUser.Entity.Id;
         }
 
-        public async Task<Guid> Update(User user)
+        public async Task<Guid> Update(User user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await _dbContext.Users
                 .Where(x => x.Id == user.Id)
                 .ExecuteUpdateAsync(x => x
@@ -62,8 +69,9 @@ namespace EventsWebApp.Infrastructure.Repositories
             return user.Id;
         }
 
-        public async Task<int> Delete(Guid id)
+        public async Task<int> Delete(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             int deletedRows = await _dbContext.Users.Where(x => x.Id == id).ExecuteDeleteAsync();
 
             return deletedRows;

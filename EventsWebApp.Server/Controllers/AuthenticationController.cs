@@ -17,18 +17,18 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        public async Task<IActionResult> Login(LoginRequest loginRequest, CancellationToken cancellationToken)
         {
-            var (accessToken, refreshToken) = await _userService.Login(loginRequest.email, loginRequest.password);
+            var (accessToken, refreshToken) = await _userService.Login(loginRequest.email, loginRequest.password, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
         }
 
         [HttpPost("/register")]
-        public async Task<IActionResult> Register(RegisterRequest registerRequest)
+        public async Task<IActionResult> Register(RegisterRequest registerRequest, CancellationToken cancellationToken)
         {
-            var (accessToken,refreshToken) = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username);
+            var (accessToken,refreshToken) = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain ="localhost"});
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
@@ -51,22 +51,24 @@ namespace EventsWebApp.Server.Controllers
 
         [HttpGet("/getRole")]
         [Authorize]
-        public IActionResult GetRole()
+        public IActionResult GetRole(CancellationToken cancellationToken)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
 
-            var role = accessToken.IsNullOrEmpty() ? null : _userService.GetRoleByToken(accessToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var role = accessToken.IsNullOrEmpty() ? null : _userService.GetRoleByToken(accessToken, cancellationToken);
 
             return Ok(role);
         }
 
         [HttpPost("/refresh")]
-        public async Task<IActionResult> Refresh()
+        public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
             var refreshToken = HttpContext.Request.Cookies["refreshToken"];
 
-            accessToken = await _userService.RefreshToken(accessToken, refreshToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            accessToken = await _userService.RefreshToken(accessToken, refreshToken, cancellationToken);
             
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));

@@ -22,11 +22,12 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetAllByUser()
+        public async Task<IActionResult> GetAllByUser(CancellationToken cancellationToken)
         {
             var accessToken = HttpContext.Request.Cookies["accessToken"];
-            var attendees = await _attendeeService.GetAttendeesByToken(accessToken);
+            var attendees = await _attendeeService.GetAttendeesByToken(accessToken, cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             var responseList = attendees.Select(_mapper.Map<AttendeeResponse>).ToList();
             return Ok(responseList);
         }
@@ -34,18 +35,18 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getAttendeeById")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetById([FromQuery] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var attendee = await _attendeeService.GetAttendeeById(id);
+            var attendee = await _attendeeService.GetAttendeeById(id, cancellationToken);
             return Ok(attendee);
         }
 
         [HttpDelete]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id)
+        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var attendeeId = await _attendeeService.DeleteAttendee(id);
+            var attendeeId = await _attendeeService.DeleteAttendee(id,cancellationToken);
             return Ok(attendeeId);
         }
     }

@@ -7,6 +7,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Domain.PaginationHandlers;
 using System.Text;
+using System.Threading;
 
 namespace EventsWebApp.Application.Services
 {
@@ -26,15 +27,17 @@ namespace EventsWebApp.Application.Services
             _validator = validator;
         }
 
-        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex = 1, int pageSize = 10)
+        public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
-            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(filters, pageIndex, pageSize);
+            cancellationToken.ThrowIfCancellationRequested();
+            var socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(filters, pageIndex, pageSize, cancellationToken);
             return socialEvents;
         }
 
-        public async Task<SocialEvent> GetSocialEventById(Guid id)
+        public async Task<SocialEvent> GetSocialEventById(Guid id, CancellationToken cancellationToken)
         {
-            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
+            cancellationToken.ThrowIfCancellationRequested();
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id, cancellationToken);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");
@@ -42,9 +45,10 @@ namespace EventsWebApp.Application.Services
             return socialEvent;
         }
 
-        public async Task<SocialEvent> GetSocialEventByName(string name)
+        public async Task<SocialEvent> GetSocialEventByName(string name, CancellationToken cancellationToken)
         {
-            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByName(name);
+            cancellationToken.ThrowIfCancellationRequested();
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByName(name, cancellationToken);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");
@@ -52,18 +56,20 @@ namespace EventsWebApp.Application.Services
             return socialEvent;
         }
 
-        public async Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken)
+        public async Task<(SocialEvent, bool)> GetSocialEventByIdWithToken(Guid id, string accessToken, CancellationToken cancellationToken)
         {
             var userId = CheckToken(accessToken);
-            var socialEvent = await GetSocialEventById(id);
+            cancellationToken.ThrowIfCancellationRequested();
+            var socialEvent = await GetSocialEventById(id, cancellationToken);
             var attendee = socialEvent.ListOfAttendees.FirstOrDefault((a) => a.UserId == userId);
             return (socialEvent, attendee != null);
         }
 
 
-        public async Task<List<Attendee>> GetAttendeesById(Guid id)
+        public async Task<List<Attendee>> GetAttendeesById(Guid id, CancellationToken cancellationToken)
         {
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id);
+            cancellationToken.ThrowIfCancellationRequested();
+            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(id, cancellationToken);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");
@@ -71,18 +77,20 @@ namespace EventsWebApp.Application.Services
             return socialEvent.ListOfAttendees;
         }
 
-        public async Task<Guid> CreateSocialEvent(SocialEvent socialEvent)
+        public async Task<Guid> CreateSocialEvent(SocialEvent socialEvent, CancellationToken cancellationToken)
         {
             ValidateSocialEvent(socialEvent);
 
-            var id = await _appUnitOfWork.SocialEventRepository.Add(socialEvent);
+            cancellationToken.ThrowIfCancellationRequested();
+            var id = await _appUnitOfWork.SocialEventRepository.Add(socialEvent, cancellationToken);
             _appUnitOfWork.Save();
             return id;
         }
 
-        public async Task<Guid> UpdateSocialEvent(SocialEvent socialEvent)
+        public async Task<Guid> UpdateSocialEvent(SocialEvent socialEvent, CancellationToken cancellationToken)
         {
-            var candidate = await _appUnitOfWork.SocialEventRepository.GetById(socialEvent.Id);
+            cancellationToken.ThrowIfCancellationRequested();
+            var candidate = await _appUnitOfWork.SocialEventRepository.GetById(socialEvent.Id, cancellationToken);
             if (candidate == null)
             {
                 throw new SocialEventException("No social event found");
@@ -95,22 +103,25 @@ namespace EventsWebApp.Application.Services
 
             ValidateSocialEvent(socialEvent);
 
+            cancellationToken.ThrowIfCancellationRequested();
             bool isDateChanged = !candidate.Date.Equals(socialEvent.Date);
             bool isPlaceChanged = candidate.Place != socialEvent.Place;
-            var id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent);
+            var id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent, cancellationToken);
 
             _appUnitOfWork.Save();
 
-            if(isDateChanged || isPlaceChanged)
+            cancellationToken.ThrowIfCancellationRequested();
+            if (isDateChanged || isPlaceChanged)
             {
                 candidate.ListOfAttendees.ForEach((attendee) => _emailSender.SendEmailAsync(attendee.Email, "One of the social events that you applied to were changed!", $"Event {socialEvent.EventName} now has current Date of Event is {socialEvent.Date}, current Place of Event is {socialEvent.Place}"));
             }
             return id;
         }
 
-        public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId)
+        public async Task<Guid> AddAttendeeToEvent(Guid socialEventId, Attendee attendee, Guid userId, CancellationToken cancellationToken)
         {
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdTracking(socialEventId);
+            cancellationToken.ThrowIfCancellationRequested();
+            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdTracking(socialEventId, cancellationToken);
 
             if (socialEvent == null)
             {
@@ -123,7 +134,8 @@ namespace EventsWebApp.Application.Services
             {
                 attendeesList = new List<Attendee>();
             }
-            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email);
+            cancellationToken.ThrowIfCancellationRequested();
+            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email, cancellationToken);
             if (candidate != null)
             {
                 throw new SocialEventException("This attendee already in the list");
@@ -133,26 +145,28 @@ namespace EventsWebApp.Application.Services
                 throw new SocialEventException("Max attendee number reached");
             }
 
-            var resultId = await _attendeeService.AddAttendee(attendee, socialEvent, userId);
+            cancellationToken.ThrowIfCancellationRequested();
+            var resultId = await _attendeeService.AddAttendee(attendee, socialEvent, userId, cancellationToken);
 
             _appUnitOfWork.Save();
             return resultId;
         }
 
-        public async Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken)
+        public async Task<Guid> AddAttendeeToEventWithToken(Guid socialEventId, Attendee attendee, string accessToken, CancellationToken cancellationToken)
         {
             var userId = CheckToken(accessToken);
-            return await AddAttendeeToEvent(socialEventId, attendee,userId);
+            return await AddAttendeeToEvent(socialEventId, attendee,userId, cancellationToken);
         }
 
-        public async Task<Guid> DeleteSocialEvent(Guid id)
+        public async Task<Guid> DeleteSocialEvent(Guid id, CancellationToken cancellationToken)
         {
-            var rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(id);
+            var rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(id, cancellationToken);
             if (rowsDeleted == 0)
             {
                 throw new SocialEventException("Social event wasn't deleted");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             _appUnitOfWork.Save();
             return id;
         }

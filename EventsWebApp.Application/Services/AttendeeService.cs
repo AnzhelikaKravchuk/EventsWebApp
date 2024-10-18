@@ -5,7 +5,6 @@ using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Text;
-
 namespace EventsWebApp.Application.Services
 {
     public class AttendeeService : IDisposable, IAttendeeService
@@ -20,38 +19,41 @@ namespace EventsWebApp.Application.Services
             _jwtProvider = jwtProvider;
         }
 
-        public async Task<Attendee> GetAttendeeById(Guid id)
+        public async Task<Attendee> GetAttendeeById(Guid id, CancellationToken cancellationToken)
         {
-            return await _appUnitOfWork.AttendeeRepository.GetById(id);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _appUnitOfWork.AttendeeRepository.GetById(id, cancellationToken);
         }
 
-        public async Task<List<Attendee>> GetAttendeesByToken(string accessToken)
+        public async Task<List<Attendee>> GetAttendeesByToken(string accessToken, CancellationToken cancellationToken)
         {
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(accessToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             if (userId == null)
             {
                 throw new UserException("No user id found");
             }
 
-            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(Guid.Parse(userId));
+            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(Guid.Parse(userId), cancellationToken);
         }
 
-        public async Task<List<Attendee>> GetAllAttendeesByUserId(Guid userId)
+        public async Task<List<Attendee>> GetAllAttendeesByUserId(Guid userId, CancellationToken cancellationToken)
         {
-            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(userId);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _appUnitOfWork.AttendeeRepository.GetAllByUserId(userId, cancellationToken);
         }
 
-        public async Task<List<Attendee>> GetAllAttendees()
+        public async Task<List<Attendee>> GetAllAttendees(CancellationToken cancellationToken)
         {
-            return await _appUnitOfWork.AttendeeRepository.GetAll();
-
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _appUnitOfWork.AttendeeRepository.GetAll(cancellationToken);
         }
 
-        public async Task<Guid> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId)
+        public async Task<Guid> AddAttendee(Attendee attendee, SocialEvent socialEvent, Guid userId, CancellationToken cancellationToken)
         {
-            User user = await _appUnitOfWork.UserRepository.GetByIdTracking(userId);
+            User user = await _appUnitOfWork.UserRepository.GetByIdTracking(userId, cancellationToken);
 
             if (user == null)
             {
@@ -60,37 +62,38 @@ namespace EventsWebApp.Application.Services
             attendee.SocialEvent = socialEvent;
             attendee.User = user;
 
+            cancellationToken.ThrowIfCancellationRequested();
             ValidateAttendee(attendee);
 
             socialEvent.ListOfAttendees.Add(attendee);
-            var resultId = await _appUnitOfWork.AttendeeRepository.Add(attendee);
+            var resultId = await _appUnitOfWork.AttendeeRepository.Add(attendee, cancellationToken);
             _appUnitOfWork.Save();
             return resultId;
         }
 
-        public async Task<Guid> UpdateAttendee(Attendee attendee)
+        public async Task<Guid> UpdateAttendee(Attendee attendee, CancellationToken cancellationToken)
         {
             ValidateAttendee(attendee);
 
-            var id = await _appUnitOfWork.AttendeeRepository.Update(attendee);
+            cancellationToken.ThrowIfCancellationRequested();
+            var id = await _appUnitOfWork.AttendeeRepository.Update(attendee, cancellationToken);
 
             _appUnitOfWork.Save();
             return id;
         }
 
-        public async Task<Guid> DeleteAttendee(Guid id)
+        public async Task<Guid> DeleteAttendee(Guid id, CancellationToken cancellationToken)
         {
-            var attendee = await _appUnitOfWork.AttendeeRepository.GetById(id);
+            var attendee = await _appUnitOfWork.AttendeeRepository.GetById(id, cancellationToken);
 
             if (attendee == null)
             {
                 throw new AttendeeException("No attendee found");
             }
 
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(attendee.SocialEvent.Id);
+            cancellationToken.ThrowIfCancellationRequested();
 
-            //socialEvent.ListOfAttendees.Remove(attendee);
-            await _appUnitOfWork.AttendeeRepository.Delete(id);
+            await _appUnitOfWork.AttendeeRepository.Delete(id, cancellationToken);
 
             _appUnitOfWork.Save();
             return id;
