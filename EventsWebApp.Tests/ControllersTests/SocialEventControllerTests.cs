@@ -93,9 +93,9 @@ namespace EventsWebApp.Tests.ControllersTests
             int pageSize = 10;
             AppliedFilters filters = A.Fake<AppliedFilters>();
             var paginatedList = new PaginatedList<SocialEvent> { Items = new List<SocialEvent>()};
-            SocialEventResponse socialEventResponse = A.Fake<SocialEventResponse>();
+            SocialEventDto socialEventResponse = A.Fake<SocialEventDto>();
             A.CallTo(() => _socialEventService.GetSocialEvents(filters, pageIndex, pageSize)).Returns(paginatedList);
-            A.CallTo(() => _mapper.Map<SocialEventResponse>(A<SocialEvent>.Ignored)).Returns(socialEventResponse);
+            A.CallTo(() => _mapper.Map<SocialEventDto>(A<SocialEvent>.Ignored)).Returns(socialEventResponse);
             var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
 
             //Act

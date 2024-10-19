@@ -4,6 +4,9 @@ using EventsWebApp.Application.Dto;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
 using EventsWebApp.Application.Users.Commands.UpdateUserCommand;
+using EventsWebApp.Application.SocialEvents.Commands.CreateSocialEventCommand;
+using EventsWebApp.Application.SocialEvents.Commands.UpdateSocialEventCommand;
+using EventsWebApp.Application.SocialEvents.Commands.AddAttendeeCommand;
 
 namespace EventsWebApp.Application.Mapper
 {
@@ -25,18 +28,19 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
                 ;
 
-            CreateMap<CreateSocialEventRequest, SocialEvent>()
+            CreateMap<CreateSocialEventCommand, SocialEvent>()
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date).Date))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date)))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), src.Category)))
                 .ForMember(dest => dest.MaxAttendee, opt => opt.MapFrom(src => src.MaxAttendee))
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Image, opt => opt.Ignore())
                 ;
 
-            CreateMap<SocialEvent, SocialEventResponse>()
+            CreateMap<SocialEvent, SocialEventDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -48,8 +52,8 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.MapFrom(src => src.ListOfAttendees))
                 ;
 
-            CreateMap<UpdateSocialEventRequest, SocialEvent>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.Parse(src.Id)))
+            CreateMap<UpdateSocialEventCommand, SocialEvent>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Place, opt => opt.MapFrom(src => src.Place))
@@ -60,7 +64,7 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
                 ;
 
-            CreateMap<CreateAttendeeRequest, Attendee>()
+            CreateMap<AddAttendeeCommand, Attendee>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.Surname))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))

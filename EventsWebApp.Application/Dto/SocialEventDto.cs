@@ -2,7 +2,7 @@ using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Application.Dto
 {
-    public record SocialEventResponse
+    public record SocialEventDto
     {
         public Guid Id { get; set; }
         public string EventName { get; set; } = string.Empty;
@@ -15,9 +15,9 @@ namespace EventsWebApp.Application.Dto
         public string Image { get; set; }
         public bool IsAlreadyInList { get; set; } = false;
 
-        public SocialEventResponse() { }
+        public SocialEventDto() { }
 
-        public SocialEventResponse(Guid id, string name,
+        public SocialEventDto(Guid id, string name,
                                             string description,
                                             string place,
                                             string date,
