@@ -3,6 +3,8 @@ using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MediatR;
+using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
@@ -10,10 +12,12 @@ namespace EventsWebApp.Server.Controllers
     public class AuthenticationController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public AuthenticationController(IUserService userService)
+        public AuthenticationController(IUserService userService, IMediator mediator)
         {
             _userService = userService;
+            _mediator = mediator;
         }
 
         [HttpPost("/login")]
@@ -26,9 +30,9 @@ namespace EventsWebApp.Server.Controllers
         }
 
         [HttpPost("/register")]
-        public async Task<IActionResult> Register(RegisterRequest registerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand, CancellationToken cancellationToken)
         {
-            var (accessToken,refreshToken) = await _userService.Register(registerRequest.email, registerRequest.password, registerRequest.username, cancellationToken);
+            var (accessToken, refreshToken) = await _mediator.Send(registerUserCommand, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain ="localhost"});
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));

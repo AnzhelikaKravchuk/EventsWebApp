@@ -7,7 +7,6 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Models;
 using System.Security.Claims;
 using System.Text;
-using System.Threading;
 
 namespace EventsWebApp.Application.Services
 {

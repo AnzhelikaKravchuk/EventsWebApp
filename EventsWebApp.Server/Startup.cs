@@ -1,5 +1,5 @@
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Server.Mapper;
+using EventsWebApp.Application.Mapper;
 using EventsWebApp.Application.Services;
 using EventsWebApp.Infrastructure.Handlers;
 using EventsWebApp.Infrastructure.Repositories;
@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Infrastructure.DataSeeder;
 using EventsWebApp.Domain.Interfaces.Repositories;
+using EventsWebApp.Application.Extensions;
 
 namespace EventsWebApp.Server
 {
@@ -65,6 +66,7 @@ namespace EventsWebApp.Server
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
 
+            services.AddMediatRServices();
             services.AddControllers().AddJsonOptions(x =>x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();

@@ -2,13 +2,22 @@
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Domain.Enums;
+using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
 
-namespace EventsWebApp.Server.Mapper
+namespace EventsWebApp.Application.Mapper
 {
     public class AppMappingProfile : Profile
     {
         public AppMappingProfile() {
             CreateMap<User, UserDto>();
+
+
+            CreateMap<RegisterUserCommand, User>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
+                .AfterMap((com, user)=>user.Role = E_Role.User)
+                ;
 
             CreateMap<CreateSocialEventRequest, SocialEvent>()
                 .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))

@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +22,28 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         _logger.LogError(
             exception, "Exception occurred: {Message}", exception.Message);
 
-        var problemDetails = new ProblemDetails
-        {
+        var problemDetails = new {
             Status = StatusCodes.Status500InternalServerError,
-            Detail = exception.Message
+            Detail = exception.Message,
+            Errors = GetErrors(exception)
         };
 
-        httpContext.Response.StatusCode = problemDetails.Status.Value;
+        httpContext.Response.StatusCode = problemDetails.Status;
 
         await httpContext.Response
             .WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
+    }
+
+    private static List<ValidationFailure> GetErrors(Exception exception)
+    {
+        List<ValidationFailure> errors = null;
+        if (exception is ValidationException validationException)
+        {
+            errors = validationException.Errors.ToList();
+        }
+        return errors;
     }
     }
 
