@@ -7,13 +7,15 @@ namespace EventsWebApp.Application.Users.Commands.RegisterUserCommand
         public RegisterUserValidator() {
             RuleFor(user => user.Email)
                 .NotEmpty()
+                .MaximumLength(100)
                 .EmailAddress();
 
             RuleFor(user => user.Password)
                 .NotEmpty();
 
             RuleFor(user => user.Username)
-                .NotEmpty();
+                .NotEmpty()
+                .MaximumLength(100);
         }
     }
 }

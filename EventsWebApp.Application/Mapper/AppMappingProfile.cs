@@ -3,6 +3,7 @@ using EventsWebApp.Domain.Models;
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
+using EventsWebApp.Application.Users.Commands.UpdateUserCommand;
 
 namespace EventsWebApp.Application.Mapper
 {
@@ -11,12 +12,17 @@ namespace EventsWebApp.Application.Mapper
         public AppMappingProfile() {
             CreateMap<User, UserDto>();
 
-
             CreateMap<RegisterUserCommand, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
                 .AfterMap((com, user)=>user.Role = E_Role.User)
+                ;
+
+            CreateMap<UpdateUserCommand, User>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
                 ;
 
             CreateMap<CreateSocialEventRequest, SocialEvent>()

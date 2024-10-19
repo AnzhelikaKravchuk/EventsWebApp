@@ -35,6 +35,14 @@ namespace EventsWebApp.Infrastructure.Repositories
             return user;
         }
 
+        public async Task<User> GetByEmailTracking(string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+
+            return user;
+        }
+
         public async Task<User> GetByName(string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -62,7 +70,6 @@ namespace EventsWebApp.Infrastructure.Repositories
             await _dbContext.Users
                 .Where(x => x.Id == user.Id)
                 .ExecuteUpdateAsync(x => x
-                    .SetProperty(u => u.Email, u => user.Email)
                     .SetProperty(u => u.PasswordHash, u => user.PasswordHash)
                     .SetProperty(u => u.Username, u => user.Username)
                     );

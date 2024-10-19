@@ -23,7 +23,7 @@ namespace EventsWebApp.Application.Users.Commands.RegisterUserCommand
 
         public async Task<(string, string)> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var candidate = await _appUnitOfWork.UserRepository.GetByEmail(request.Email, cancellationToken);
+            var candidate = await _appUnitOfWork.UserRepository.GetByEmailTracking(request.Email, cancellationToken);
             if (candidate != null)
             {
                 throw new UserException("User already exists");

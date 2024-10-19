@@ -1,29 +1,28 @@
-using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
 using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
+using EventsWebApp.Application.Users.Commands.LoginUserCommand;
+using EventsWebApp.Application.Users.Queries.GetRoleByTokenQuery;
+using EventsWebApp.Application.Users.Commands.RefreshTokenCommand;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class AuthenticationController : Controller
     {
-        private readonly IUserService _userService;
         private readonly IMediator _mediator;
 
-        public AuthenticationController(IUserService userService, IMediator mediator)
+        public AuthenticationController(IMediator mediator)
         {
-            _userService = userService;
             _mediator = mediator;
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Login(LoginRequest loginRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login(LoginUserCommand loginRequest, CancellationToken cancellationToken)
         {
-            var (accessToken, refreshToken) = await _userService.Login(loginRequest.email, loginRequest.password, cancellationToken);
+            var (accessToken, refreshToken) = await _mediator.Send(loginRequest, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
@@ -60,7 +59,7 @@ namespace EventsWebApp.Server.Controllers
             var accessToken = HttpContext.Request.Cookies["accessToken"];
 
             cancellationToken.ThrowIfCancellationRequested();
-            var role = accessToken.IsNullOrEmpty() ? null : _userService.GetRoleByToken(accessToken, cancellationToken);
+            var role = accessToken.IsNullOrEmpty() ? null : _mediator.Send(new GetRoleByTokenQuery(accessToken), cancellationToken).Result;
 
             return Ok(role);
         }
@@ -72,7 +71,7 @@ namespace EventsWebApp.Server.Controllers
             var refreshToken = HttpContext.Request.Cookies["refreshToken"];
 
             cancellationToken.ThrowIfCancellationRequested();
-            accessToken = await _userService.RefreshToken(accessToken, refreshToken, cancellationToken);
+            accessToken = await _mediator.Send(new RefreshTokenCommand(accessToken, refreshToken), cancellationToken);
             
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
