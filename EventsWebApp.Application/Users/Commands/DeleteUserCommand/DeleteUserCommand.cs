@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.Users.Commands.DeleteUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
-    public record DeleteUserCommand(Guid Id) : ICommand<Guid>;
+    public record DeleteUserCommand : IdRequest, ICommand<Guid>;
 }

@@ -1,22 +1,22 @@
-using AutoMapper;
-using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using EventsWebApp.Application.Attendees.Commands;
+using EventsWebApp.Application.Validators;
+using EventsWebApp.Application.Attendees.Queries;
 
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AttendeeController : ControllerBase    
+    public class AttendeeController : ControllerBase
     {
-        private readonly IAttendeeService _attendeeService;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public AttendeeController(IAttendeeService attendeeService, IMapper mapper)
+        public AttendeeController(IMediator mediator)
         {
-            _attendeeService = attendeeService;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,29 +24,37 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetAllByUser(CancellationToken cancellationToken)
         {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
-            var attendees = await _attendeeService.GetAttendeesByToken(accessToken, cancellationToken);
-
-            cancellationToken.ThrowIfCancellationRequested();
-            var responseList = attendees.Select(_mapper.Map<AttendeeResponse>).ToList();
-            return Ok(responseList);
+            string? accessToken = HttpContext.Request.Cookies["accessToken"];
+            List<AttendeeDto> attendees = await _mediator.Send(new GetAllAttendeesQuery(accessToken), cancellationToken);
+            return Ok(attendees);
         }
 
         [HttpGet("getAttendeeById")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetById([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById([FromQuery] GetAttendeeByIdQuery request, CancellationToken cancellationToken)
         {
-            var attendee = await _attendeeService.GetAttendeeById(id, cancellationToken);
+            AttendeeDto attendee = await _mediator.Send(request, cancellationToken);
             return Ok(attendee);
+        }
+
+        [HttpPost("addAttendee")]
+        [Authorize(Policy = "User")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> AddAttendee(AddUpdateAttendeeRequest request, [FromQuery] Guid eventId, CancellationToken cancellationToken)
+        {
+            string? accessToken = HttpContext.Request.Cookies["accessToken"];
+            cancellationToken.ThrowIfCancellationRequested();
+            Guid resultId = await _mediator.Send(new AddAttendeeWithTokenCommand(request, eventId, accessToken), cancellationToken);
+            return Ok(resultId);
         }
 
         [HttpDelete]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> DeleteAttendee([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAttendee([FromQuery] DeleteAttendeeCommand request, CancellationToken cancellationToken)
         {
-            var attendeeId = await _attendeeService.DeleteAttendee(id,cancellationToken);
+            Guid attendeeId = await _mediator.Send(request, cancellationToken);
             return Ok(attendeeId);
         }
     }

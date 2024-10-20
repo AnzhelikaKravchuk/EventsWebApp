@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.DeleteSocialEventCommand
+namespace EventsWebApp.Application.SocialEvents.Commands
 {
-    public record class DeleteSocialEventCommand(Guid Id) :ICommand<Guid>;
+    public record DeleteSocialEventCommand : IdRequest, ICommand<Guid>;
 }

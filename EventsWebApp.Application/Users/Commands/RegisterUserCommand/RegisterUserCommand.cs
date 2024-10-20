@@ -1,6 +1,6 @@
 using EventsWebApp.Application.Interfaces.UseCases;
 
-namespace EventsWebApp.Application.Users.Commands.RegisterUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public record RegisterUserCommand : ICommand<(string, string)>
     {

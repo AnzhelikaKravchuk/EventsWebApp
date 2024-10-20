@@ -1,13 +1,11 @@
-﻿using FluentValidation;
+﻿using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.Users.Commands.DeleteUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
-    public class DeleteUserValidator : AbstractValidator<DeleteUserCommand>
+    public class DeleteUserValidator : IdValidator<DeleteUserCommand>
     {
-        public DeleteUserValidator()
+        public DeleteUserValidator() : base()
         {
-            RuleFor(user => user.Id)
-                .NotEmpty();
         }
     }
 }

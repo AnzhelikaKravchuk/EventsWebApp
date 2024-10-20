@@ -1,4 +1,6 @@
-﻿namespace EventsWebApp.Domain.Interfaces.Repositories
+﻿using EventsWebApp.Domain.Models;
+
+namespace EventsWebApp.Domain.Interfaces.Repositories
 {
     public interface IBaseRepository<T>
     {

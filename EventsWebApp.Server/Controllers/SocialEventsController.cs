@@ -1,19 +1,14 @@
 using AutoMapper;
 using EventsWebApp.Domain.Filters;
 using EventsWebApp.Application.Interfaces.Services;
-using EventsWebApp.Domain.Models;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using EventsWebApp.Application.SocialEvents.Queries.GetPaginatedSocialEventsQuery;
-using EventsWebApp.Application.SocialEvents.Queries.GetSocialEventByIdQuery;
-using EventsWebApp.Application.SocialEvents.Queries.GetSocialEventByUserWithTokenQuery;
-using EventsWebApp.Application.SocialEvents.Queries.GetAttendeesByEventIdQuery;
-using EventsWebApp.Application.SocialEvents.Commands.CreateSocialEventCommand;
-using EventsWebApp.Application.SocialEvents.Commands.DeleteSocialEventCommand;
-using EventsWebApp.Application.SocialEvents.Commands.UpdateSocialEventCommand;
+using EventsWebApp.Application.SocialEvents.Queries;
+using EventsWebApp.Application.SocialEvents.Commands;
+using EventsWebApp.Domain.PaginationHandlers;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -21,17 +16,13 @@ namespace EventsWebApp.Server.Controllers
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase {
         private readonly IMediator _mediator;
-        private readonly ISocialEventService _socialEventService;
         private readonly IImageService _imageService;
-        private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public SocialEventsController(IMediator mediator, ISocialEventService socialEventService, IImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public SocialEventsController(IMediator mediator, IImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _mediator = mediator;
-            _socialEventService = socialEventService;
             _imageService = imageService;
-            _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -40,7 +31,7 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventByIdWithToken([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
+            string? accessToken = HttpContext.Request.Cookies["accessToken"];
             SocialEventDto socialEvent;
             socialEvent = await _mediator.Send( new GetSocialEventByUserWithTokenQuery(id, accessToken), cancellationToken);
             return Ok(socialEvent);
@@ -51,7 +42,7 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventById([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var socialEvent = await _mediator.Send(new GetSocialEventByIdQuery(id), cancellationToken);
+            SocialEventDto socialEvent = await _mediator.Send(new GetSocialEventByIdQuery(id), cancellationToken);
             return Ok(socialEvent);
         }
 
@@ -60,7 +51,7 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetEventByName([FromQuery] string name, CancellationToken cancellationToken)
         {
-            var socialEvent = await _mediator.Send(new GetSocialEventByNameQuery(name), cancellationToken);
+            SocialEventDto socialEvent = await _mediator.Send(new GetSocialEventByNameQuery(name), cancellationToken);
             return Ok(socialEvent);
         }
 
@@ -69,7 +60,7 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var attendees = await _mediator.Send(new GetAttendeesByEventIdQuery(id), cancellationToken);
+            List<AttendeeDto> attendees = await _mediator.Send(new GetAttendeesByEventIdQuery(id), cancellationToken);
 
             return Ok(attendees);
         }
@@ -79,7 +70,7 @@ namespace EventsWebApp.Server.Controllers
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetSocialEvents([FromForm] AppliedFilters filters, CancellationToken cancellationToken, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var socialEvents = await _mediator.Send(new GetPaginatedSocialEventsQuery(filters, pageIndex, pageSize), cancellationToken);
+            PaginatedList<SocialEventDto> socialEvents = await _mediator.Send(new GetPaginatedSocialEventsQuery(filters, pageIndex, pageSize), cancellationToken);
             
             return Ok(socialEvents);
         }
@@ -95,35 +86,23 @@ namespace EventsWebApp.Server.Controllers
                 request.Image = newPath;
             }
             cancellationToken.ThrowIfCancellationRequested();
-            var id = await _mediator.Send(request, cancellationToken);
+            Guid id = await _mediator.Send(request, cancellationToken);
             return Ok(id);
         }
 
-        [HttpPost("addAttendee")]
-        [Authorize(Policy = "User")]
-        [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> AddAttendee(CreateAttendeeRequest request, [FromQuery] Guid eventId, CancellationToken cancellationToken)
-        {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
-            var attendee = _mapper.Map<Attendee>(request);
-            attendee.DateOfRegistration = DateTime.Now.Date;
-            cancellationToken.ThrowIfCancellationRequested();
-            var resultId = await _socialEventService.AddAttendeeToEventWithToken(eventId, attendee, accessToken, cancellationToken);
-            return Ok(resultId);
-        }
 
         [HttpDelete("deleteEvent")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Delete([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete([FromQuery] DeleteSocialEventCommand request, CancellationToken cancellationToken)
         {
-            var socialEvent = await _mediator.Send(new GetSocialEventByIdQuery(id), cancellationToken);
+            SocialEventDto socialEvent = await _mediator.Send(new GetSocialEventByIdQuery(request.Id), cancellationToken);
             if (!socialEvent.Image.IsNullOrEmpty())
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
             }
             cancellationToken.ThrowIfCancellationRequested();
-            await _mediator.Send(new DeleteSocialEventCommand(id), cancellationToken);
+            await _mediator.Send(request, cancellationToken);
             return Ok();
         }
 

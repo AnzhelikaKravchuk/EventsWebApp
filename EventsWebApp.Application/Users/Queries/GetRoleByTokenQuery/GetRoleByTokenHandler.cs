@@ -2,7 +2,7 @@
 using EventsWebApp.Application.Interfaces.UseCases;
 using System.Security.Claims;
 
-namespace EventsWebApp.Application.Users.Queries.GetRoleByTokenQuery
+namespace EventsWebApp.Application.Users.Queries
 {
     public class GetRoleByTokenHandler : IQueryHandler<GetRoleByTokenQuery, string?>
     {

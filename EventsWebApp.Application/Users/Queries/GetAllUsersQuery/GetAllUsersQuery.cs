@@ -1,7 +1,7 @@
 ﻿using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 
-namespace EventsWebApp.Application.Users.Queries.GetAllUsersQuery
+namespace EventsWebApp.Application.Users.Queries
 {
     public record GetAllUsersQuery : IQuery<List<UserDto>>;
 }

@@ -2,7 +2,7 @@
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 
-namespace EventsWebApp.Application.Users.Commands.DeleteUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public class DeleteUserHandler : ICommandHandler<DeleteUserCommand, Guid>
     {

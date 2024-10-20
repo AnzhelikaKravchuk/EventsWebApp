@@ -129,22 +129,22 @@ namespace EventsWebApp.Application.Services
 
             var attendeesList = socialEvent.ListOfAttendees;
 
-            if (attendeesList == null)
-            {
-                attendeesList = new List<Attendee>();
-            }
-            cancellationToken.ThrowIfCancellationRequested();
-            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email, cancellationToken);
-            if (candidate != null)
-            {
-                throw new SocialEventException("This attendee already in the list");
-            }
-            if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
-            {
-                throw new SocialEventException("Max attendee number reached");
-            }
+            //if (attendeesList == null)
+            //{
+            //    attendeesList = new List<Attendee>();
+            //}
+            //cancellationToken.ThrowIfCancellationRequested();
+            //Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email, cancellationToken);
+            //if (candidate != null)
+            //{
+            //    throw new SocialEventException("This attendee already in the list");
+            //}
+            //if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
+            //{
+            //    throw new SocialEventException("Max attendee number reached");
+            //}
 
-            cancellationToken.ThrowIfCancellationRequested();
+            //cancellationToken.ThrowIfCancellationRequested();
             var resultId = await _attendeeService.AddAttendee(attendee, socialEvent, userId, cancellationToken);
 
             _appUnitOfWork.Save();

@@ -1,14 +1,12 @@
-﻿using FluentValidation;
+﻿using EventsWebApp.Application.Validators;
+using FluentValidation;
 
-namespace EventsWebApp.Application.Users.Commands.UpdateUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
-    public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
+    public class UpdateUserValidator : IdValidator<UpdateUserCommand>
     {
-        public UpdateUserValidator()
+        public UpdateUserValidator() : base()
         {
-            RuleFor(user => user.Id)
-                .NotEmpty();
-
             RuleFor(user => user.Password)
                 .NotEmpty();
 

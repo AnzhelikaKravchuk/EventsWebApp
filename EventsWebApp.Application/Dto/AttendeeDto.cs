@@ -1,6 +1,6 @@
 namespace EventsWebApp.Application.Dto
 {
-    public record AttendeeResponse
+    public record AttendeeDto
     {
         public string Id { get; set; }
         public string Name { get; set; } = string.Empty;

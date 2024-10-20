@@ -3,7 +3,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 
-namespace EventsWebApp.Application.Users.Commands.RefreshTokenCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public class RefreshTokenHandler : ICommandHandler<RefreshTokenCommand, string>
     {

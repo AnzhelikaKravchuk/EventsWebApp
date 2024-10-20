@@ -5,7 +5,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.Users.Queries.GetUserByIdQuery
+namespace EventsWebApp.Application.Users.Queries
 {
     public class GetUserByIdHandler : IQueryHandler<GetUserByIdQuery, UserDto>
     {

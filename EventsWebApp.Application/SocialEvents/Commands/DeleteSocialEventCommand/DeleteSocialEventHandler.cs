@@ -2,7 +2,7 @@
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.DeleteSocialEventCommand
+namespace EventsWebApp.Application.SocialEvents.Commands
 {
     public class DeleteSocialEventHandler : ICommandHandler<DeleteSocialEventCommand, Guid>
     {

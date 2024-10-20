@@ -15,7 +15,7 @@ export async function AddAttendeeToEvent(
   eventId: string
 ): Promise<boolean> {
   const response = await axios
-    .post(`${host}/SocialEvents/addAttendee?eventId=${eventId}`, data, {
+    .post(`${host}/Attendee/addAttendee?eventId=${eventId}`, data, {
       withCredentials: true,
     })
     .then(() => true)

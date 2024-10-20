@@ -68,24 +68,19 @@ namespace EventsWebApp.Infrastructure.Repositories
             return new PaginatedList<SocialEvent>(onPageEvents, pageIndex, totalPages);
         }
 
-
-        public async Task<Attendee> GetAttendeeByEmail(Guid socialEventId, string attendeeEmail, CancellationToken cancellationToken)
+        public async Task<(Attendee?, SocialEvent)> GetAttendeeWithEventByEmail(Guid socialEventId, string attendeeEmail, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == socialEventId);
+            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
-                throw new SocialEventException("No event was found");
+                throw new SocialEventException("No social event was found");
             }
             var attendeeList = socialEvent.ListOfAttendees;
-            if (attendeeList == null)
-            {
-                throw new SocialEventException("Attendee list is empty");
-            }
             cancellationToken.ThrowIfCancellationRequested();
-            var attendee = attendeeList.FirstOrDefault(a => a.Email == attendeeEmail);
+            var attendee = attendeeList?.FirstOrDefault(a => a.Email == attendeeEmail);
 
-            return attendee;
+            return (attendee, socialEvent);
         }
 
         public async Task<Guid> Add(SocialEvent socialEvent, CancellationToken cancellationToken)

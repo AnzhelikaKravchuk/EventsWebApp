@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
-using EventsWebApp.Application.Users.Commands.LoginUserCommand;
-using EventsWebApp.Application.Users.Queries.GetRoleByTokenQuery;
-using EventsWebApp.Application.Users.Commands.RefreshTokenCommand;
+using EventsWebApp.Application.Users.Commands;
+using EventsWebApp.Application.Users.Queries;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
@@ -22,7 +20,7 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost("/login")]
         public async Task<IActionResult> Login(LoginUserCommand loginRequest, CancellationToken cancellationToken)
         {
-            var (accessToken, refreshToken) = await _mediator.Send(loginRequest, cancellationToken);
+            (string accessToken, string refreshToken) = await _mediator.Send(loginRequest, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
@@ -31,7 +29,7 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost("/register")]
         public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand, CancellationToken cancellationToken)
         {
-            var (accessToken, refreshToken) = await _mediator.Send(registerUserCommand, cancellationToken);
+            (string accessToken, string refreshToken) = await _mediator.Send(registerUserCommand, cancellationToken);
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain ="localhost"});
             HttpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
@@ -56,10 +54,10 @@ namespace EventsWebApp.Server.Controllers
         [Authorize]
         public IActionResult GetRole(CancellationToken cancellationToken)
         {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
+            string? accessToken = HttpContext.Request.Cookies["accessToken"];
 
             cancellationToken.ThrowIfCancellationRequested();
-            var role = accessToken.IsNullOrEmpty() ? null : _mediator.Send(new GetRoleByTokenQuery(accessToken), cancellationToken).Result;
+            string role = accessToken.IsNullOrEmpty() ? null : _mediator.Send(new GetRoleByTokenQuery(accessToken), cancellationToken).Result;
 
             return Ok(role);
         }
@@ -67,8 +65,8 @@ namespace EventsWebApp.Server.Controllers
         [HttpPost("/refresh")]
         public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
-            var accessToken = HttpContext.Request.Cookies["accessToken"];
-            var refreshToken = HttpContext.Request.Cookies["refreshToken"];
+            string? accessToken = HttpContext.Request.Cookies["accessToken"];
+            string? refreshToken = HttpContext.Request.Cookies["refreshToken"];
 
             cancellationToken.ThrowIfCancellationRequested();
             accessToken = await _mediator.Send(new RefreshTokenCommand(accessToken, refreshToken), cancellationToken);

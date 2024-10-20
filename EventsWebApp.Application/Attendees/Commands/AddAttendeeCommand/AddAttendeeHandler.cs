@@ -4,7 +4,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.AddAttendeeCommand
+namespace EventsWebApp.Application.Attendees.Commands
 {
     public class AddAttendeeHandler : ICommandHandler<AddAttendeeCommand, Guid>
     {
@@ -18,25 +18,40 @@ namespace EventsWebApp.Application.SocialEvents.Commands.AddAttendeeCommand
 
         public async Task<Guid> Handle(AddAttendeeCommand request, CancellationToken cancellationToken)
         {
-            var attendee = _mapper.Map<Attendee>(request);
+            Attendee attendee = _mapper.Map<Attendee>(request.Request);
             attendee.DateOfRegistration = DateTime.Now.Date;
 
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdTracking(socialEventId, cancellationToken);
 
-            if (socialEvent == null)
+            (Attendee? candidate, SocialEvent socialEvent) = await _appUnitOfWork.SocialEventRepository.GetAttendeeWithEventByEmail(request.EventId, attendee.Email, cancellationToken);
+
+            ValidateSocialEventAndCandidate(socialEvent, candidate, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            User user = await _appUnitOfWork.UserRepository.GetByIdTracking(request.UserId, cancellationToken);
+
+            if (user == null)
             {
-                throw new SocialEventException("No social event was found");
+                throw new UserException("No user was found");
             }
+            attendee.SocialEvent = socialEvent;
+            attendee.User = user;
 
+            cancellationToken.ThrowIfCancellationRequested();
+            socialEvent.ListOfAttendees.Add(attendee);
+            Guid resultId = await _appUnitOfWork.AttendeeRepository.Add(attendee, cancellationToken);
+            _appUnitOfWork.Save();
+            return resultId;
+        }
+
+        public void ValidateSocialEventAndCandidate(SocialEvent socialEvent, Attendee? candidate, CancellationToken cancellationToken)
+        {
             var attendeesList = socialEvent.ListOfAttendees;
-
             if (attendeesList == null)
             {
                 attendeesList = new List<Attendee>();
             }
+
             cancellationToken.ThrowIfCancellationRequested();
-            Attendee candidate = await _appUnitOfWork.SocialEventRepository.GetAttendeeByEmail(socialEventId, attendee.Email, cancellationToken);
             if (candidate != null)
             {
                 throw new SocialEventException("This attendee already in the list");
@@ -45,11 +60,6 @@ namespace EventsWebApp.Application.SocialEvents.Commands.AddAttendeeCommand
             {
                 throw new SocialEventException("Max attendee number reached");
             }
-            cancellationToken.ThrowIfCancellationRequested();
-            var resultId = await _attendeeService.AddAttendee(attendee, socialEvent, userId, cancellationToken);
-
-            _appUnitOfWork.Save();
-            return resultId;
         }
     }
 }

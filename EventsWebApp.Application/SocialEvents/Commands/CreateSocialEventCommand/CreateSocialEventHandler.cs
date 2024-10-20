@@ -3,7 +3,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.CreateSocialEventCommand
+namespace EventsWebApp.Application.SocialEvents.Commands
 {
     public class CreateSocialEventHandler : ICommandHandler<CreateSocialEventCommand, Guid>
     {

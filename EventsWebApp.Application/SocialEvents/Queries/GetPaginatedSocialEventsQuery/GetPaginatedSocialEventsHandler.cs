@@ -4,7 +4,7 @@ using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.PaginationHandlers;
 using AutoMapper;
 
-namespace EventsWebApp.Application.SocialEvents.Queries.GetPaginatedSocialEventsQuery
+namespace EventsWebApp.Application.SocialEvents.Queries
 {
     public class GetPaginatedSocialEventsHandler : IQueryHandler<GetPaginatedSocialEventsQuery, PaginatedList<SocialEventDto>>
     {

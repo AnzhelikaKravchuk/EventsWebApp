@@ -1,12 +1,10 @@
-﻿using FluentValidation;
+﻿using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.DeleteSocialEventCommand
+namespace EventsWebApp.Application.SocialEvents.Commands
 {
-    public class DeleteSocialEventValidator : AbstractValidator<DeleteSocialEventCommand>
+    public class DeleteSocialEventValidator : IdValidator<DeleteSocialEventCommand>
     {
-        public DeleteSocialEventValidator() {
-            RuleFor(x => x.Id)
-                .NotEmpty();
+        public DeleteSocialEventValidator() : base() {
         }
     }
 }

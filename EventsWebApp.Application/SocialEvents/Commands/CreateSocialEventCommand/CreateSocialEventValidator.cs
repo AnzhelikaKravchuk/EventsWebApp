@@ -1,35 +1,11 @@
-﻿using EventsWebApp.Domain.Enums;
-using FluentValidation;
+﻿using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.SocialEvents.Commands.CreateSocialEventCommand
+namespace EventsWebApp.Application.SocialEvents.Commands
 {
-    public class CreateSocialEventValidator : AbstractValidator<CreateSocialEventCommand>
+    public class CreateSocialEventValidator : AddUpdateSocialEventValidator<CreateSocialEventCommand>
     {
-        public CreateSocialEventValidator() {
-            RuleFor(socialEvent => socialEvent.EventName)
-                .NotEmpty()
-                .MaximumLength(100);
-
-            RuleFor(socialEvent => socialEvent.Description)
-                .NotEmpty()
-                .MaximumLength(1000);
-
-            RuleFor(socialEvent => socialEvent.Date)
-                .NotEmpty()
-                .Must(date => DateTime.Parse(date) >= DateTime.Now);
-
-            RuleFor(socialEvent => socialEvent.Place)
-                .NotEmpty()
-                .MaximumLength(100);
-
-            RuleFor(socialEvent => socialEvent.Category)
-                .NotEmpty()
-                .Must(category => !category.Equals(E_SocialEventCategory.None));
-
-            RuleFor(socialEvent => socialEvent.MaxAttendee)
-                .NotEmpty()
-                .GreaterThan(0)
-                .LessThanOrEqualTo(100_000);
+        public CreateSocialEventValidator() : base() { 
+           
         }
     }
 }

@@ -2,11 +2,10 @@
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Domain.Enums;
-using EventsWebApp.Application.Users.Commands.RegisterUserCommand;
-using EventsWebApp.Application.Users.Commands.UpdateUserCommand;
-using EventsWebApp.Application.SocialEvents.Commands.CreateSocialEventCommand;
-using EventsWebApp.Application.SocialEvents.Commands.UpdateSocialEventCommand;
-using EventsWebApp.Application.SocialEvents.Commands.AddAttendeeCommand;
+using EventsWebApp.Application.SocialEvents.Commands;
+using EventsWebApp.Application.Users.Commands;
+using EventsWebApp.Application.Attendees.Commands;
+using EventsWebApp.Application.Validators;
 
 namespace EventsWebApp.Application.Mapper
 {
@@ -64,7 +63,7 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
                 ;
 
-            CreateMap<AddAttendeeCommand, Attendee>()
+            CreateMap<AddUpdateAttendeeRequest, Attendee>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.Surname))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
@@ -75,7 +74,7 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.SocialEvent, opt => opt.Ignore())
                 ;
 
-            CreateMap<Attendee, AttendeeResponse>()
+            CreateMap<Attendee, AttendeeDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.Surname))

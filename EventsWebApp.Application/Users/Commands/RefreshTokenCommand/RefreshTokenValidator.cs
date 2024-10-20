@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace EventsWebApp.Application.Users.Commands.RefreshTokenCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public class RefreshTokenValidator :AbstractValidator<RefreshTokenCommand>
     {

@@ -1,10 +1,10 @@
 ﻿using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Application.Validators;
 
-namespace EventsWebApp.Application.Users.Commands.UpdateUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
-    public record UpdateUserCommand : ICommand<Guid>
+    public record UpdateUserCommand : IdRequest,ICommand<Guid>
     {
-        public Guid Id { get; set; }
         public string Password { get; set; }
         public string Username { get; set; }
 

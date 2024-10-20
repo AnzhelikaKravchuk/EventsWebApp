@@ -5,7 +5,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.Users.Queries.GetUserByEmailQuery
+namespace EventsWebApp.Application.Users.Queries
 {
     public class GetUserByEmailHandler : IQueryHandler<GetUserByEmailQuery, UserDto>
     {

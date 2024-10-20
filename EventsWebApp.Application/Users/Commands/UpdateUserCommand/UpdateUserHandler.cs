@@ -4,7 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.Users.Commands.UpdateUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public class UpdateUserHandler : ICommandHandler<UpdateUserCommand, Guid>
     {

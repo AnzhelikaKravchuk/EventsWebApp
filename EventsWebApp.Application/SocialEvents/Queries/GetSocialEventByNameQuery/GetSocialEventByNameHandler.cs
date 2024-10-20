@@ -5,7 +5,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.SocialEvents.Queries.GetSocialEventByIdQuery
+namespace EventsWebApp.Application.SocialEvents.Queries
 {
     public class GetSocialEventByNameHandler : IQueryHandler<GetSocialEventByNameQuery, SocialEventDto>
     {

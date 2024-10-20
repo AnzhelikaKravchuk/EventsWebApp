@@ -10,6 +10,7 @@ using EventsWebApp.Domain.Filters;
 using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Http;
+using EventsWebApp.Application.Validators;
 
 namespace EventsWebApp.Tests.ControllersTests
 {
@@ -113,7 +114,7 @@ namespace EventsWebApp.Tests.ControllersTests
         {
             //Arrange
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            CreateSocialEventRequest socialEventRequest = A.Fake<CreateSocialEventRequest>();
+            AddUpdateSocialEventRequest socialEventRequest = A.Fake<AddUpdateSocialEventRequest>();
             A.CallTo(() => _mapper.Map<SocialEvent>(socialEventRequest)).Returns(socialEvent);
             var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
 
@@ -139,7 +140,7 @@ namespace EventsWebApp.Tests.ControllersTests
             };
 
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            CreateSocialEventRequest socialEventRequest = new CreateSocialEventRequest("a", "b", "c", "d", "f", 1, formFile);
+            AddUpdateSocialEventRequest socialEventRequest = new AddUpdateSocialEventRequest("a", "b", "c", "d", "f", 1, formFile);
             A.CallTo(() => _mapper.Map<SocialEvent>(socialEventRequest)).Returns(socialEvent);
             A.CallTo(() => _imageService.StoreImage(_webHostEnvironment.WebRootPath, socialEventRequest.File)).Returns(filePath);
             A.CallTo(() => _socialEventService.CreateSocialEvent(socialEvent)).Returns(socialEvent.Id);

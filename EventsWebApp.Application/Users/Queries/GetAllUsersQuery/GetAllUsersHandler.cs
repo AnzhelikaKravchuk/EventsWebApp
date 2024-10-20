@@ -3,7 +3,7 @@ using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Interfaces.Repositories;
 
-namespace EventsWebApp.Application.Users.Queries.GetAllUsersQuery
+namespace EventsWebApp.Application.Users.Queries
 {
     public class GetAllUsersHandler : IQueryHandler<GetAllUsersQuery, List<UserDto>>
     {

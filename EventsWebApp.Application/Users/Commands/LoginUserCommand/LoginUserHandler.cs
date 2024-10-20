@@ -4,7 +4,7 @@ using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
-namespace EventsWebApp.Application.Users.Commands.LoginUserCommand
+namespace EventsWebApp.Application.Users.Commands
 {
     public class LoginUserHandler : ICommandHandler<LoginUserCommand, (string,string)>
     {

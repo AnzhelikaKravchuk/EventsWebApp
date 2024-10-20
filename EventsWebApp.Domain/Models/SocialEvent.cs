@@ -2,9 +2,9 @@
 
 namespace EventsWebApp.Domain.Models
 {
-    public class SocialEvent
+    public class SocialEvent 
     {
-        public Guid Id { get;  set; }
+        public Guid Id { get; set; }
         public string EventName { get;  set; } = string.Empty;
         public string Description { get;  set; } = string.Empty;
         public DateTime Date { get;  set; }
