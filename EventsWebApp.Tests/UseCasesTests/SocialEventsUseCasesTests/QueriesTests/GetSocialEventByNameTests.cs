@@ -65,7 +65,6 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
         public async void GetSocialEventByNameTests_GetSocialEventByNameHandler_ThrowsException()
         {
             //Arrange
-            //Arrange
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             string name = "Book";

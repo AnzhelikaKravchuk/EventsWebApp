@@ -3,13 +3,10 @@ using FluentValidation;
 
 namespace EventsWebApp.Application.Attendees.Commands
 {
-    public class AddAttendeeWithTokenValidator : AbstractValidator<AddAttendeeWithTokenCommand>
+    public class AddAttendeeWithTokenValidator : AddUpdateAttendeeValidator<AddAttendeeWithTokenCommand>
     {
-        public AddAttendeeWithTokenValidator()
+        public AddAttendeeWithTokenValidator() : base()
         {
-            RuleFor(attendee => attendee.Request)
-                .NotEmpty();
-
             RuleFor(attendee => attendee.EventId)
                 .NotEmpty();
 

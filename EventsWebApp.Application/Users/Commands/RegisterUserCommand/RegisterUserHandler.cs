@@ -23,20 +23,20 @@ namespace EventsWebApp.Application.Users.Commands
 
         public async Task<(string, string)> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var candidate = await _appUnitOfWork.UserRepository.GetByEmailTracking(request.Email, cancellationToken);
+            User candidate = await _appUnitOfWork.UserRepository.GetByEmailTracking(request.Email, cancellationToken);
             if (candidate != null)
             {
                 throw new UserException("User already exists");
             }
             request.Password = _passwordHasher.Generate(request.Password);
 
-            var user = _mapper.Map<User>(request);
+            User user = _mapper.Map<User>(request);
 
-            var addedUserId = await _appUnitOfWork.UserRepository.Add(user, cancellationToken);
+            Guid addedUserId = await _appUnitOfWork.UserRepository.Add(user, cancellationToken);
             user.Id = addedUserId;
 
             cancellationToken.ThrowIfCancellationRequested();
-            var (accessToken, refreshToken) = _jwtProvider.CreateTokens(user);
+            (string accessToken, string refreshToken) = _jwtProvider.CreateTokens(user);
             _appUnitOfWork.Save();
 
             return (accessToken, refreshToken);

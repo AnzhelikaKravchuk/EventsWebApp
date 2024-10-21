@@ -18,8 +18,8 @@ namespace EventsWebApp.Application.SocialEvents.Commands
         public async Task<Guid> Handle(CreateSocialEventCommand request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = _mapper.Map<SocialEvent>(request);
-            var id = await _appUnitOfWork.SocialEventRepository.Add(socialEvent, cancellationToken);
+            SocialEvent socialEvent = _mapper.Map<SocialEvent>(request);
+            Guid id = await _appUnitOfWork.SocialEventRepository.Add(socialEvent, cancellationToken);
             _appUnitOfWork.Save();
             return id;
         }

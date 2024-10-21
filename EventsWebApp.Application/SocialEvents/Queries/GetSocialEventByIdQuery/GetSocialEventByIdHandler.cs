@@ -25,7 +25,7 @@ namespace EventsWebApp.Application.SocialEvents.Queries
             {
                 throw new SocialEventException("No social event was found");
             }
-            var socialEventDto = _mapper.Map<SocialEventDto>(socialEvent);
+            SocialEventDto socialEventDto = _mapper.Map<SocialEventDto>(socialEvent);
             return socialEventDto;
         }
     }

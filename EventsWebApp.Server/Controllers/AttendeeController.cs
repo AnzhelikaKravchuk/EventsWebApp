@@ -45,7 +45,7 @@ namespace EventsWebApp.Server.Controllers
         {
             string? accessToken = HttpContext.Request.Cookies["accessToken"];
             cancellationToken.ThrowIfCancellationRequested();
-            Guid resultId = await _mediator.Send(new AddAttendeeWithTokenCommand(request, eventId, accessToken), cancellationToken);
+            Guid resultId = await _mediator.Send(new AddAttendeeWithTokenCommand(request.Name, request.Surname, request.Email, request.DateOfBirth, eventId, accessToken), cancellationToken);
             return Ok(resultId);
         }
 

@@ -18,7 +18,7 @@ namespace EventsWebApp.Application.Attendees.Commands
         public async Task<Guid> Handle(AddAttendeeWithTokenCommand request, CancellationToken cancellationToken)
         {
             Guid userId = TokenHelper.CheckToken(request.AccessToken, _jwtProvider);
-            return await _mediator.Send(new AddAttendeeCommand(request.Request, request.EventId, userId), cancellationToken);
+            return await _mediator.Send(new AddAttendeeCommand(request.Name, request.Surname, request.Email, request.DateOfBirth, request.EventId, userId), cancellationToken);
         }
     }
 }

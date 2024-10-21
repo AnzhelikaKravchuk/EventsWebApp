@@ -2,6 +2,7 @@
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Interfaces.Repositories;
+using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Application.Users.Queries
 {
@@ -16,10 +17,10 @@ namespace EventsWebApp.Application.Users.Queries
         }
         public async Task<List<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            var users = await _appUnitOfWork.UserRepository.GetAll(cancellationToken);
+            List<User> users = await _appUnitOfWork.UserRepository.GetAll(cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
-            var usersDtos = users.ConvertAll(_mapper.Map<UserDto>).ToList();
+            List<UserDto> usersDtos = users.ConvertAll(_mapper.Map<UserDto>).ToList();
             return usersDtos;
         }
     }

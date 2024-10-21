@@ -1,6 +1,10 @@
 ﻿using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Application.Validators;
 
 namespace EventsWebApp.Application.Users.Commands
 {
-    public record LoginUserCommand(string Email, string Password) : ICommand<(string, string)>;
+    public record LoginUserCommand : LoginRegisterUserRequest, ICommand<(string, string)>
+    {
+        public LoginUserCommand() { }
+    }
 }

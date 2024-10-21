@@ -14,7 +14,7 @@ namespace EventsWebApp.Application.SocialEvents.Commands
 
         public async Task<Guid> Handle(DeleteSocialEventCommand request, CancellationToken cancellationToken)
         {
-            var rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(request.Id, cancellationToken);
+            int rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(request.Id, cancellationToken);
             if (rowsDeleted == 0)
             {
                 throw new SocialEventException("Social event wasn't deleted");

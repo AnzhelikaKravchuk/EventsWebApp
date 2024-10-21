@@ -25,8 +25,10 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             _jwtProvider = A.Fake<IJwtProvider>();
         }
 
-        [Fact]
-        public async void GetSocialEventByUserWithTokenTests_GetSocialEventByUserWithTokenHandler_ReturnsSocialEventTrue()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async void GetSocialEventByUserWithTokenTests_GetSocialEventByUserWithTokenHandler_ReturnsSocialEventTrue(bool hasAttendee)
         {
             //Arrange
             _cancellationTokenSource = new CancellationTokenSource();
@@ -36,7 +38,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             string accessToken = string.Empty;
             GetSocialEventByUserWithTokenQuery request = new GetSocialEventByUserWithTokenQuery(id,accessToken);
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            SocialEventDto socialEventDto = new SocialEventDto { ListOfAttendees = new List<Attendee> { new Attendee { UserId = userId} } };
+            SocialEventDto socialEventDto = new SocialEventDto { ListOfAttendees = new List<Attendee> { hasAttendee? new Attendee { UserId = userId}: null } };
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("Id", userId.ToString()) }));
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id, _cancellationToken)).Returns(socialEvent);
@@ -49,34 +51,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             //Assert
             entity.Should().NotBeNull();
             entity.Should().BeOfType<SocialEventDto>();
-            entity.IsAlreadyInList.Should().Be(true);
-        }
-
-        [Fact]
-        public async void GetSocialEventByUserWithTokenTests_GetSocialEventByUserWithTokenHandler_ReturnsSocialEventFalse()
-        {
-            //Arrange
-            _cancellationTokenSource = new CancellationTokenSource();
-            _cancellationToken = _cancellationTokenSource.Token;
-            Guid id = Guid.NewGuid();
-            Guid userId = Guid.NewGuid();
-            string accessToken = string.Empty;
-            GetSocialEventByUserWithTokenQuery request = new GetSocialEventByUserWithTokenQuery(id, accessToken);
-            SocialEvent socialEvent = A.Fake<SocialEvent>();
-            SocialEventDto socialEventDto = new SocialEventDto { ListOfAttendees = new List<Attendee> {  } };
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("Id", userId.ToString()) }));
-            A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id, _cancellationToken)).Returns(socialEvent);
-            A.CallTo(() => _mapper.Map<SocialEventDto>(socialEvent)).Returns(socialEventDto);
-            GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper, _jwtProvider);
-
-            //Act
-            SocialEventDto entity = await handler.Handle(request, _cancellationToken);
-
-            //Assert
-            entity.Should().NotBeNull();
-            entity.Should().BeOfType<SocialEventDto>();
-            entity.IsAlreadyInList.Should().Be(false);
+            entity.IsAlreadyInList.Should().Be(hasAttendee);
         }
 
         [Fact]
@@ -110,7 +85,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();
             string accessToken = string.Empty;
-            var socialEvent = A.Fake<SocialEvent>();
+            SocialEvent socialEvent = A.Fake<SocialEvent>();
             GetSocialEventByUserWithTokenQuery request = new GetSocialEventByUserWithTokenQuery(id, accessToken);
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
@@ -141,7 +116,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper, _jwtProvider);
 
             //Act
-            var exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request, _cancellationToken));
+            SocialEventException exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();

@@ -3,6 +3,7 @@ using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
+using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Application.SocialEvents.Queries
 {
@@ -19,7 +20,7 @@ namespace EventsWebApp.Application.SocialEvents.Queries
         public async Task<List<AttendeeDto>> Handle(GetAttendeesByEventIdQuery request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(request.Id, cancellationToken);
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(request.Id, cancellationToken);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");

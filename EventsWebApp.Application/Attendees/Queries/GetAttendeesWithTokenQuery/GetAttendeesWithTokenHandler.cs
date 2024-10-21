@@ -25,7 +25,7 @@ namespace EventsWebApp.Application.Attendees.Queries
             var principal = _jwtProvider.GetPrincipalFromExpiredToken(request.AccessToken);
 
             cancellationToken.ThrowIfCancellationRequested();
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            string userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             if (userId == null)
             {
                 throw new UserException("No user id found");

@@ -23,7 +23,7 @@ namespace EventsWebApp.Application.SocialEvents.Queries
 
         public async Task<SocialEventDto> Handle(GetSocialEventByUserWithTokenQuery request, CancellationToken cancellationToken)
         {
-            var userId = TokenHelper.CheckToken(request.Token, _jwtProvider);
+            Guid userId = TokenHelper.CheckToken(request.Token, _jwtProvider);
             cancellationToken.ThrowIfCancellationRequested();
             SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(request.Id, cancellationToken);
             if (socialEvent == null)
@@ -32,8 +32,8 @@ namespace EventsWebApp.Application.SocialEvents.Queries
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEventDto = _mapper.Map<SocialEventDto>(socialEvent);
-            var attendee = socialEventDto.ListOfAttendees.FirstOrDefault((a) => a.UserId == userId);
+            SocialEventDto socialEventDto = _mapper.Map<SocialEventDto>(socialEvent);
+            Attendee attendee = socialEventDto.ListOfAttendees.FirstOrDefault((a) => a?.UserId == userId);
             socialEventDto.IsAlreadyInList = attendee != null;
             return socialEventDto;
         }

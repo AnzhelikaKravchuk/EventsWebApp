@@ -14,7 +14,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<Attendee> GetById(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var attendee = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            Attendee attendee = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             return attendee;
         }
@@ -22,7 +22,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<List<Attendee>> GetAllByUserId(Guid userId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var attendees = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).Where(x => x.User.Id == userId).AsNoTracking().ToListAsync();
+            List<Attendee> attendees = await _dbContext.Attendees.Include(s => s.User).Include(s => s.SocialEvent).Where(x => x.User.Id == userId).AsNoTracking().ToListAsync();
 
             return attendees;
         }

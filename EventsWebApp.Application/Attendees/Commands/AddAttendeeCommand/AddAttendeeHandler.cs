@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
@@ -18,7 +19,7 @@ namespace EventsWebApp.Application.Attendees.Commands
 
         public async Task<Guid> Handle(AddAttendeeCommand request, CancellationToken cancellationToken)
         {
-            Attendee attendee = _mapper.Map<Attendee>(request.Request);
+            Attendee attendee = _mapper.Map<Attendee>(new AddUpdateAttendeeRequest(request.Name, request.Surname, request.Email, request.DateOfBirth));
             attendee.DateOfRegistration = DateTime.Now.Date;
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -45,7 +46,7 @@ namespace EventsWebApp.Application.Attendees.Commands
 
         public void ValidateSocialEventAndCandidate(SocialEvent socialEvent, Attendee? candidate, CancellationToken cancellationToken)
         {
-            var attendeesList = socialEvent.ListOfAttendees;
+            List<Attendee> attendeesList = socialEvent.ListOfAttendees;
             if (attendeesList == null)
             {
                 attendeesList = new List<Attendee>();

@@ -60,7 +60,7 @@ namespace EventsWebApp.Tests.ControllersTests
             {
                 HttpContext = httpContext,
             };
-        _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();   
             string accessToken = string.Empty;
@@ -132,11 +132,11 @@ namespace EventsWebApp.Tests.ControllersTests
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.GetSocialEvents(filters, _cancellationToken,pageIndex, pageSize);
+            IActionResult result = await socialEventsController.GetSocialEvents(filters, _cancellationToken,pageIndex, pageSize);
 
             //Assert
             result.Should().NotBeNull();
-            var okResult = result.Should().BeOfType<OkObjectResult>();
+            result.Should().BeOfType<OkObjectResult>();
         }
 
 
@@ -147,12 +147,11 @@ namespace EventsWebApp.Tests.ControllersTests
             //Arrange
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
-            SocialEvent socialEvent = A.Fake<SocialEvent>();
             CreateSocialEventCommand socialEventRequest = A.Fake<CreateSocialEventCommand>();
             var socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.CreateSocialEvent(socialEventRequest, _cancellationToken);
+            IActionResult result = await socialEventsController.CreateSocialEvent(socialEventRequest, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();

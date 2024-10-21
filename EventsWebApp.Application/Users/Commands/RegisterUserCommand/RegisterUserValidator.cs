@@ -1,18 +1,11 @@
-﻿using FluentValidation;
+﻿using EventsWebApp.Application.Validators;
+using FluentValidation;
 
 namespace EventsWebApp.Application.Users.Commands
 {
-    public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
+    public class RegisterUserValidator : LoginRegisterUserValidator<RegisterUserCommand>
     {
-        public RegisterUserValidator() {
-            RuleFor(user => user.Email)
-                .NotEmpty()
-                .MaximumLength(100)
-                .EmailAddress();
-
-            RuleFor(user => user.Password)
-                .NotEmpty();
-
+        public RegisterUserValidator() :base(){
             RuleFor(user => user.Username)
                 .NotEmpty()
                 .MaximumLength(100);
