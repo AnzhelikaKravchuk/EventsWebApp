@@ -9,6 +9,8 @@ namespace EventsWebApp.Tests.RepositoriesTests
 {
     public class SocialEventsRepositoryTests
     {
+        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationToken _cancellationToken;
         private async Task<ApplicationDbContext> GetDatabaseContext()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -47,12 +49,14 @@ namespace EventsWebApp.Tests.RepositoriesTests
         public async void SocialEventsRepository_GetById_ReturnsSocialEvent()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.Parse("6B29FC40-CA47-1067-B31D-00DD010662DA");
             var context = await GetDatabaseContext();
             var socialEventsRepository = new SocialEventRepository(context);
 
             //Act
-            var result = await socialEventsRepository.GetById(id);
+            var result = await socialEventsRepository.GetById(id, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -64,12 +68,14 @@ namespace EventsWebApp.Tests.RepositoriesTests
         public async void SocialEventsRepository_GetById_ReturnNull()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.Parse("12345689-1234-1234-1234-1234567890DA");
             var context = await GetDatabaseContext();
             var socialEventsRepository = new SocialEventRepository(context);
 
             //Act
-            var result = await socialEventsRepository.GetById(id);
+            var result = await socialEventsRepository.GetById(id, _cancellationToken);
 
             //Assert
             result.Should().BeNull();
@@ -80,6 +86,8 @@ namespace EventsWebApp.Tests.RepositoriesTests
         public async void SocialEventsRepository_Add_ReturnsSocialEventId()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             SocialEvent socialEvent = new SocialEvent
             {
                 Id = Guid.NewGuid(),
@@ -96,9 +104,9 @@ namespace EventsWebApp.Tests.RepositoriesTests
             var socialEventsRepository = new SocialEventRepository(context);
             
             //Act
-            var id = await socialEventsRepository.Add(socialEvent);
+            var id = await socialEventsRepository.Add(socialEvent, _cancellationToken);
             await context.SaveChangesAsync();
-            var result = await socialEventsRepository.GetById(id);
+            var result = await socialEventsRepository.GetById(id, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();

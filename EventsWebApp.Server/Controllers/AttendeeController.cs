@@ -25,7 +25,7 @@ namespace EventsWebApp.Server.Controllers
         public async Task<IActionResult> GetAllByUser(CancellationToken cancellationToken)
         {
             string? accessToken = HttpContext.Request.Cookies["accessToken"];
-            List<AttendeeDto> attendees = await _mediator.Send(new GetAllAttendeesQuery(accessToken), cancellationToken);
+            List<AttendeeDto> attendees = await _mediator.Send(new GetAttendeesWithTokenQuery(accessToken), cancellationToken);
             return Ok(attendees);
         }
 

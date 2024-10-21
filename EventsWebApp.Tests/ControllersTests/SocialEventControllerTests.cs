@@ -1,7 +1,5 @@
-﻿using EventsWebApp.Application.Interfaces.Services;
-using FakeItEasy;
+﻿using FakeItEasy;
 using Microsoft.AspNetCore.Hosting;
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Controllers;
@@ -10,22 +8,23 @@ using EventsWebApp.Domain.Filters;
 using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Http;
-using EventsWebApp.Application.Validators;
+using MediatR;
+using EventsWebApp.Application.SocialEvents.Queries;
+using EventsWebApp.Application.SocialEvents.Commands;
+using EventsWebApp.Application.ImageService.Commands;
 
 namespace EventsWebApp.Tests.ControllersTests
 {
     public class SocialEventControllerTests
     {
-        private readonly ISocialEventService _socialEventService;
-        private readonly IImageService _imageService;
-        private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMediator _mediator;
+        private readonly IWebHostEnvironment _webHostEnvironment; 
+        private CancellationTokenSource? _cancellationTokenSource;
+        private CancellationToken _cancellationToken;
 
         public SocialEventControllerTests()
         {
-            _socialEventService = A.Fake<ISocialEventService>();
-            _imageService = A.Fake<IImageService>();
-            _mapper = A.Fake<IMapper>();
+            _mediator = A.Fake<IMediator>();
             _webHostEnvironment = A.Fake<IWebHostEnvironment>();
         }
 
@@ -35,13 +34,42 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_GetEventById_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();
-            SocialEvent socialEvent = A.Fake<SocialEvent>();
-            A.CallTo(()=>_socialEventService.GetSocialEventById(id)).Returns(socialEvent);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
+            A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(id), _cancellationToken)).Returns(socialEventDto);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.GetEventById(id);
+            IActionResult result = await socialEventsController.GetEventById(id, _cancellationToken);
+
+            //Assert
+            result.Should().NotBeNull();
+            result.Should().BeOfType<OkObjectResult>();
+        }
+
+        //-------------------------------GetEventByIdWithToken-----------------------
+        [Fact]
+        public async void SocialEventControllerTests_GetEventByIdWithToken_ReturnsOk()
+        {
+            //Arrange
+            var httpContext = new DefaultHttpContext();
+
+            var controllerContext = new ControllerContext()
+            {
+                HttpContext = httpContext,
+            };
+        _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            Guid id = Guid.NewGuid();   
+            string accessToken = string.Empty;
+            SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
+            A.CallTo(() => _mediator.Send(new GetSocialEventByUserWithTokenQuery(id, accessToken), _cancellationToken)).Returns(socialEventDto);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment) { ControllerContext = controllerContext };
+
+            //Act
+            IActionResult result = await socialEventsController.GetEventByIdWithToken(id, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -53,13 +81,15 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_GetEventByName_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             string name = "Book";
-            SocialEvent socialEvent = A.Fake<SocialEvent>();
-            A.CallTo(() => _socialEventService.GetSocialEventByName(name)).Returns(socialEvent);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
+            A.CallTo(() => _mediator.Send(new GetSocialEventByNameQuery(name), _cancellationToken)).Returns(socialEventDto);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.GetEventByName(name);
+            IActionResult result = await socialEventsController.GetEventByName(name, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -71,13 +101,15 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_GetAttendeesByEventId_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();
-            var attendees = A.Fake<List<Attendee>>();
-            A.CallTo(() => _socialEventService.GetAttendeesById(id)).Returns(attendees);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            List<AttendeeDto> attendees = A.Fake<List<AttendeeDto>>();
+            A.CallTo(() => _mediator.Send(new GetAttendeesByEventIdQuery(id), _cancellationToken)).Returns(attendees);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.GetAttendeesByEventId(id);
+            IActionResult result = await socialEventsController.GetAttendeesByEventId(id, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -90,21 +122,21 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_GetSocialEvents_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             int pageIndex = 1;
             int pageSize = 10;
             AppliedFilters filters = A.Fake<AppliedFilters>();
-            var paginatedList = new PaginatedList<SocialEvent> { Items = new List<SocialEvent>()};
-            SocialEventDto socialEventResponse = A.Fake<SocialEventDto>();
-            A.CallTo(() => _socialEventService.GetSocialEvents(filters, pageIndex, pageSize)).Returns(paginatedList);
-            A.CallTo(() => _mapper.Map<SocialEventDto>(A<SocialEvent>.Ignored)).Returns(socialEventResponse);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            PaginatedList<SocialEventDto> paginatedList = new PaginatedList<SocialEventDto> { Items = new List<SocialEventDto>() };
+            A.CallTo(() => _mediator.Send(new GetPaginatedSocialEventsQuery(filters, pageIndex, pageSize),_cancellationToken)).Returns(paginatedList);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.GetSocialEvents(filters, pageIndex, pageSize);
+            var result = await socialEventsController.GetSocialEvents(filters, _cancellationToken,pageIndex, pageSize);
 
             //Assert
             result.Should().NotBeNull();
-            var okResult =result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Should().BeOfType<OkObjectResult>();
         }
 
 
@@ -113,17 +145,37 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_CreateSocialEvent_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            AddUpdateSocialEventRequest socialEventRequest = A.Fake<AddUpdateSocialEventRequest>();
-            A.CallTo(() => _mapper.Map<SocialEvent>(socialEventRequest)).Returns(socialEvent);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            CreateSocialEventCommand socialEventRequest = A.Fake<CreateSocialEventCommand>();
+            var socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.CreateSocialEvent(socialEventRequest);
+            var result = await socialEventsController.CreateSocialEvent(socialEventRequest, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<OkObjectResult>();
+        }
+
+        [Fact]
+        public async void SocialEventControllerTests_CreateSocialEvent_ThrowsCancellation()
+        {
+            //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            _cancellationTokenSource.Cancel();
+            SocialEvent socialEvent = A.Fake<SocialEvent>();
+            CreateSocialEventCommand request = A.Fake<CreateSocialEventCommand>();
+            var socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
+
+            //Act
+            OperationCanceledException exception = await Assert.ThrowsAsync<OperationCanceledException>(() => socialEventsController.CreateSocialEvent(request, _cancellationToken));
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Message.Should().Be("The operation was canceled.");
         }
 
 
@@ -131,65 +183,46 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_CreateSocialEvent_ReturnsOkWithImage()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             string filePath = "..\\..\\..\\..\\EventsWebApp.Server\\wwwroot\\testing\\404383ab-3f9d-4194-8d9e-8b38136816c8.png";
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var formFile = new FormFile(fileStream, 0, fileStream.Length, "image", Path.GetFileName(filePath))
+            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            FormFile formFile = new FormFile(fileStream, 0, fileStream.Length, "image", Path.GetFileName(filePath))
             {
                 Headers = new HeaderDictionary(),
-                ContentType = "image/jpeg" 
+                ContentType = "image/jpeg"
             };
 
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            AddUpdateSocialEventRequest socialEventRequest = new AddUpdateSocialEventRequest("a", "b", "c", "d", "f", 1, formFile);
-            A.CallTo(() => _mapper.Map<SocialEvent>(socialEventRequest)).Returns(socialEvent);
-            A.CallTo(() => _imageService.StoreImage(_webHostEnvironment.WebRootPath, socialEventRequest.File)).Returns(filePath);
-            A.CallTo(() => _socialEventService.CreateSocialEvent(socialEvent)).Returns(socialEvent.Id);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            CreateSocialEventCommand request = new CreateSocialEventCommand("a", "b", "c", "d", "f", 1,"image.png", formFile);
+            A.CallTo(() => _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File),_cancellationToken)).Returns(filePath);
+            A.CallTo(() => _mediator.Send(request,_cancellationToken)).Returns(socialEvent.Id);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.CreateSocialEvent(socialEventRequest);
+            IActionResult result = await socialEventsController.CreateSocialEvent(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<OkObjectResult>();
         }
-
-
-        //-------------------------------AddAttendee-----------------------
-        [Fact]
-        public async void SocialEventControllerTests_AddAttendee_ReturnsOk()
-        {
-            //Arrange
-            Guid eventId = Guid.NewGuid();
-            Guid resultId = Guid.NewGuid();
-            string accessToken = "Access-token";
-            Attendee attendee = A.Fake<Attendee>();
-            CreateAttendeeRequest request = A.Fake<CreateAttendeeRequest>();
-            A.CallTo(() => _mapper.Map<Attendee>(request)).Returns(attendee);
-            A.CallTo(() => _socialEventService.AddAttendeeToEventWithToken(eventId, attendee, accessToken)).Returns(resultId);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
-            socialEventsController.ControllerContext.HttpContext = new DefaultHttpContext();
-
-            //Act
-            var result = await socialEventsController.AddAttendee(request, eventId);
-
-            //Assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType<OkObjectResult>();
-        }
-
 
         //-------------------------------DeleteEvent-----------------------
         [Fact]
         public async void SocialEventControllerTests_DeleteEvent_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token; 
             Guid eventId = Guid.NewGuid();
-            A.CallTo(() => _socialEventService.DeleteSocialEvent(eventId)).Returns(eventId);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            SocialEventDto socialEventDto = new SocialEventDto { Id = eventId };
+            DeleteSocialEventCommand request = new DeleteSocialEventCommand(eventId);
+            A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(request.Id), _cancellationToken)).Returns(socialEventDto);
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.Delete(eventId);
+            IActionResult result = await socialEventsController.Delete(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -197,18 +230,43 @@ namespace EventsWebApp.Tests.ControllersTests
         }
 
         [Fact]
+        public async void SocialEventControllerTests_DeleteEvent_ThrowsCancellation()
+        {
+            //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            _cancellationTokenSource.Cancel();
+            Guid eventId = Guid.NewGuid();
+            SocialEventDto socialEventDto = new SocialEventDto { Id = eventId };
+            DeleteSocialEventCommand request = new DeleteSocialEventCommand(eventId);
+            A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(request.Id), _cancellationToken)).Returns(socialEventDto);
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
+
+            //Act
+            OperationCanceledException exception = await Assert.ThrowsAsync<OperationCanceledException>(() => socialEventsController.Delete(request, _cancellationToken));
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Message.Should().Be("The operation was canceled.");
+        }
+
+        [Fact]
         public async void SocialEventControllerTests_DeleteEvent_ReturnsOkWithImage()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid eventId = Guid.NewGuid();
-            SocialEvent socialEvent = new SocialEvent { Image ="image"};
-            A.CallTo(() => _socialEventService.GetSocialEventById(eventId)).Returns(socialEvent);
-            A.CallTo(() => _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image)));
-            A.CallTo(() => _socialEventService.DeleteSocialEvent(eventId)).Returns(eventId);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            SocialEventDto socialEventDto = new SocialEventDto { Id = eventId, Image = "image" };
+            DeleteSocialEventCommand request = new DeleteSocialEventCommand(eventId);
+            A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(request.Id), _cancellationToken)).Returns(socialEventDto);
+            A.CallTo(() => _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, socialEventDto.Image)), _cancellationToken));
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.Delete(eventId);
+            IActionResult result = await socialEventsController.Delete(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -220,20 +278,43 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_UpdateEvent_ReturnsOk()
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             Guid eventId = Guid.NewGuid();
             IFormFile file = A.Fake<IFormFile>();
             SocialEvent socialEvent = A.Fake<SocialEvent>();
-            UpdateSocialEventRequest updateSocialEventRequest = A.Fake<UpdateSocialEventRequest>();
-            A.CallTo(() => _socialEventService.GetSocialEventById(eventId)).Returns(socialEvent);
-            A.CallTo(() => _socialEventService.UpdateSocialEvent(socialEvent)).Returns(eventId);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            UpdateSocialEventCommand request = A.Fake<UpdateSocialEventCommand>();
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.Update(updateSocialEventRequest);
+            var result = await socialEventsController.Update(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<OkResult>();
+        }
+
+        [Fact]
+        public async void SocialEventControllerTests_UpdateEvent_ThrowsCancellation()
+        {
+            //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            _cancellationTokenSource.Cancel();
+            Guid eventId = Guid.NewGuid();
+            IFormFile file = A.Fake<IFormFile>();
+            SocialEvent socialEvent = A.Fake<SocialEvent>();
+            UpdateSocialEventCommand request = A.Fake<UpdateSocialEventCommand>();
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
+
+            //Act
+            OperationCanceledException exception = await Assert.ThrowsAsync<OperationCanceledException>(() => socialEventsController.Update(request, _cancellationToken));
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Message.Should().Be("The operation was canceled.");
         }
 
         [Theory]
@@ -242,25 +323,26 @@ namespace EventsWebApp.Tests.ControllersTests
         public async void SocialEventControllerTests_UpdateEvent_ReturnsOkWithImage(bool hasImage)
         {
             //Arrange
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
             string filePath = "..\\..\\..\\..\\EventsWebApp.Server\\wwwroot\\testing\\404383ab-3f9d-4194-8d9e-8b38136816c8.png";
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var formFile = new FormFile(fileStream, 0, fileStream.Length, "image", Path.GetFileName(filePath))
+            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            FormFile formFile = new FormFile(fileStream, 0, fileStream.Length, "image", Path.GetFileName(filePath))
             {
                 Headers = new HeaderDictionary(),
                 ContentType = "image/jpeg"
             };
 
             Guid eventId = Guid.NewGuid();
-            SocialEvent socialEvent = new SocialEvent { Image = hasImage ? "oldPath": string.Empty };
-            UpdateSocialEventRequest updateSocialEventRequest = A.Fake<UpdateSocialEventRequest>();
-            A.CallTo(() => _socialEventService.GetSocialEventById(eventId)).Returns(socialEvent);
-            A.CallTo(() => _imageService.StoreImage(_webHostEnvironment.WebRootPath, formFile)).Returns(filePath);
-            A.CallTo(() => _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image)));
-            A.CallTo(() => _socialEventService.UpdateSocialEvent(socialEvent)).Returns(eventId);
-            var socialEventsController = new SocialEventsController(_socialEventService, _imageService, _mapper, _webHostEnvironment);
+            SocialEvent socialEvent = new SocialEvent { Image = hasImage ? "oldPath" : string.Empty };
+            UpdateSocialEventCommand request = new UpdateSocialEventCommand { Image = hasImage ? "oldPath" : string.Empty, File = formFile };
+            A.CallTo(() => _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File), _cancellationToken)).Returns(filePath);
+            A.CallTo(() => _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)),_cancellationToken));
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
+            SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            var result = await socialEventsController.Update(updateSocialEventRequest);
+            IActionResult result = await socialEventsController.Update(request,_cancellationToken);
 
             //Assert
             result.Should().NotBeNull();

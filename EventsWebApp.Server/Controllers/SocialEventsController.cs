@@ -1,6 +1,4 @@
-using AutoMapper;
 using EventsWebApp.Domain.Filters;
-using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +7,7 @@ using MediatR;
 using EventsWebApp.Application.SocialEvents.Queries;
 using EventsWebApp.Application.SocialEvents.Commands;
 using EventsWebApp.Domain.PaginationHandlers;
+using EventsWebApp.Application.ImageService.Commands;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -16,13 +15,11 @@ namespace EventsWebApp.Server.Controllers
     [Route("[controller]")]
     public class SocialEventsController : ControllerBase {
         private readonly IMediator _mediator;
-        private readonly IImageService _imageService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public SocialEventsController(IMediator mediator, IImageService imageService, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public SocialEventsController(IMediator mediator, IWebHostEnvironment webHostEnvironment)
         {
             _mediator = mediator;
-            _imageService = imageService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -82,7 +79,7 @@ namespace EventsWebApp.Server.Controllers
             if (request.File != null && request.File.IsImage())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
+                string newPath = await _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File), cancellationToken);
                 request.Image = newPath;
             }
             cancellationToken.ThrowIfCancellationRequested();
@@ -99,7 +96,7 @@ namespace EventsWebApp.Server.Controllers
             if (!socialEvent.Image.IsNullOrEmpty())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image));
+                await _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image)));
             }
             cancellationToken.ThrowIfCancellationRequested();
             await _mediator.Send(request, cancellationToken);
@@ -112,11 +109,11 @@ namespace EventsWebApp.Server.Controllers
         {
             if (request.File != null && request.File.IsImage())
             {
-                string newPath = await _imageService.StoreImage(_webHostEnvironment.WebRootPath, request.File);
+                string newPath = await _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File), cancellationToken);
                 if (!request.Image.IsNullOrEmpty())
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await _imageService.DeleteImage(Path.Combine(_webHostEnvironment.WebRootPath, request.Image));
+                    await _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)));
                 }
                 request.Image = newPath;
             }

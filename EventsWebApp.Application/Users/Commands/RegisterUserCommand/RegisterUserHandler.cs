@@ -13,7 +13,7 @@ namespace EventsWebApp.Application.Users.Commands
         private readonly IPasswordHasher _passwordHasher;
         private readonly IMapper _mapper;
         private readonly IJwtProvider _jwtProvider;
-        public RegisterUserHandler(IAppUnitOfWork appUnitOfWork, IMapper mapper, IPasswordHasher passwordHasher, IJwtProvider jwtProvider, UserValidator validator)
+        public RegisterUserHandler(IAppUnitOfWork appUnitOfWork, IMapper mapper, IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
         {
             _appUnitOfWork = appUnitOfWork;
             _mapper = mapper;

@@ -3,5 +3,9 @@ using EventsWebApp.Application.Validators;
 
 namespace EventsWebApp.Application.SocialEvents.Commands
 {
-    public record UpdateSocialEventCommand(Guid Id) : AddUpdateSocialEventRequest, ICommand<Guid>;
+    public record UpdateSocialEventCommand : AddUpdateSocialEventRequest, ICommand<Guid>
+    {
+        public Guid Id { get; set; }
+        public UpdateSocialEventCommand() { }
+    }
 }

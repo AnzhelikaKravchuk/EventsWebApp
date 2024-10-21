@@ -1,18 +1,15 @@
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Mapper;
-using EventsWebApp.Application.Services;
 using EventsWebApp.Infrastructure.Handlers;
 using EventsWebApp.Infrastructure.Repositories;
 using EventsWebApp.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using EventsWebApp.Infrastructure.UnitOfWork;
-using EventsWebApp.Application.Validators;
 using EventsWebApp.Server.Extensions;
 using EventsWebApp.Server.ExceptionsHandler;
 using AutoMapper;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
-using EventsWebApp.Application.Interfaces.Services;
 using EventsWebApp.Infrastructure.DataSeeder;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Extensions;
@@ -51,15 +48,7 @@ namespace EventsWebApp.Server
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<UserValidator>();
-            services.AddScoped<SocialEventValidator>();
-            services.AddScoped<AttendeeValidator>();
             services.AddScoped<IEmailSender, EmailSender>();
-
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ISocialEventService, SocialEventService>();
-            services.AddScoped<IAttendeeService, AttendeeService>();
-            services.AddScoped<IImageService, ImageService>();
 
             services.AddApiAuthentication(Configuration);
 
@@ -71,10 +60,7 @@ namespace EventsWebApp.Server
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            MapperConfiguration config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AppMappingProfile());
-            });
+            MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile(new AppMappingProfile()));
 
             services.AddAutoMapper(typeof(AppMappingProfile));
         }
