@@ -1,5 +1,8 @@
 ## Prerequisites
 * MSSQL server and database should be set up
+  
+## Set up Start Configuration:
+In Solution "EventsWebApp" in properties check "Multiple startup projects" and then select for both client and Server projects "Start" Action. Then in Configuration Properties uncheck "Deploy" box in client project.
 
 ## Configure back-end environment
 
@@ -19,8 +22,7 @@ dotnet user-secrets set "SqlConnectionString" "$sql_connection_string"
 ```
 Replace \<Your Email> and \<Your Password> with credentials provided (or your Gmail email and app key). \<Your Jwt Secret> is an arbitrary key (for example: `S1u*p7e_r+S2e/c4r6e7t*0K/e7yS1u*p7e_r+S2e/c4r6e7t*0K/e7yS1u*p7e_r+S2e/c4r6e7t*0K/e7y`). \<Client Url> with url of your client app (it's https://localhost:5173 by default). Replace \<Your Database Name> and \<Your Server Name> with your MSSQL server and database name
 
-Set up Start Configuration:
-In Solution "EventsWebApp" in properties check "Multiple startup projects" and then select for both client and Server projects "Start" Action. Then in Configuration Properties uncheck "Deploy" box in client project.
+
 
 Run in PowerShell:
 ```powershell
