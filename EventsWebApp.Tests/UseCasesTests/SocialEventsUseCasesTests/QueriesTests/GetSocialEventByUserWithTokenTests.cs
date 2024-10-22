@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.SocialEvents.Queries;
+using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Dto;
-using EventsWebApp.Application.SocialEvents.Queries;
+using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;

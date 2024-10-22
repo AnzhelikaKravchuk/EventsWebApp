@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.SocialEvents.Commands;
+using EventsWebApp.Application.UseCases.SocialEvents.Commands;
 using EventsWebApp.Domain.Enums;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;

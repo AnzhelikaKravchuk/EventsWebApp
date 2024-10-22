@@ -1,4 +1,4 @@
-﻿using EventsWebApp.Application.SocialEvents.Commands;
+﻿using EventsWebApp.Application.UseCases.SocialEvents.Commands;
 using EventsWebApp.Application.Validators;
 using FluentAssertions;
 using FluentValidation.Results;

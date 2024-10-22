@@ -2,9 +2,9 @@ using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using EventsWebApp.Application.Attendees.Commands;
+using EventsWebApp.Application.UseCases.Attendees.Queries;
+using EventsWebApp.Application.UseCases.Attendees.Commands;
 using EventsWebApp.Application.Validators;
-using EventsWebApp.Application.Attendees.Queries;
 
 namespace EventsWebApp.Server.Controllers
 {

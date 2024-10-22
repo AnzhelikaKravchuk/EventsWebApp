@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using EventsWebApp.Application.Users.Commands;
-using EventsWebApp.Application.Users.Queries;
+using EventsWebApp.Application.UseCases.Users.Queries;
+using EventsWebApp.Application.UseCases.Users.Commands;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]

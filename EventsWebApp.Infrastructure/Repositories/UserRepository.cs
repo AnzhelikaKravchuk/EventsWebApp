@@ -14,7 +14,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetById(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            User user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             
             return user;
         }
@@ -22,7 +22,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetByIdTracking(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             return user;
         }
@@ -30,7 +30,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetByEmail(string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email);
+            User user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }
@@ -38,7 +38,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetByEmailTracking(string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+            User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
         }
@@ -46,7 +46,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<User> GetByName(string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == name);
+            User user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == name);
 
             return user;
         }

@@ -7,7 +7,7 @@ namespace EventsWebApp.Application.Interfaces
     {
         (string, string) CreateTokens(User user);
         string GenerateAccessToken(User user);
-        string GenerateRefreshToken(User user);
+        string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }

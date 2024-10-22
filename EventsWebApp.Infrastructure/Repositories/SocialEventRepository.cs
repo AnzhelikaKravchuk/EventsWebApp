@@ -19,7 +19,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<SocialEvent> GetById(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            SocialEvent socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
         }
@@ -27,7 +27,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<SocialEvent> GetByIdTracking(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
+            SocialEvent socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == id);
 
             return socialEvent;
         }
@@ -35,7 +35,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<SocialEvent> GetByName(string name, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.EventName.Contains(name));
+            SocialEvent socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().FirstOrDefaultAsync(x => x.EventName.Contains(name));
 
             return socialEvent;
         }
@@ -43,7 +43,7 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<List<SocialEvent>> GetAll(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
+            List<SocialEvent> socialEvents = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).AsNoTracking().ToListAsync();
 
             return socialEvents;
         }
@@ -51,19 +51,19 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<PaginatedList<SocialEvent>> GetSocialEvents(AppliedFilters filters, int pageIndex, int pageSize, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var allEvents = await _dbContext.SocialEvents
+            var allEvents = _dbContext.SocialEvents
                                                     .Include(s => s.ListOfAttendees)
                                                     .AsNoTracking()
                                                     .Where(s => s.EventName.Contains(filters.Name ?? ""))
                                                     .Where(s => filters.Date.IsNullOrEmpty() || s.Date == DateTime.Parse(filters.Date).Date)
                                                     .Where(s => filters.Category.IsNullOrEmpty() || s.Category == (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), filters.Category))
                                                     .Where(s => s.Place.Contains(filters.Place ?? ""))
-                                                    .OrderBy(s => s.EventName).ToListAsync();
+                                                    .OrderBy(s => s.EventName);
 
             cancellationToken.ThrowIfCancellationRequested();
-            var onPageEvents = allEvents.Skip((pageIndex - 1) * pageSize)
-                                        .Take(pageSize).ToList();
-            var totalPages = (int)Math.Ceiling(allEvents.Count / (double)pageSize);
+            List<SocialEvent> onPageEvents = await allEvents.Skip((pageIndex - 1) * pageSize)
+                                        .Take(pageSize).ToListAsync();
+            int totalPages = (int)Math.Ceiling(allEvents.Count() / (double)pageSize);
 
             return new PaginatedList<SocialEvent>(onPageEvents, pageIndex, totalPages);
         }
@@ -71,14 +71,14 @@ namespace EventsWebApp.Infrastructure.Repositories
         public async Task<(Attendee?, SocialEvent)> GetAttendeeWithEventByEmail(Guid socialEventId, string attendeeEmail, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
+            SocialEvent socialEvent = await _dbContext.SocialEvents.Include(s => s.ListOfAttendees).FirstOrDefaultAsync(x => x.Id == socialEventId);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");
             }
-            var attendeeList = socialEvent.ListOfAttendees;
+            List<Attendee> attendeeList = socialEvent.ListOfAttendees;
             cancellationToken.ThrowIfCancellationRequested();
-            var attendee = attendeeList?.FirstOrDefault(a => a.Email == attendeeEmail);
+            Attendee attendee = attendeeList?.FirstOrDefault(a => a.Email == attendeeEmail);
 
             return (attendee, socialEvent);
         }

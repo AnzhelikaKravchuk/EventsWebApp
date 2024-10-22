@@ -23,7 +23,7 @@ namespace EventsWebApp.Infrastructure.Handlers
         public (string,string) CreateTokens(User user)
         {
             var accessToken = GenerateAccessToken(user);
-            var refreshToken = GenerateRefreshToken(user);
+            var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.ExpiresRefreshToken = DateTime.UtcNow.AddHours(_options.ExpiresTimeRefresh);
@@ -53,7 +53,7 @@ namespace EventsWebApp.Infrastructure.Handlers
             return tokenValue;
         }
 
-        public string GenerateRefreshToken(User user)
+        public string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];
             using (var numberGenerator = RandomNumberGenerator.Create())

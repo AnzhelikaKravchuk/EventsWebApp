@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EventsWebApp.Application.SocialEvents.Commands;
+using EventsWebApp.Application.UseCases.SocialEvents.Commands;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using FakeItEasy;

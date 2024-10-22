@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using EventsWebApp.Application.SocialEvents.Queries;
-using EventsWebApp.Application.SocialEvents.Commands;
 using EventsWebApp.Domain.PaginationHandlers;
-using EventsWebApp.Application.ImageService.Commands;
+using EventsWebApp.Application.UseCases.SocialEvents.Queries;
+using EventsWebApp.Application.UseCases.SocialEvents.Commands;
+using EventsWebApp.Application.UseCases.ImageService.Commands;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -37,27 +37,27 @@ namespace EventsWebApp.Server.Controllers
         [HttpGet("getSocialEventById")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetEventById([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEventById([FromQuery] GetSocialEventByIdQuery request, CancellationToken cancellationToken)
         {
-            SocialEventDto socialEvent = await _mediator.Send(new GetSocialEventByIdQuery(id), cancellationToken);
+            SocialEventDto socialEvent = await _mediator.Send(request, cancellationToken);
             return Ok(socialEvent);
         }
 
         [HttpGet("getSocialEventByName")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetEventByName([FromQuery] string name, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetEventByName([FromQuery] GetSocialEventByNameQuery request, CancellationToken cancellationToken)
         {
-            SocialEventDto socialEvent = await _mediator.Send(new GetSocialEventByNameQuery(name), cancellationToken);
+            SocialEventDto socialEvent = await _mediator.Send(request, cancellationToken);
             return Ok(socialEvent);
         }
 
         [HttpGet("getAttendeesByEventId")]
         [Authorize(Policy = "User")]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> GetAttendeesByEventId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAttendeesByEventId([FromQuery] GetAttendeesByEventIdQuery request, CancellationToken cancellationToken)
         {
-            List<AttendeeDto> attendees = await _mediator.Send(new GetAttendeesByEventIdQuery(id), cancellationToken);
+            List<AttendeeDto> attendees = await _mediator.Send(request, cancellationToken);
 
             return Ok(attendees);
         }

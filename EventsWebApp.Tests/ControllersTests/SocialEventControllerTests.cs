@@ -9,9 +9,9 @@ using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Http;
 using MediatR;
-using EventsWebApp.Application.SocialEvents.Queries;
-using EventsWebApp.Application.SocialEvents.Commands;
-using EventsWebApp.Application.ImageService.Commands;
+using EventsWebApp.Application.UseCases.SocialEvents.Queries;
+using EventsWebApp.Application.UseCases.SocialEvents.Commands;
+using EventsWebApp.Application.UseCases.ImageService.Commands;
 
 namespace EventsWebApp.Tests.ControllersTests
 {
@@ -38,11 +38,12 @@ namespace EventsWebApp.Tests.ControllersTests
             _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();
             SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
-            A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(id), _cancellationToken)).Returns(socialEventDto);
+            GetSocialEventByIdQuery request = new GetSocialEventByIdQuery(id);
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(socialEventDto);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            IActionResult result = await socialEventsController.GetEventById(id, _cancellationToken);
+            IActionResult result = await socialEventsController.GetEventById(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -85,11 +86,12 @@ namespace EventsWebApp.Tests.ControllersTests
             _cancellationToken = _cancellationTokenSource.Token;
             string name = "Book";
             SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
-            A.CallTo(() => _mediator.Send(new GetSocialEventByNameQuery(name), _cancellationToken)).Returns(socialEventDto);
+            GetSocialEventByNameQuery request = new GetSocialEventByNameQuery(name);
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(socialEventDto);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            IActionResult result = await socialEventsController.GetEventByName(name, _cancellationToken);
+            IActionResult result = await socialEventsController.GetEventByName(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
@@ -105,11 +107,12 @@ namespace EventsWebApp.Tests.ControllersTests
             _cancellationToken = _cancellationTokenSource.Token;
             Guid id = Guid.NewGuid();
             List<AttendeeDto> attendees = A.Fake<List<AttendeeDto>>();
-            A.CallTo(() => _mediator.Send(new GetAttendeesByEventIdQuery(id), _cancellationToken)).Returns(attendees);
+            GetAttendeesByEventIdQuery request = new GetAttendeesByEventIdQuery(id);
+            A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(attendees);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _webHostEnvironment);
 
             //Act
-            IActionResult result = await socialEventsController.GetAttendeesByEventId(id, _cancellationToken);
+            IActionResult result = await socialEventsController.GetAttendeesByEventId(request, _cancellationToken);
 
             //Assert
             result.Should().NotBeNull();
