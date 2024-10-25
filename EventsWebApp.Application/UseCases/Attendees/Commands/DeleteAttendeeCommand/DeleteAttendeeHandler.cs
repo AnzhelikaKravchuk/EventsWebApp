@@ -15,7 +15,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
 
         public async Task<Guid> Handle(DeleteAttendeeCommand request, CancellationToken cancellationToken)
         {
-            Attendee attendee = await _appUnitOfWork.AttendeeRepository.GetById(request.Id, cancellationToken);
+            Attendee attendee = await _appUnitOfWork.AttendeeRepository.GetByIdWithInclude(request.Id, cancellationToken);
 
             if (attendee == null)
             {

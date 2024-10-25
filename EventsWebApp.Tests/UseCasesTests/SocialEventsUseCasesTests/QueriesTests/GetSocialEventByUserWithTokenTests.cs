@@ -2,12 +2,12 @@
 using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.UseCases.SocialEvents.Queries;
-using EventsWebApp.Domain.Exceptions;
-using EventsWebApp.Domain.Interfaces.Repositories;
-using EventsWebApp.Domain.Models;
 using FakeItEasy;
 using FluentAssertions;
 using System.Security.Claims;
+using EventsWebApp.Domain.Models;
+using EventsWebApp.Domain.Interfaces.Repositories;
+using EventsWebApp.Domain.Exceptions;
 
 namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTests
 {
@@ -41,7 +41,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             SocialEventDto socialEventDto = new SocialEventDto { ListOfAttendees = new List<Attendee> { hasAttendee? new Attendee { UserId = userId}: null } };
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("Id", userId.ToString()) }));
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id, _cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(id, _cancellationToken)).Returns(socialEvent);
             A.CallTo(()=>_mapper.Map<SocialEventDto>(socialEvent)).Returns(socialEventDto);
             GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper,_jwtProvider);
 
@@ -112,7 +112,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             SocialEvent? socialEvent = null;
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim("Id", userId.ToString()) }));
             A.CallTo(() => _jwtProvider.GetPrincipalFromExpiredToken(accessToken)).Returns(claimsPrincipal);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(id,_cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(id,_cancellationToken)).Returns(socialEvent);
             GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper, _jwtProvider);
 
             //Act

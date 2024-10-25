@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
@@ -22,7 +23,16 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
         {
             request.Password = _passwordHasher.Generate(request.Password);
 
-            var user = _mapper.Map<User>(request);
+            User candidate = await _appUnitOfWork.UserRepository.GetById(request.Id, cancellationToken);
+            if (candidate == null)
+            {
+                throw new UserException("No user was found");
+            }
+
+            User user = _mapper.Map<User>(request);
+            user.Email = candidate.Email;
+            user.ExpiresRefreshToken = candidate.ExpiresRefreshToken;
+            user.RefreshToken = candidate.RefreshToken;
             var userId = await _appUnitOfWork.UserRepository.Update(user, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();

@@ -19,7 +19,8 @@ namespace EventsWebApp.Application.UseCases.Attendees.Queries
         public async Task<List<AttendeeDto>> Handle(GetAllAttendeesQuery request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return (await _appUnitOfWork.AttendeeRepository.GetAll(cancellationToken)).Select(_mapper.Map<AttendeeDto>).ToList();
+
+            return (await _appUnitOfWork.AttendeeRepository.GetAllWithInclude(cancellationToken)).Select(_mapper.Map<AttendeeDto>).ToList();
         }
     }
 }

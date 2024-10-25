@@ -66,7 +66,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
                 MaxAttendee = 20,
                 Image = "image.png"
             };
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(request.Id,_cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id,_cancellationToken)).Returns(socialEvent);
             A.CallTo(() => _mapper.Map<SocialEvent>(request)).Returns(socialEvent);
             A.CallTo(() => _unitOfWork.SocialEventRepository.Update(socialEvent, _cancellationToken)).Returns(updatedEvent.Id);
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork,_mapper, _emailSender);
@@ -125,7 +125,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
                 MaxAttendee = 20,
                 Image = "image.png"
             };
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(request.Id, _cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, _cancellationToken)).Returns(socialEvent);
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork, _mapper, _emailSender);
 
             //Act
@@ -164,7 +164,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
                 MaxAttendee = 1,
                 Image = "image.png"
             };
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(request.Id, _cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, _cancellationToken)).Returns(socialEvent);
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork, _mapper, _emailSender);
 
             //Act

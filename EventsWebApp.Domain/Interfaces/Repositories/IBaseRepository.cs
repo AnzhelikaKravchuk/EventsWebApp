@@ -1,4 +1,5 @@
 ﻿using EventsWebApp.Domain.Models;
+using System.Linq.Expressions;
 
 namespace EventsWebApp.Domain.Interfaces.Repositories
 {

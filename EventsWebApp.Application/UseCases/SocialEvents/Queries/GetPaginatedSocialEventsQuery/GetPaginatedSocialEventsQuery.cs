@@ -1,7 +1,6 @@
 ﻿using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Filters;
-using EventsWebApp.Domain.PaginationHandlers;
 
 namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
 {

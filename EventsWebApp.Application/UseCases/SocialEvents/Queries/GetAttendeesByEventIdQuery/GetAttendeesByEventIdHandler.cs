@@ -20,7 +20,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
         public async Task<List<AttendeeDto>> Handle(GetAttendeesByEventIdQuery request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetById(request.Id, cancellationToken);
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if (socialEvent == null)
             {
                 throw new SocialEventException("No social event was found");

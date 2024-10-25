@@ -22,7 +22,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
         public async Task<Guid> Handle(UpdateSocialEventCommand request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var candidate = await _appUnitOfWork.SocialEventRepository.GetById(request.Id, cancellationToken);
+            SocialEvent candidate = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if (candidate == null)
             {
                 throw new SocialEventException("No social event found");
@@ -37,7 +37,8 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
             bool isDateChanged = !candidate.Date.Equals(DateTime.Parse(request.Date));
             bool isPlaceChanged = !candidate.Place.Equals(request.Place);
             SocialEvent socialEvent = _mapper.Map<SocialEvent>(request);
-            var id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent, cancellationToken);
+            socialEvent.ListOfAttendees = candidate.ListOfAttendees;
+            Guid id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent, cancellationToken);
 
             _appUnitOfWork.Save();
 

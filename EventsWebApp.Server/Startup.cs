@@ -60,9 +60,16 @@ namespace EventsWebApp.Server
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile(new AppMappingProfile()));
+            MapperConfiguration config = new MapperConfiguration(cfg => cfg.AddProfile(new AttendeeDtoMappingProfile()));
 
-            services.AddAutoMapper(typeof(AppMappingProfile));
+            services.AddAutoMapper(typeof(AttendeeDtoMappingProfile));
+            services.AddAutoMapper(typeof(AddUpdateAttendeeRequestMappingProfile));
+            services.AddAutoMapper(typeof(CreateSocialEventCommandMappingProfile));
+            services.AddAutoMapper(typeof(RegisterUserCommandMappingProfile));
+            services.AddAutoMapper(typeof(SocialEventDtoMappingProfile));
+            services.AddAutoMapper(typeof(UpdateSocialEventCommandMappingProfile));
+            services.AddAutoMapper(typeof(UpdateUserCommandMappingProfile));
+            services.AddAutoMapper(typeof(UserDtoMappingProfile));
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env, string[] args)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MediatR;
-using EventsWebApp.Domain.PaginationHandlers;
+using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Application.UseCases.SocialEvents.Commands;
 using EventsWebApp.Application.UseCases.ImageService.Commands;

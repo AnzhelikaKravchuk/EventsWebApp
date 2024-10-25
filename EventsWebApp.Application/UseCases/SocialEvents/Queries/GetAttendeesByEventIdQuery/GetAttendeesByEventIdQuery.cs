@@ -6,6 +6,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
 {
     public record GetAttendeesByEventIdQuery : IdRequest, IQuery<List<AttendeeDto>>
     {
+        public GetAttendeesByEventIdQuery() { }
         public GetAttendeesByEventIdQuery(Guid id)
         {
             Id = id;

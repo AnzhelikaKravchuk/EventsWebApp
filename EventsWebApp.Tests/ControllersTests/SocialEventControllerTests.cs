@@ -5,7 +5,6 @@ using EventsWebApp.Domain.Models;
 using EventsWebApp.Server.Controllers;
 using FluentAssertions;
 using EventsWebApp.Domain.Filters;
-using EventsWebApp.Domain.PaginationHandlers;
 using EventsWebApp.Application.Dto;
 using Microsoft.AspNetCore.Http;
 using MediatR;

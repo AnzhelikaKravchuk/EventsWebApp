@@ -43,7 +43,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             };
             AttendeeDto attendeeResponse = A.Fake<AttendeeDto>();
             GetAttendeesByEventIdQuery request = new GetAttendeesByEventIdQuery(id); 
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(request.Id, _cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, _cancellationToken)).Returns(socialEvent);
             A.CallTo(() => _mapper.Map<AttendeeDto>(A<Attendee>.Ignored)).Returns(attendeeResponse);
             GetAttendeesByEventIdHandler handler = new GetAttendeesByEventIdHandler(_unitOfWork, _mapper);
 
@@ -84,7 +84,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             Guid id = Guid.NewGuid();
             SocialEvent? socialEvent = null;
             GetAttendeesByEventIdQuery request = new GetAttendeesByEventIdQuery(id); 
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetById(request.Id, _cancellationToken)).Returns(socialEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, _cancellationToken)).Returns(socialEvent);
             GetAttendeesByEventIdHandler handler = new GetAttendeesByEventIdHandler(_unitOfWork, _mapper);
 
             //Act

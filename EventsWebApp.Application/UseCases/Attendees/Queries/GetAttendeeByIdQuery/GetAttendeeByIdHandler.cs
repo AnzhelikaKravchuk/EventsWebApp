@@ -19,7 +19,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Queries
         public async Task<AttendeeDto> Handle(GetAttendeeByIdQuery request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return _mapper.Map<AttendeeDto>(await _appUnitOfWork.AttendeeRepository.GetById(request.Id, cancellationToken));
+            return _mapper.Map<AttendeeDto>(await _appUnitOfWork.AttendeeRepository.GetByIdWithInclude(request.Id, cancellationToken));
         }
     }
 }

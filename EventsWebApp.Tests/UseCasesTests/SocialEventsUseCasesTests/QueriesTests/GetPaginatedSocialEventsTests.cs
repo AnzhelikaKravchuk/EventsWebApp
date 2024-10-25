@@ -4,7 +4,6 @@ using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Domain.Filters;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
-using EventsWebApp.Domain.PaginationHandlers;
 using FakeItEasy;
 using FluentAssertions;
 
@@ -30,11 +29,12 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             _cancellationToken = _cancellationTokenSource.Token;
             int pageIndex = 10;
             int pageSize = 10;
-            PaginatedList<SocialEvent> paginatedList = new PaginatedList<SocialEvent> { Items = new List<SocialEvent>()};
+            int totalPages = 10;
+            List<SocialEvent> socialEvents = new List<SocialEvent>();
             SocialEventDto socialEventDto = A.Fake<SocialEventDto>();
             AppliedFilters appliedFilters = A.Fake<AppliedFilters>();
             GetPaginatedSocialEventsQuery request = new GetPaginatedSocialEventsQuery(appliedFilters, pageIndex, pageSize);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.GetSocialEvents(appliedFilters, pageIndex, pageSize, _cancellationToken)).Returns(paginatedList);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.GetSocialEvents(appliedFilters, pageIndex, pageSize, _cancellationToken)).Returns((socialEvents,totalPages));
             A.CallTo(() => _mapper.Map<SocialEventDto>(A<SocialEvent>.Ignored)).Returns(socialEventDto);
             GetPaginatedSocialEventsHandler handler = new GetPaginatedSocialEventsHandler(_unitOfWork, _mapper);
 

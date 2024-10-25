@@ -1,4 +1,4 @@
-namespace EventsWebApp.Domain.PaginationHandlers
+namespace EventsWebApp.Application.Dto
 {
     public class PaginatedList<T>
     {

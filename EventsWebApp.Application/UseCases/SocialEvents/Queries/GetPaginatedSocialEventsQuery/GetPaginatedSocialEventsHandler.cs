@@ -1,7 +1,6 @@
 ﻿using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Interfaces.Repositories;
-using EventsWebApp.Domain.PaginationHandlers;
 using AutoMapper;
 using EventsWebApp.Domain.Models;
 
@@ -20,11 +19,11 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
         public async Task<PaginatedList<SocialEventDto>> Handle(GetPaginatedSocialEventsQuery request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            PaginatedList<SocialEvent> socialEvents = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(request.Filters, request.PageIndex, request.PageSize, cancellationToken);
+            (List<SocialEvent> socialEvents,int totalPages) = await _appUnitOfWork.SocialEventRepository.GetSocialEvents(request.Filters, request.PageIndex, request.PageSize, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
-            PaginatedList<SocialEventDto> responseList = new PaginatedList<SocialEventDto>(null, socialEvents.PageIndex, socialEvents.TotalPages);
-            responseList.Items = socialEvents.Items.ConvertAll(_mapper.Map<SocialEventDto>).ToList();
+            PaginatedList<SocialEventDto> responseList = new PaginatedList<SocialEventDto>(null, request.PageIndex, totalPages);
+            responseList.Items = socialEvents.ConvertAll(_mapper.Map<SocialEventDto>).ToList();
             return responseList;
         }
     }

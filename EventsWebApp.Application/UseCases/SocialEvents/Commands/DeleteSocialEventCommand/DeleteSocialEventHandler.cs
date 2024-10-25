@@ -1,6 +1,7 @@
 ﻿using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
+using EventsWebApp.Domain.Models;
 
 namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
 {
@@ -14,6 +15,12 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
 
         public async Task<Guid> Handle(DeleteSocialEventCommand request, CancellationToken cancellationToken)
         {
+            SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
+            if (socialEvent == null)
+            {
+                throw new SocialEventException("No social event found");
+            }
+
             int rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(request.Id, cancellationToken);
             if (rowsDeleted == 0)
             {
