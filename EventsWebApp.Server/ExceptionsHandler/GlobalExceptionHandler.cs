@@ -1,3 +1,4 @@
+using EventsWebApp.Domain.Exceptions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Diagnostics;
@@ -20,15 +21,17 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         CancellationToken cancellationToken)
     {
         _logger.LogError(
-            exception, "Exception occurred: {Message}", exception.Message);
+        exception, "Exception occurred: {Message}", exception.Message);
+
+        int status = exception is BadRequestException or ValidationException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
 
         var problemDetails = new {
-            Status = StatusCodes.Status500InternalServerError,
+            Status = status,
             Detail = exception.Message,
             Errors = GetErrors(exception)
         };
 
-        httpContext.Response.StatusCode = problemDetails.Status;
+        httpContext.Response.StatusCode = status;
 
         await httpContext.Response
             .WriteAsJsonAsync(problemDetails, cancellationToken);
