@@ -4,13 +4,11 @@ using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using EventsWebApp.Domain.Filters;
-using System.Linq.Expressions;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {
     public class SocialEventRepository : GenericRepository<SocialEvent>,ISocialEventRepository
     {
-        private Expression<Func<SocialEvent, object>>[] includes = [x => x.ListOfAttendees];
         public SocialEventRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }

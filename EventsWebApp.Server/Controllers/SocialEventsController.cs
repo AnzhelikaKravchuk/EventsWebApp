@@ -79,8 +79,7 @@ namespace EventsWebApp.Server.Controllers
             if (request.File != null && request.File.IsImage())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                string newPath = await _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File), cancellationToken);
-                request.Image = newPath;
+                request.Image = await _mediator.Send(new StoreImageCommand(_webHostEnvironment.WebRootPath, request.File), cancellationToken);
             }
             cancellationToken.ThrowIfCancellationRequested();
             Guid id = await _mediator.Send(request, cancellationToken);

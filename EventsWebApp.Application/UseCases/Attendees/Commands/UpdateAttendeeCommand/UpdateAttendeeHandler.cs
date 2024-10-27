@@ -23,13 +23,8 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
                 throw new Exception("Attendee not found");
             }
             
-            Attendee attendee = _mapper.Map<Attendee>(request);
-            attendee.DateOfRegistration = candidate.DateOfRegistration;
-            attendee.SocialEvent = candidate.SocialEvent;
-            attendee.SocialEventId = candidate.SocialEventId;
-            attendee.User = candidate.User;
-            attendee.UserId = candidate.UserId;
-            var id = await _appUnitOfWork.AttendeeRepository.Update(attendee, cancellationToken);
+            Attendee attendee = _mapper.Map(request, candidate);
+            Guid id = await _appUnitOfWork.AttendeeRepository.Update(attendee, cancellationToken);
 
             _appUnitOfWork.Save();
             return id;

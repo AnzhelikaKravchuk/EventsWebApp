@@ -29,11 +29,8 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
                 throw new UserException("No user was found");
             }
 
-            User user = _mapper.Map<User>(request);
-            user.Email = candidate.Email;
-            user.ExpiresRefreshToken = candidate.ExpiresRefreshToken;
-            user.RefreshToken = candidate.RefreshToken;
-            var userId = await _appUnitOfWork.UserRepository.Update(user, cancellationToken);
+            User user = _mapper.Map(request, candidate);
+            Guid userId = await _appUnitOfWork.UserRepository.Update(user, cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
             _appUnitOfWork.Save();

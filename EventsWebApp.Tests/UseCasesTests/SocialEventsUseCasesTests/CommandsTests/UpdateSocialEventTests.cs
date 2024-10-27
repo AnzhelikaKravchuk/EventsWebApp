@@ -67,8 +67,8 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
                 Image = "image.png"
             };
             A.CallTo(() => _unitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id,_cancellationToken)).Returns(socialEvent);
-            A.CallTo(() => _mapper.Map<SocialEvent>(request)).Returns(socialEvent);
-            A.CallTo(() => _unitOfWork.SocialEventRepository.Update(socialEvent, _cancellationToken)).Returns(updatedEvent.Id);
+            A.CallTo(() => _mapper.Map(request, socialEvent)).Returns(updatedEvent);
+            A.CallTo(() => _unitOfWork.SocialEventRepository.Update(updatedEvent, _cancellationToken)).Returns(updatedEvent.Id);
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork,_mapper, _emailSender);
 
             //Act

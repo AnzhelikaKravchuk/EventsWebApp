@@ -8,6 +8,8 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
         public string Password { get; set; }
         public string Username { get; set; }
 
+        public UpdateUserCommand() { }
+
         public UpdateUserCommand(Guid id,
                                     string password,
                                     string username)

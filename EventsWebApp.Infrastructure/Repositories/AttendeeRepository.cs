@@ -1,7 +1,6 @@
 ﻿using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace EventsWebApp.Infrastructure.Repositories
 {

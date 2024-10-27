@@ -7,6 +7,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
     {
         public Guid EventId { get; set; }
         public string AccessToken { get; set; }
+        public AddAttendeeWithTokenCommand() { }
         public AddAttendeeWithTokenCommand(string name, string surname, string email, string dateOfBirth, Guid EventId, string accessToken) : base(name, surname, email, dateOfBirth)
         {
             this.EventId = EventId;

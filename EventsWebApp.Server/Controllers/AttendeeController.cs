@@ -57,5 +57,6 @@ namespace EventsWebApp.Server.Controllers
             Guid attendeeId = await _mediator.Send(request, cancellationToken);
             return Ok(attendeeId);
         }
+
     }
 }

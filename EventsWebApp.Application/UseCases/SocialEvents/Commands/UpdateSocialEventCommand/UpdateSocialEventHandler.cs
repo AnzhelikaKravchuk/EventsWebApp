@@ -36,8 +36,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
             cancellationToken.ThrowIfCancellationRequested();
             bool isDateChanged = !candidate.Date.Equals(DateTime.Parse(request.Date));
             bool isPlaceChanged = !candidate.Place.Equals(request.Place);
-            SocialEvent socialEvent = _mapper.Map<SocialEvent>(request);
-            socialEvent.ListOfAttendees = candidate.ListOfAttendees;
+            SocialEvent socialEvent = _mapper.Map(request, candidate);
             Guid id = await _appUnitOfWork.SocialEventRepository.Update(socialEvent, cancellationToken);
 
             _appUnitOfWork.Save();

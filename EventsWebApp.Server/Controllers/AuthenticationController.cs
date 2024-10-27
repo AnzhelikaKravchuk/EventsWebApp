@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using MediatR;
 using EventsWebApp.Application.UseCases.Users.Queries;
 using EventsWebApp.Application.UseCases.Users.Commands;
+using EventsWebApp.Application.UseCases.Attendees.Commands;
 namespace EventsWebApp.Server.Controllers
 {
     [ApiController]
@@ -74,5 +75,6 @@ namespace EventsWebApp.Server.Controllers
             HttpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions { Domain = "localhost" });
             return Ok((accessToken, refreshToken));
         }
+
     }
 }

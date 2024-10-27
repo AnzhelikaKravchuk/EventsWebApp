@@ -12,6 +12,7 @@ namespace EventsWebApp.Application.Mapper
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => DateTime.Parse(src.Date).Date))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (E_SocialEventCategory)Enum.Parse(typeof(E_SocialEventCategory), src.Category)))
                 .ForMember(dest => dest.ListOfAttendees, opt => opt.Ignore())
+                .AfterMap((com, res) => { res.Image = (res.Image == null) ? string.Empty : res.Image; })
                 ;
         }
     }

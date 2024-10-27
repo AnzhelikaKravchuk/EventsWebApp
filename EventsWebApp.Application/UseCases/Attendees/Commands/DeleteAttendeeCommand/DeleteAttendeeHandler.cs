@@ -15,7 +15,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
 
         public async Task<Guid> Handle(DeleteAttendeeCommand request, CancellationToken cancellationToken)
         {
-            Attendee attendee = await _appUnitOfWork.AttendeeRepository.GetByIdWithInclude(request.Id, cancellationToken);
+            Attendee attendee = await _appUnitOfWork.AttendeeRepository.GetById(request.Id, cancellationToken);
 
             if (attendee == null)
             {
@@ -24,7 +24,12 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _appUnitOfWork.AttendeeRepository.Delete(request.Id, cancellationToken);
+            int rowsDeleted = await _appUnitOfWork.AttendeeRepository.Delete(request.Id, cancellationToken);
+
+            if (rowsDeleted == 0)
+            {
+                throw new AttendeeException("Attendee wasn't deleted");
+            }
 
             _appUnitOfWork.Save();
             return request.Id;
