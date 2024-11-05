@@ -2,6 +2,7 @@
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Users.Commands
 {
@@ -18,14 +19,14 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
             User user = await _appUnitOfWork.UserRepository.GetById(request.Id, cancellationToken);
             if (user == null)
             {
-                throw new UserException("No user found");
+                throw new NotFoundException("No user found");
             }
 
             int rowsDeleted = await _appUnitOfWork.UserRepository.Delete(request.Id, cancellationToken);
 
             if (rowsDeleted == 0)
             {
-                throw new UserException("User wasn't deleted");
+                throw new NotFoundException("User wasn't deleted");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

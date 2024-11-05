@@ -1,6 +1,5 @@
 ﻿using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Domain.Exceptions;
-
 namespace EventsWebApp.Application.Helpers
 {
     public static class TokenHelper
@@ -12,7 +11,7 @@ namespace EventsWebApp.Application.Helpers
             var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             if (userId == null)
             {
-                throw new TokenException("Invalid token");
+                throw new InvalidTokenException("Invalid token");
             }
             return Guid.Parse(userId);
         }

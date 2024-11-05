@@ -7,6 +7,7 @@ using EventsWebApp.Application.Validators;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
 {
@@ -33,7 +34,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
 
             if (socialEvent == null)
             {
-                throw new SocialEventException("No social event found");
+                throw new NotFoundException("No social event found");
             }
 
             ValidateSocialEventAndCandidate(socialEvent, candidate, cancellationToken);
@@ -42,7 +43,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
 
             if (user == null)
             {
-                throw new UserException("No user was found");
+                throw new NotFoundException("No user was found");
             }
             attendee.SocialEvent = socialEvent;
             attendee.User = user;
@@ -64,11 +65,11 @@ namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
             cancellationToken.ThrowIfCancellationRequested();
             if (candidate != null)
             {
-                throw new SocialEventException("This attendee already in the list");
+                throw new ConflictException("This attendee already in the list");
             }
             if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
             {
-                throw new SocialEventException("Max attendee number reached");
+                throw new UnprocessableEntityException("Max attendee number reached");
             }
         }
     }

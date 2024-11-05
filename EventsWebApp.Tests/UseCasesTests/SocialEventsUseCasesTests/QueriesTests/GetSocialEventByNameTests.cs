@@ -74,7 +74,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             GetSocialEventByNameHandler handler = new GetSocialEventByNameHandler(_unitOfWork, _mapper);
 
             //Act
-            SocialEventException exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request,_cancellationToken));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(request,_cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();

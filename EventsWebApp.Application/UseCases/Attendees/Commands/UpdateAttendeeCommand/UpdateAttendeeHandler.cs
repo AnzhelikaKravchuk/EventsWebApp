@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EventsWebApp.Application.Interfaces.UseCases;
+using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
 
@@ -20,7 +21,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Commands
             Attendee candidate = await _appUnitOfWork.AttendeeRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if(candidate == null)
             {
-                throw new Exception("Attendee not found");
+                throw new NotFoundException("Attendee not found");
             }
             
             Attendee attendee = _mapper.Map(request, candidate);

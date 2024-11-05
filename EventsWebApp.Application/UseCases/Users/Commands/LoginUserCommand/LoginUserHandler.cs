@@ -3,6 +3,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Users.Commands
 {
@@ -24,7 +25,7 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
 
             if (candidate == null || !_passwordHasher.Verify(request.Password, candidate.PasswordHash))
             {
-                throw new UserException("No candidate found");
+                throw new NotFoundException("No candidate found");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

@@ -13,6 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using EventsWebApp.Infrastructure.DataSeeder;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Extensions;
+using EventsWebApp.Application.Services.ImageService;
 
 namespace EventsWebApp.Server
 {
@@ -42,6 +43,7 @@ namespace EventsWebApp.Server
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
             services.AddTransient<DataSeeder>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAttendeeRepository, AttendeeRepository>();
             services.AddScoped<ISocialEventRepository, SocialEventRepository>();
@@ -50,10 +52,10 @@ namespace EventsWebApp.Server
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailSender, EmailSender>();
 
-            services.AddApiAuthentication(Configuration);
-
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
+
+            services.AddApiAuthentication(Configuration);
 
             services.AddMediatRServices();
             services.AddControllers().AddJsonOptions(x =>x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
@@ -108,9 +110,10 @@ namespace EventsWebApp.Server
 
             app.UseHttpsRedirection();
 
+            app.UseMiddleware<StatusCodeInterceptorMiddleware>();
+            app.UseExceptionHandler();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseExceptionHandler();
 
         }
 

@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Users.Commands
 {
@@ -26,7 +27,7 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
             User candidate = await _appUnitOfWork.UserRepository.GetById(request.Id, cancellationToken);
             if (candidate == null)
             {
-                throw new UserException("No user was found");
+                throw new NotFoundException("No user was found");
             }
 
             User user = _mapper.Map(request, candidate);

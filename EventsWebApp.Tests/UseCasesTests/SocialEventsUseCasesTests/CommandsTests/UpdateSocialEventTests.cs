@@ -129,7 +129,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork, _mapper, _emailSender);
 
             //Act
-            var exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request, _cancellationToken));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(request, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();
@@ -168,7 +168,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork, _mapper, _emailSender);
 
             //Act
-            var exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request, _cancellationToken));
+            ConflictException exception = await Assert.ThrowsAsync<ConflictException>(() => handler.Handle(request, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();

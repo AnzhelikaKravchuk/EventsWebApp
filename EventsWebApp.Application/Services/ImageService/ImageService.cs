@@ -1,10 +1,11 @@
-﻿using EventsWebApp.Application.Interfaces.UseCases;
+﻿using EventsWebApp.Application.Dto;
+using EventsWebApp.Application.Interfaces;
 
-namespace EventsWebApp.Application.UseCases.ImageService.Commands
+namespace EventsWebApp.Application.Services.ImageService
 {
-    public class StoreImageHandler : ICommandHandler<StoreImageCommand, string>
+    public class ImageService : IImageService
     {
-        public async Task<string> Handle(StoreImageCommand request, CancellationToken cancellationToken)
+        public async Task<string> StoreImage(StoreImageRequest request, CancellationToken cancellationToken)
         {
             if (request.Image == null)
             {

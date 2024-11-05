@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Attendees.Queries
 {
@@ -28,7 +29,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.Queries
             string userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
             if (userId == null)
             {
-                throw new UserException("No user id found");
+                throw new InvalidTokenException("No user id found");
             }
 
             return (await _appUnitOfWork.AttendeeRepository.GetAllByUserId(Guid.Parse(userId), cancellationToken)).Select(_mapper.Map<AttendeeDto>).ToList();

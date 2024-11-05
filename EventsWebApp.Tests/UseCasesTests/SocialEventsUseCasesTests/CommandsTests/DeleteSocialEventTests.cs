@@ -81,7 +81,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
             DeleteSocialEventHandler handler = new DeleteSocialEventHandler(_unitOfWork);
 
             //Act
-            SocialEventException exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(socialEventRequest, _cancellationToken));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(socialEventRequest, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();
@@ -103,7 +103,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
             DeleteSocialEventHandler handler = new DeleteSocialEventHandler(_unitOfWork);
 
             //Act
-            SocialEventException exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(socialEventRequest, _cancellationToken));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(socialEventRequest, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();

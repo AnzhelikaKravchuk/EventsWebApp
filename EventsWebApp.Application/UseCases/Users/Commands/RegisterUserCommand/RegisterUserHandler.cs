@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 namespace EventsWebApp.Application.UseCases.Users.Commands
 {
     public class RegisterUserHandler : ICommandHandler<RegisterUserCommand, (string, string)>
@@ -25,7 +26,7 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
             User candidate = await _appUnitOfWork.UserRepository.GetByEmail(request.Email, cancellationToken);
             if (candidate != null)
             {
-                throw new UserException("User already exists");
+                throw new NotFoundException("User already exists");
             }
             request.Password = _passwordHasher.Generate(request.Password);
 

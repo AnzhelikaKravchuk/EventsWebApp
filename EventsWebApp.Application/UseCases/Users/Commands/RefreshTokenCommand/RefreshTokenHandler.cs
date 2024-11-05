@@ -1,4 +1,5 @@
-﻿using EventsWebApp.Application.Interfaces;
+﻿using EventsWebApp.Application.Helpers;
+using EventsWebApp.Application.Interfaces;
 using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
@@ -17,21 +18,14 @@ namespace EventsWebApp.Application.UseCases.Users.Commands
 
         public async Task<string> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var principal = _jwtProvider.GetPrincipalFromExpiredToken(request.AccessToken);
-
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
-
-            if (userId == null)
-            {
-                throw new UserException("No user id found");
-            }
+            Guid userId = TokenHelper.CheckToken(request.AccessToken, _jwtProvider);
 
             cancellationToken.ThrowIfCancellationRequested();
-            var user = await _appUnitOfWork.UserRepository.GetById(Guid.Parse(userId), cancellationToken);
+            var user = await _appUnitOfWork.UserRepository.GetById(userId, cancellationToken);
 
             if (user == null || user.RefreshToken != request.RefreshToken || user.ExpiresRefreshToken <= DateTime.UtcNow)
             {
-                throw new TokenException("Invalid token");
+                throw new UnauthorizedException("Refresh token is not valid or expired");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

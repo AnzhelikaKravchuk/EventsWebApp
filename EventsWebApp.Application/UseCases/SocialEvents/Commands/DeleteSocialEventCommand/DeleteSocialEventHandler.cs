@@ -2,6 +2,7 @@
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
 {
@@ -18,13 +19,13 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
             SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if (socialEvent == null)
             {
-                throw new SocialEventException("No social event found");
+                throw new NotFoundException("No social event found");
             }
 
             int rowsDeleted = await _appUnitOfWork.SocialEventRepository.Delete(request.Id, cancellationToken);
             if (rowsDeleted == 0)
             {
-                throw new SocialEventException("Social event wasn't deleted");
+                throw new NotFoundException("Social event wasn't deleted");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

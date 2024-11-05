@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
 {
@@ -25,12 +26,12 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
             SocialEvent candidate = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if (candidate == null)
             {
-                throw new SocialEventException("No social event found");
+                throw new NotFoundException("No social event found");
             }
 
             if (request.MaxAttendee < candidate.ListOfAttendees.Count)
             {
-                throw new SocialEventException("Can't lower max attendee number");
+                throw new ConflictException("Can't lower max attendee number");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

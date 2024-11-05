@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
 {
@@ -23,7 +24,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Queries
             SocialEvent socialEvent = await _appUnitOfWork.SocialEventRepository.GetByIdWithInclude(request.Id, cancellationToken);
             if (socialEvent == null)
             {
-                throw new SocialEventException("No social event was found");
+                throw new NotFoundException("No social event was found");
             }
 
             List<AttendeeDto> responseList = socialEvent.ListOfAttendees.Select(_mapper.Map<AttendeeDto>).ToList();

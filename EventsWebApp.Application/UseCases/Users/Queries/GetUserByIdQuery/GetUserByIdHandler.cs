@@ -4,6 +4,7 @@ using EventsWebApp.Application.Interfaces.UseCases;
 using EventsWebApp.Domain.Exceptions;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Domain.Models;
+using System.Net;
 
 namespace EventsWebApp.Application.UseCases.Users.Queries
 {
@@ -23,7 +24,7 @@ namespace EventsWebApp.Application.UseCases.Users.Queries
             cancellationToken.ThrowIfCancellationRequested();
             if (user == null)
             {
-                throw new UserException("No such user found");
+                throw new NotFoundException("No such user found");
             }
 
             var userDto = _mapper.Map<UserDto>(user);

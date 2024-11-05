@@ -92,7 +92,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper, _jwtProvider);
 
             //Act
-            TokenException exception = await Assert.ThrowsAsync<TokenException>(() => handler.Handle(request,_cancellationToken));
+            InvalidTokenException exception = await Assert.ThrowsAsync<InvalidTokenException>(() => handler.Handle(request,_cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();
@@ -116,7 +116,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.QueriesTest
             GetSocialEventByUserWithTokenHandler handler = new GetSocialEventByUserWithTokenHandler(_unitOfWork, _mapper, _jwtProvider);
 
             //Act
-            SocialEventException exception = await Assert.ThrowsAsync<SocialEventException>(() => handler.Handle(request, _cancellationToken));
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(request, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();
