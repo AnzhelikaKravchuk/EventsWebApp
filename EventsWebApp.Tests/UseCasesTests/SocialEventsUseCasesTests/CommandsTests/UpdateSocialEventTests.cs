@@ -168,7 +168,7 @@ namespace EventsWebApp.Tests.UseCasesTests.SocialEventsUseCasesTests.CommandsTes
             UpdateSocialEventHandler handler = new UpdateSocialEventHandler(_unitOfWork, _mapper, _emailSender);
 
             //Act
-            ConflictException exception = await Assert.ThrowsAsync<ConflictException>(() => handler.Handle(request, _cancellationToken));
+            BadRequestException exception = await Assert.ThrowsAsync<BadRequestException>(() => handler.Handle(request, _cancellationToken));
 
             //Assert
             exception.Should().NotBeNull();

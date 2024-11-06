@@ -65,11 +65,11 @@ namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
             cancellationToken.ThrowIfCancellationRequested();
             if (candidate != null)
             {
-                throw new ConflictException("This attendee already in the list");
+                throw new BadRequestException("This attendee already in the list");
             }
             if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
             {
-                throw new ConflictException("Max attendee number reached");
+                throw new BadRequestException("Max attendee number reached");
             }
         }
     }

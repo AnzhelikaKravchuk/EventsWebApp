@@ -31,7 +31,7 @@ namespace EventsWebApp.Application.UseCases.SocialEvents.Commands
 
             if (request.MaxAttendee < candidate.ListOfAttendees.Count)
             {
-                throw new ConflictException("Can't lower max attendee number");
+                throw new BadRequestException("Can't lower max attendee number");
             }
 
             cancellationToken.ThrowIfCancellationRequested();

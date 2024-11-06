@@ -28,7 +28,6 @@ namespace EventsWebApp.Server.ExceptionsHandler
                 NotFoundException => StatusCodes.Status404NotFound,
                 //401 and 403 is handled via middleware
                 OperationCanceledException => StatusCodes.Status408RequestTimeout,
-                ConflictException => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError
             };
 
