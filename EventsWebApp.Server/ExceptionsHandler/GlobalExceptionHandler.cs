@@ -23,17 +23,12 @@ namespace EventsWebApp.Server.ExceptionsHandler
 
             int status = exception switch
             {
-                BadRequestException => StatusCodes.Status400BadRequest,
+                BadRequestException or ValidationException => StatusCodes.Status400BadRequest,
                 UnauthorizedException or InvalidTokenException => StatusCodes.Status401Unauthorized,
                 NotFoundException => StatusCodes.Status404NotFound,
+                //401 and 403 is handled via middleware
+                OperationCanceledException => StatusCodes.Status408RequestTimeout,
                 ConflictException => StatusCodes.Status409Conflict,
-                UnprocessableEntityException or ValidationException => StatusCodes.Status422UnprocessableEntity,
-                OperationCanceledException => StatusCodes.Status499ClientClosedRequest,
-                NotImplementedException => StatusCodes.Status501NotImplemented,
-                //For future use
-                ServiceNotAvailableException => StatusCodes.Status503ServiceUnavailable,
-                OutOfMemoryException => StatusCodes.Status507InsufficientStorage,
-
                 _ => StatusCodes.Status500InternalServerError
             };
 

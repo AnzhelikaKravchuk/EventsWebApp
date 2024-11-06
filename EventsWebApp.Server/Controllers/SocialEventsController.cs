@@ -7,7 +7,6 @@ using MediatR;
 using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Application.UseCases.SocialEvents.Commands;
 using EventsWebApp.Application.Interfaces;
-using EventsWebApp.Application.UseCases.ImageService.Commands;
 
 namespace EventsWebApp.Server.Controllers
 {
@@ -97,7 +96,7 @@ namespace EventsWebApp.Server.Controllers
             if (!socialEvent.Image.IsNullOrEmpty())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image)), cancellationToken);
+                await _imageService.DeleteImage(new DeleteImageRequest(Path.Combine(_webHostEnvironment.WebRootPath, socialEvent.Image)), cancellationToken);
             }
             cancellationToken.ThrowIfCancellationRequested();
             await _mediator.Send(request, cancellationToken);
@@ -114,7 +113,7 @@ namespace EventsWebApp.Server.Controllers
                 if (!request.Image.IsNullOrEmpty())
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)), cancellationToken);
+                    await _imageService.DeleteImage(new DeleteImageRequest(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)), cancellationToken);
                 }
                 request.Image = newPath;
             }

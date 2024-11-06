@@ -14,7 +14,6 @@ using EventsWebApp.Infrastructure.DataSeeder;
 using EventsWebApp.Domain.Interfaces.Repositories;
 using EventsWebApp.Application.Extensions;
 using EventsWebApp.Application.Services.ImageService;
-
 namespace EventsWebApp.Server
 {
     public class Startup
@@ -112,6 +111,7 @@ namespace EventsWebApp.Server
 
             app.UseMiddleware<StatusCodeInterceptorMiddleware>();
             app.UseExceptionHandler();
+            app.MapControllers();
             app.UseAuthentication();
             app.UseAuthorization();
 

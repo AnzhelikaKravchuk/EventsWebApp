@@ -69,7 +69,7 @@ namespace EventsWebApp.Application.UseCases.Attendees.CommandsUserRepository.Get
             }
             if (attendeesList.Count + 1 > socialEvent.MaxAttendee)
             {
-                throw new UnprocessableEntityException("Max attendee number reached");
+                throw new ConflictException("Max attendee number reached");
             }
         }
     }

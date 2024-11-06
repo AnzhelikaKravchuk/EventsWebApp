@@ -1,5 +1,6 @@
 ﻿using EventsWebApp.Application.Dto;
 using EventsWebApp.Application.Interfaces;
+using MediatR;
 
 namespace EventsWebApp.Application.Services.ImageService
 {
@@ -20,6 +21,20 @@ namespace EventsWebApp.Application.Services.ImageService
             }
 
             return Path.Combine("images", fileName);
+        }
+        public Task<Unit> DeleteImage(DeleteImageRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                FileInfo file = new FileInfo(request.Path);
+                if (file.Exists)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    file.Delete();
+                }
+            }
+            catch (Exception) { }
+            return Task.FromResult(Unit.Value);
         }
     }
 }

@@ -9,7 +9,6 @@ var app = builder.Build();
 startup.Configure(app, app.Environment, args);
 
 app.MapControllers();
-
 app.MapFallbackToFile("/index.html");
 
 app.Run();

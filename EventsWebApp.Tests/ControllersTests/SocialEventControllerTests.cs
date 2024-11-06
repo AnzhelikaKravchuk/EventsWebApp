@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using MediatR;
 using EventsWebApp.Application.UseCases.SocialEvents.Queries;
 using EventsWebApp.Application.UseCases.SocialEvents.Commands;
-using EventsWebApp.Application.UseCases.ImageService.Commands;
 using EventsWebApp.Application.Interfaces;
 
 namespace EventsWebApp.Tests.ControllersTests
@@ -199,7 +198,7 @@ namespace EventsWebApp.Tests.ControllersTests
 
             SocialEvent socialEvent = A.Fake<SocialEvent>();
             CreateSocialEventCommand request = new CreateSocialEventCommand("a", "b", "c", "d", "f", 1,"image.png", formFile);
-            A.CallTo(() => _mediator.Send(new StoreImageRequest(_webHostEnvironment.WebRootPath, request.File),_cancellationToken)).Returns(filePath);
+            A.CallTo(() => _imageService.StoreImage(new StoreImageRequest(_webHostEnvironment.WebRootPath, request.File), _cancellationToken)).Returns(filePath);
             A.CallTo(() => _mediator.Send(request,_cancellationToken)).Returns(socialEvent.Id);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _imageService, _webHostEnvironment);
 
@@ -265,7 +264,7 @@ namespace EventsWebApp.Tests.ControllersTests
             SocialEventDto socialEventDto = new SocialEventDto { Id = eventId, Image = "image" };
             DeleteSocialEventCommand request = new DeleteSocialEventCommand(eventId);
             A.CallTo(() => _mediator.Send(new GetSocialEventByIdQuery(request.Id), _cancellationToken)).Returns(socialEventDto);
-            A.CallTo(() => _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, socialEventDto.Image)), _cancellationToken));
+            A.CallTo(() => _imageService.DeleteImage(new DeleteImageRequest(Path.Combine(_webHostEnvironment.WebRootPath, socialEventDto.Image)), _cancellationToken));
             A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _imageService, _webHostEnvironment);
 
@@ -340,8 +339,8 @@ namespace EventsWebApp.Tests.ControllersTests
             Guid eventId = Guid.NewGuid();
             SocialEvent socialEvent = new SocialEvent { Image = hasImage ? "oldPath" : string.Empty };
             UpdateSocialEventCommand request = new UpdateSocialEventCommand { Image = hasImage ? "oldPath" : string.Empty, File = formFile };
-            A.CallTo(() => _mediator.Send(new StoreImageRequest(_webHostEnvironment.WebRootPath, request.File), _cancellationToken)).Returns(filePath);
-            A.CallTo(() => _mediator.Send(new DeleteImageCommand(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)),_cancellationToken));
+            A.CallTo(() => _imageService.StoreImage(new StoreImageRequest(_webHostEnvironment.WebRootPath, request.File), _cancellationToken)).Returns(filePath);
+            A.CallTo(() => _imageService.DeleteImage(new DeleteImageRequest(Path.Combine(_webHostEnvironment.WebRootPath, request.Image)),_cancellationToken));
             A.CallTo(() => _mediator.Send(request, _cancellationToken)).Returns(eventId);
             SocialEventsController socialEventsController = new SocialEventsController(_mediator, _imageService, _webHostEnvironment);
 
